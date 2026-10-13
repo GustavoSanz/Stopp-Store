@@ -7,8 +7,9 @@ const CURRENT_STORE_VERSION_NAME = "0.1-Beta";
 // Native Android Bridge & Web Fallback Interface
 const StoppBridge = {
     isNative: function () {
-        return typeof window.StoppStoreNative !== 'undefined' &&
-               typeof window.StoppStoreNative.isAppInstalled === 'function';
+        return (typeof window.StoppStoreNative !== 'undefined' &&
+               typeof window.StoppStoreNative.isAppInstalled === 'function') ||
+               (navigator.userAgent && navigator.userAgent.includes('StoppStoreApp'));
     },
 
     isAppInstalled: function (packageName) {
@@ -194,8 +195,25 @@ const StoppNotifications = {
     }
 };
 
+// Native Mode App Suppression
+function applyNativeAppClass() {
+    if (StoppBridge.isNative()) {
+        document.documentElement.classList.add('is-native-app');
+        if (document.body) {
+            document.body.classList.add('is-native-app');
+        }
+    }
+}
+applyNativeAppClass();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyNativeAppClass);
+} else {
+    applyNativeAppClass();
+}
+
 // UI App Status Controller
 function refreshAllAppStatus() {
+    applyNativeAppClass();
     const appContainers = document.querySelectorAll('[data-package]');
     if (!appContainers.length) return;
 
@@ -218,6 +236,82 @@ function refreshAllAppStatus() {
         const actionsContainer = isDetailPage
             ? document.getElementById('detail-actions-' + pkg)
             : document.getElementById('actions-' + pkg);
+
+        if (pkg === 'com.stopp.store') {
+            if (isInstalled) {
+                const needsUpdate = installedCode >= 0 && installedCode < targetCode;
+                if (statusBadge) {
+                    statusBadge.style.display = 'inline-flex';
+                    if (needsUpdate) {
+                        statusBadge.className = 'badge-status badge-update';
+                        statusBadge.textContent = 'Atualizacao Disponivel';
+                    } else {
+                        statusBadge.className = 'badge-status badge-installed';
+                        statusBadge.textContent = '✓ Em Execucao';
+                    }
+                }
+                if (actionsContainer) {
+                    if (needsUpdate) {
+                        actionsContainer.innerHTML = `
+                            <button class="btn-download btn-update-action" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                Atualizar (${targetName})
+                            </button>
+                            <a href="stoppstore.html" class="btn-secondary">Detalhes</a>
+                        `;
+                    } else {
+                        if (isDetailPage) {
+                            actionsContainer.innerHTML = `
+                                <span class="tag" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600; padding: 12px 20px; border-radius: 12px; font-size: 0.95rem;">
+                                    ✓ Em Execucao (Esta Aplicacao)
+                                </span>
+                                <button class="btn-secondary btn-large" onclick="openSettingsModal()">
+                                    Definicoes da Loja
+                                </button>
+                            `;
+                        } else {
+                            actionsContainer.innerHTML = `
+                                <span class="tag" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600; padding: 10px 16px; border-radius: 12px; font-size: 0.88rem;">
+                                    ✓ Em Execucao
+                                </span>
+                                <a href="stoppstore.html" class="btn-secondary" title="Ver Detalhes da Aplicacao">
+                                    Detalhes
+                                </a>
+                            `;
+                        }
+                    }
+                }
+            } else {
+                if (statusBadge) {
+                    statusBadge.style.display = 'inline-flex';
+                    statusBadge.className = 'badge-status badge-installed';
+                    statusBadge.textContent = 'App Oficial';
+                }
+                if (actionsContainer) {
+                    if (isDetailPage) {
+                        actionsContainer.innerHTML = `
+                            <button class="btn-download btn-large" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Instalar APK Nativo (${targetName})
+                            </button>
+                            <button class="btn-secondary btn-large" onclick="openAppModal()">
+                                Ver Vantagens
+                            </button>
+                        `;
+                    } else {
+                        actionsContainer.innerHTML = `
+                            <button class="btn-download" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Instalar APK
+                            </button>
+                            <a href="stoppstore.html" class="btn-secondary" title="Ver Detalhes da Aplicacao">
+                                Detalhes
+                            </a>
+                        `;
+                    }
+                }
+            }
+            return;
+        }
 
         if (!isInstalled) {
             // Estado: Nao Instalada
@@ -666,6 +760,9 @@ if ('serviceWorker' in navigator) {
 
 // App Features Modal Handlers
 function openAppModal() {
+    if (StoppBridge.isNative()) {
+        return;
+    }
     const modal = document.getElementById('app-features-modal');
     if (modal) {
         modal.classList.add('active');

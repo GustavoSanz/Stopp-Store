@@ -1608,4 +1608,14 @@ footer a:hover {
     border-color: rgba(14, 165, 233, 0.5);
 }
 
-
+/* Ocultar promocoes e ofertas da app Android quando executado na app nativa */
+html.is-native-app .promo-banner,
+html.is-native-app .btn-install-app,
+html.is-native-app #app-features-modal,
+html.is-native-app #btn-pwa-install,
+body.is-native-app .promo-banner,
+body.is-native-app .btn-install-app,
+body.is-native-app #app-features-modal,
+body.is-native-app #btn-pwa-install {
+    display: none !important;
+}

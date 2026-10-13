@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stopp Store - Aplicação Nativa Android | Stopp App Store</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=7">
+    <link rel="stylesheet" href="assets/css/style.css?v=8">
     <link rel="icon" type="image/svg+xml" href="assets/img/icon.svg">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
     <link rel="manifest" href="manifest.webmanifest">
@@ -51,7 +51,7 @@
         </div>
 
         <!-- Main Product Card -->
-        <main class="app-detail-card">
+        <main class="app-detail-card" id="app-detail-com.stopp.store" data-package="com.stopp.store" data-target-version-code="1" data-target-version-name="0.1-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.1-Beta.apk" data-apk-size="1">
             <!-- App Hero Header -->
             <div class="app-detail-hero">
                 <div class="detail-app-icon" style="background: linear-gradient(135deg, #10b981, #0ea5e9); color: #fff; font-size: 3.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);">
@@ -61,7 +61,7 @@
                 <div class="app-detail-info">
                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 0.3rem; flex-wrap: wrap;">
                         <h1 style="margin-bottom: 0;">Stopp Store</h1>
-                        <span class="badge-status badge-installed">Oficial Android</span>
+                        <span class="badge-status badge-installed" id="badge-status-com.stopp.store">Oficial Android</span>
                     </div>
                     <div class="app-detail-developer">Desenvolvido por Stopp (Gustavo Sanz)</div>
 
@@ -72,7 +72,7 @@
                         </div>
                         <div class="meta-stat">
                             <span>Tamanho</span>
-                            <strong>~922 KB</strong>
+                            <strong>~937 KB</strong>
                         </div>
                         <div class="meta-stat">
                             <span>Classificação</span>
@@ -84,7 +84,7 @@
                         </div>
                     </div>
 
-                    <div class="detail-actions">
+                    <div class="detail-actions" id="detail-actions-com.stopp.store">
                         <button class="btn-download btn-large" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.1-Beta.apk', 1)">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             Instalar APK Nativo (v0.1-Beta)
@@ -340,7 +340,7 @@
         </div>
     </div>
 
-    <script src="assets/js/app.js?v=7"></script>
-    <script src="assets/js/download.js?v=7"></script>
+    <script src="assets/js/app.js?v=8"></script>
+    <script src="assets/js/download.js?v=8"></script>
 </body>
 </html>

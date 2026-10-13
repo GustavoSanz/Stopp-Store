@@ -42,22 +42,29 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
             clearInterval(interval);
             statusText.textContent = 'Concluído com sucesso!';
 
-            // Real browser download trigger
+            // Download trigger (Nativo Android vs Web)
             if (apkUrl) {
-                const tempLink = document.createElement('a');
-                tempLink.href = apkUrl;
-                tempLink.download = apkUrl.split('/').pop();
-                document.body.appendChild(tempLink);
-                tempLink.click();
-                document.body.removeChild(tempLink);
+                if (typeof StoppBridge !== 'undefined' && StoppBridge.isNative() && typeof window.StoppStoreNative.downloadAndInstall === 'function') {
+                    const fullUrl = new URL(apkUrl, window.location.href).href;
+                    const fileName = apkUrl.split('/').pop() || 'app.apk';
+                    window.StoppStoreNative.downloadAndInstall(fullUrl, fileName);
+                    statusText.textContent = 'Transferencia em curso. O instalador sera aberto automaticamente.';
+                } else {
+                    const tempLink = document.createElement('a');
+                    tempLink.href = apkUrl;
+                    tempLink.download = apkUrl.split('/').pop();
+                    document.body.appendChild(tempLink);
+                    tempLink.click();
+                    document.body.removeChild(tempLink);
 
-                // Em modo web/simulacao, atualiza o estado da aplicacao para instalada
-                if (apkUrl.includes('VeraWatt') && typeof StoppBridge !== 'undefined' && !StoppBridge.isNative()) {
-                    localStorage.setItem('sim_installed_com.vera_watt', 'true');
-                    localStorage.setItem('sim_version_code_com.vera_watt', '4');
-                    localStorage.setItem('sim_version_name_com.vera_watt', '0.4-Beta');
-                    if (typeof refreshAllAppStatus === 'function') {
-                        setTimeout(() => refreshAllAppStatus(), 600);
+                    // Em modo web/simulacao, atualiza o estado da aplicacao para instalada
+                    if (apkUrl.includes('VeraWatt') && typeof StoppBridge !== 'undefined' && !StoppBridge.isNative()) {
+                        localStorage.setItem('sim_installed_com.vera_watt', 'true');
+                        localStorage.setItem('sim_version_code_com.vera_watt', '4');
+                        localStorage.setItem('sim_version_name_com.vera_watt', '0.4-Beta');
+                        if (typeof refreshAllAppStatus === 'function') {
+                            setTimeout(() => refreshAllAppStatus(), 600);
+                        }
                     }
                 }
             }
