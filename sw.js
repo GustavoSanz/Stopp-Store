@@ -1,8 +1,9 @@
-const CACHE_NAME = 'stopp-store-v4';
+const CACHE_NAME = 'stopp-store-v5';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './verawatt.html',
+  './stoppstore.html',
   './assets/css/style.css',
   './assets/js/app.js',
   './assets/js/download.js',

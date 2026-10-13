@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopp Store - Aplicação Nativa Android | Stopp App Store</title>
+    <link rel="stylesheet" href="assets/css/style.css?v=7">
+    <link rel="icon" type="image/svg+xml" href="assets/img/icon.svg">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <div class="glow-bg">
+        <div class="glow-orb glow-1"></div>
+        <div class="glow-orb glow-2"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="brand">
+                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+                    <div class="brand-logo">S</div>
+                    <div class="brand-text">
+                        <h1>STOPP<span>.STORE</span></h1>
+                        <p>Developer Hub & Applications</p>
+                    </div>
+                </a>
+            </div>
+            <div class="header-links">
+                <button class="btn-settings-nav" onclick="openSettingsModal()" title="Definições e Gestão da Loja">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Definições
+                </button>
+                <a href="index.html">← Voltar à Loja</a>
+                <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </header>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html">Início</a>
+            <span>/</span>
+            <a href="index.html#apps">Aplicações</a>
+            <span>/</span>
+            <strong>Stopp Store</strong>
+        </div>
+
+        <!-- Main Product Card -->
+        <main class="app-detail-card">
+            <!-- App Hero Header -->
+            <div class="app-detail-hero">
+                <div class="detail-app-icon" style="background: linear-gradient(135deg, #10b981, #0ea5e9); color: #fff; font-size: 3.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);">
+                    S
+                </div>
+
+                <div class="app-detail-info">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 0.3rem; flex-wrap: wrap;">
+                        <h1 style="margin-bottom: 0;">Stopp Store</h1>
+                        <span class="badge-status badge-installed">Oficial Android</span>
+                    </div>
+                    <div class="app-detail-developer">Desenvolvido por Stopp (Gustavo Sanz)</div>
+
+                    <div class="app-detail-meta">
+                        <div class="meta-stat">
+                            <span>Versão</span>
+                            <strong>v0.1-Beta</strong>
+                        </div>
+                        <div class="meta-stat">
+                            <span>Tamanho</span>
+                            <strong>~922 KB</strong>
+                        </div>
+                        <div class="meta-stat">
+                            <span>Classificação</span>
+                            <strong>★★★★★ (5.0)</strong>
+                        </div>
+                        <div class="meta-stat">
+                            <span>Requisitos</span>
+                            <strong>Android 10+</strong>
+                        </div>
+                    </div>
+
+                    <div class="detail-actions">
+                        <button class="btn-download btn-large" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.1-Beta.apk', 1)">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Instalar APK Nativo (v0.1-Beta)
+                        </button>
+                        <button class="btn-secondary btn-large" onclick="openAppModal()">
+                            Ver Vantagens
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Grid: Description & Specs -->
+            <div class="content-grid">
+                <div>
+                    <h2 class="section-title">Sobre a Aplicação</h2>
+                    <p class="detail-text">
+                        A <strong>Stopp Store</strong> é a aplicação Android oficial concebida para disponibilizar, atualizar e gerir todas as criações de software e videojogos do ecossistema Stopp Studio.
+                    </p>
+                    <p class="detail-text">
+                        Ao contrário de downloads convencionais em navegadores móveis, a aplicação Stopp Store estabelece ligação direta através de APIs de sistema com o gestor de pacotes do Android, simplificando transferências e verificando de forma autónoma a integridade e versões de cada ficheiro.
+                    </p>
+
+                    <h2 class="section-title">Funcionalidades Exclusivas</h2>
+                    <ul class="feature-list">
+                        <li>
+                            <strong>Instalação com 1 Toque:</strong> Descarrega e encaminha pacotes APK diretamente para o instalador do sistema sem múltiplos avisos do browser.
+                        </li>
+                        <li>
+                            <strong>Deteção Automática de Aplicações:</strong> Identifica instantaneamente se aplicações como a Vera Watt já se encontram instaladas no teu telemóvel e disponibiliza botões para Abrir ou Desinstalar.
+                        </li>
+                        <li>
+                            <strong>Notificações do Sistema:</strong> Alertas em tempo real na barra de estado quando surgirem atualizações para aplicações instaladas ou para a própria Stopp Store.
+                        </li>
+                        <li>
+                            <strong>Atualizações em Segundo Plano:</strong> Verificação transparente de novas compilações com diálogo de atualização direta.
+                        </li>
+                        <li>
+                            <strong>Design Glassmorphism Fluido:</strong> Interface otimizada a 120Hz com tema dark slate e baixo consumo de bateria.
+                        </li>
+                    </ul>
+
+                    <h2 class="section-title">Como Instalar no Telemóvel</h2>
+                    <ol style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.7; padding-left: 1.2rem; margin-bottom: 2rem;">
+                        <li>Clica no botão <strong>Instalar APK Nativo</strong> acima para descarregar o pacote de ~922 KB.</li>
+                        <li>Quando a transferência terminar, toca no ficheiro descarregado para iniciar a instalação.</li>
+                        <li>Se for a primeira vez que instalas um APK direto, permite a opção de instalar ficheiros desconhecidos quando o Android solicitar.</li>
+                        <li>Abre a Stopp Store e explora o catálogo completo com todas as funcionalidades nativas ativas!</li>
+                    </ol>
+                </div>
+
+                <div class="sidebar">
+                    <div class="sidebar-box">
+                        <h3>Ficha Técnica</h3>
+                        <div class="spec-row">
+                            <span>Nome do Pacote</span>
+                            <strong>com.stopp.store</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span>Versão Inicial</span>
+                            <strong>v0.1-Beta (Build 1)</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span>Arquitetura</span>
+                            <strong>Universal (ARM64, x86_64)</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span>Segurança</span>
+                            <strong>Assinado Digitalmente</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span>Canal Notificações</span>
+                            <strong>stopp_store_updates</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span>Licença</span>
+                            <strong>Gratuito / Proprietário</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2026 Stopp Developer Studio. Todos os direitos reservados.</p>
+            <p>Criado por Gustavo Sanz (Stopp) &bull; Alojado via GitHub Pages</p>
+        </footer>
+    </div>
+
+    <!-- Download Progress Modal -->
+    <div class="modal-backdrop" id="download-modal">
+        <div class="modal-card">
+            <div class="confetti-container" id="confetti-container"></div>
+            
+            <div id="dl-progress-container">
+                <div class="modal-icon-circle">↓</div>
+                <h3 id="dl-modal-title">A transferir aplicação</h3>
+                <div class="progress-track">
+                    <div class="progress-fill" id="dl-progress-bar"></div>
+                </div>
+                <div class="progress-status-row">
+                    <span id="dl-status-text">A preparar transferência...</span>
+                    <strong id="dl-progress-text">0%</strong>
+                </div>
+            </div>
+
+            <div id="dl-success-box" style="display: none;">
+                <div class="success-checkmark">✓</div>
+                <h3>Transferência Concluída!</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">
+                    O ficheiro foi transferido com sucesso. Abre o ficheiro transferido no teu telemóvel para concluir a instalação.
+                </p>
+                <button class="btn-download" style="width: 100%;" onclick="closeDownloadModal()">
+                    Concluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Store Settings & Updates Modal -->
+    <div class="modal-backdrop" id="settings-modal">
+        <div class="modal-card modal-settings">
+            <div class="modal-header-app">
+                <div class="app-icon-badge">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <div>
+                    <span id="settings-env-pill" class="env-pill env-web"><span class="env-dot"></span> Modo Web / PWA</span>
+                    <h3 style="margin-top: 4px;">Definições da Loja</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closeSettingsModal()" aria-label="Fechar">✕</button>
+            </div>
+
+            <!-- Section 1: Auto-Update Apps Toggle -->
+            <div class="settings-section">
+                <div class="toggle-switch-row">
+                    <div class="toggle-switch-label">
+                        <div class="settings-section-title">Atualizações Automáticas</div>
+                        <div class="settings-section-desc">Procurar e notificar automaticamente sobre novas versões de aplicações instaladas (ex.: Vera Watt).</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-auto-update" onchange="handleAutoUpdateToggle(this)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Section 2: System Notifications -->
+            <div class="settings-section">
+                <div class="toggle-switch-row" style="margin-bottom: 8px;">
+                    <div class="toggle-switch-label">
+                        <div class="settings-section-title">Notificações do Sistema</div>
+                        <div class="settings-section-desc">Alertas na barra de notificações quando surgirem novas atualizações ou downloads concluídos.</div>
+                    </div>
+                    <span id="settings-notif-status" class="env-pill env-web"><span class="env-dot"></span> Desativadas</span>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button id="btn-request-notif-perm" class="btn-secondary" style="flex: 1; font-size: 0.82rem; padding: 10px 12px;" onclick="handleRequestNotificationPermission()">
+                        Ativar Notificações
+                    </button>
+                    <button class="btn-secondary" style="flex: 1; font-size: 0.82rem; padding: 10px 12px;" onclick="handleTestNotification()">
+                        Testar Notificação
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 3: Store Self-Update -->
+            <div class="settings-section">
+                <div class="settings-section-title">Atualização da Stopp Store</div>
+                <div class="settings-section-desc">Garante que a própria aplicação da loja possui as correções e ligações nativas mais recentes.</div>
+                
+                <div class="store-version-box">
+                    <span>Versão da Loja:</span>
+                    <strong id="settings-store-version">v0.1-Beta (Build 1)</strong>
+                </div>
+
+                <p id="store-update-status-text" class="store-status-text">A verificar estado da loja...</p>
+
+                <button class="btn-secondary" style="width: 100%; margin-bottom: 8px;" onclick="handleManualCheckStore()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    Verificar Atualizações da Loja
+                </button>
+                <button id="btn-store-update-action" class="btn-download btn-update-action" style="display: none; width: 100%;">
+                    Atualizar Stopp Store Agora
+                </button>
+            </div>
+
+            <button class="btn-secondary" style="width: 100%; margin-top: 6px;" onclick="closeSettingsModal()">
+                Concluir
+            </button>
+        </div>
+    </div>
+
+    <!-- App Features Modal -->
+    <div class="modal-backdrop" id="app-features-modal">
+        <div class="modal-card modal-app-features">
+            <div class="modal-header-app">
+                <div class="app-icon-badge">S</div>
+                <div>
+                    <span class="exclusivity-pill">Exclusivo Android</span>
+                    <h3>Stopp Store App</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closeAppModal()" aria-label="Fechar">✕</button>
+            </div>
+
+            <p class="modal-lead">
+                A experiência definitiva de distribuição e instalação de aplicações e jogos. Instala todo o catálogo Stopp no teu telemóvel com máxima velocidade e conveniência.
+            </p>
+
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Instalação com 1 Toque Direto</h4>
+                        <p>Descarrega e instala atualizações de APKs diretamente, sem bloqueios ou múltiplos avisos do navegador.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Notificações de Atualizações</h4>
+                        <p>Sabe de imediato quando saírem novos patches e versões de jogos como Vera Watt e Sons of Echoes.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Gestor de Downloads Nativo</h4>
+                        <p>Transferências rápidas em segundo plano com gestão automática de ficheiros e retoma de downloads.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Performance Nativa & Modo Offline</h4>
+                        <p>Interface Glassmorphism fluida a 120Hz adaptada ao teu ecrã, sem barras do navegador.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="availability-notice">
+                <strong>Nota de Disponibilidade:</strong> A aplicação Stopp Store está disponível para Android (versão 10.0 ou superior).
+            </div>
+
+            <div class="modal-app-actions">
+                <button class="btn-download" style="width: 100%;" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.1-Beta.apk', 1)">
+                    Descarregar APK da App (v0.1-Beta)
+                </button>
+                <button class="btn-secondary" style="width: 100%;" onclick="closeAppModal()">
+                    Continuar na Versão Web
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js?v=7"></script>
+    <script src="assets/js/download.js?v=7"></script>
+</body>
+</html>
