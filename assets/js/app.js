@@ -73,6 +73,9 @@ function openAppModal() {
     const modal = document.getElementById('app-features-modal');
     if (modal) {
         modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
         document.body.style.overflow = 'hidden';
     }
 }
@@ -81,9 +84,15 @@ function closeAppModal() {
     const modal = document.getElementById('app-features-modal');
     if (modal) {
         modal.classList.remove('active');
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
         document.body.style.overflow = '';
     }
 }
+
+window.openAppModal = openAppModal;
+window.closeAppModal = closeAppModal;
 
 // Fechar ao clicar fora do conteudo do modal
 document.addEventListener('click', (e) => {

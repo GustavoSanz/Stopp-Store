@@ -780,24 +780,25 @@ footer a:hover {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(5, 10, 20, 0.75);
+    background: rgba(5, 10, 20, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    z-index: 1000;
+    z-index: 99999;
     display: none;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.25s ease;
 }
 
-.modal-backdrop.active {
-    display: flex;
-    opacity: 1;
+.modal-backdrop.active,
+.modal-backdrop[style*="display: flex"] {
+    display: flex !important;
+    opacity: 1 !important;
 }
 
 .modal-card {
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(15, 23, 42, 0.98);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 28px;
     padding: 2.8rem;
@@ -806,14 +807,16 @@ footer a:hover {
     max-height: 88vh;
     overflow-y: auto;
     text-align: center;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
     position: relative;
     transform: scale(0.95);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.modal-backdrop.active .modal-card {
-    transform: scale(1);
+.modal-backdrop.active .modal-card,
+.modal-backdrop[style*="display: flex"] .modal-card {
+    transform: scale(1) !important;
+    opacity: 1 !important;
 }
 
 .modal-icon-circle {
