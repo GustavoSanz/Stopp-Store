@@ -32,6 +32,7 @@
                 </a>
             </div>
             <div class="header-links">
+                <button class="btn-install-app" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
                 <a href="index.html">← Voltar à Loja</a>
                 <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
             </div>
@@ -219,6 +220,75 @@
                 </p>
                 <button class="btn-download" style="width: 100%;" onclick="closeDownloadModal()">
                     Concluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Features & Advantages Modal -->
+    <div class="modal-backdrop" id="app-features-modal" style="display: none;">
+        <div class="modal-card modal-app-features">
+            <div class="modal-header-app">
+                <div class="app-icon-badge">S</div>
+                <div>
+                    <span class="exclusivity-pill">Exclusivo Android</span>
+                    <h3>Stopp Store App</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closeAppModal()" aria-label="Fechar">✕</button>
+            </div>
+
+            <p class="modal-lead">
+                A experiência definitiva de distribuição e instalação de aplicações e jogos. Instala todo o catálogo Stopp no teu telemóvel com máxima velocidade e conveniência.
+            </p>
+
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Instalação com 1 Toque Direto</h4>
+                        <p>Descarrega e instala atualizações de APKs diretamente, sem bloqueios ou múltiplos avisos do navegador.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Notificações de Atualizações</h4>
+                        <p>Sabe de imediato quando saírem novos patches e versões de jogos como Vera Watt e Sons of Echoes.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Gestor de Downloads Nativo</h4>
+                        <p>Transferências rápidas em segundo plano com gestão automática de ficheiros e retoma de downloads.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Acesso Antecipado & Builds Beta</h4>
+                        <p>Acesso prioritário a versões experimentais e novidades antes de serem publicadas na versão web.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div>
+                        <h4>Performance Nativa & Modo Offline</h4>
+                        <p>Interface Glassmorphism fluida a 120Hz adaptada ao teu ecrã, sem barras do navegador.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="availability-notice">
+                <strong>Nota de Disponibilidade:</strong> Para já, a aplicação Stopp Store está disponível exclusivamente no sistema Android (versão 10.0 ou superior).
+            </div>
+
+            <div class="modal-app-actions">
+                <button class="btn-download" style="width: 100%;" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v1.0.apk', 15)">
+                    Descarregar APK da App (v1.0)
+                </button>
+                <button class="btn-secondary" style="width: 100%;" onclick="closeAppModal()">
+                    Continuar na Versão Web
                 </button>
             </div>
         </div>

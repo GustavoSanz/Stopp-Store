@@ -67,3 +67,28 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.error('SW registration failed:', err));
     });
 }
+
+// App Features Modal Handlers
+function openAppModal() {
+    const modal = document.getElementById('app-features-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeAppModal() {
+    const modal = document.getElementById('app-features-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Fechar ao clicar fora do conteudo do modal
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('app-features-modal');
+    if (modal && e.target === modal) {
+        closeAppModal();
+    }
+});
