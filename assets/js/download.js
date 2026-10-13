@@ -62,6 +62,15 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
                 }
             }
 
+            // Envio de notificacao do sistema ao concluir
+            if (typeof StoppNotifications !== 'undefined' && typeof StoppNotifications.send === 'function') {
+                StoppNotifications.send(
+                    'Transferencia Concluida: ' + appName,
+                    'O pacote APK foi descarregado com sucesso.',
+                    './index.html'
+                );
+            }
+
             // Trigger Post-Install Celebration Animation
             setTimeout(() => {
                 progressBox.style.display = 'none';

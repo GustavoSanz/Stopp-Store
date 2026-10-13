@@ -1,4 +1,4 @@
-// Stopp App Store - Client Application & Native Bridge Controller
+// Stopp App Store - Client Application, Native Bridge & Notification Controller
 // Strictly Zero Emojis Compliance
 
 const CURRENT_STORE_VERSION_CODE = 1;
@@ -121,6 +121,76 @@ const StoppBridge = {
             }
         }
         return CURRENT_STORE_VERSION_NAME;
+    },
+
+    hasNotificationPermission: function () {
+        if (this.isNative() && typeof window.StoppStoreNative.hasNotificationPermission === 'function') {
+            try {
+                return window.StoppStoreNative.hasNotificationPermission();
+            } catch (err) {
+                console.error('Erro ao verificar permissao de notificacao nativa:', err);
+            }
+        }
+        return ('Notification' in window) && Notification.permission === 'granted';
+    },
+
+    requestNotificationPermission: function () {
+        if (this.isNative() && typeof window.StoppStoreNative.requestNotificationPermission === 'function') {
+            try {
+                window.StoppStoreNative.requestNotificationPermission();
+                return;
+            } catch (err) {
+                console.error('Erro ao pedir permissao de notificacao nativa:', err);
+            }
+        }
+        if ('Notification' in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    showStoreToast('Notificacoes ativadas no navegador.', 'success');
+                } else {
+                    showStoreToast('Permissao de notificacoes recusada.', 'warning');
+                }
+                renderSettingsOverview();
+            });
+        }
+    },
+
+    sendNotification: function (title, message, url = './index.html') {
+        if (this.isNative() && typeof window.StoppStoreNative.sendNotification === 'function') {
+            try {
+                window.StoppStoreNative.sendNotification(title, message, url);
+                return;
+            } catch (err) {
+                console.error('Erro ao enviar notificacao nativa:', err);
+            }
+        }
+
+        if ('Notification' in window && Notification.permission === 'granted') {
+            if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, {
+                        body: message,
+                        icon: 'assets/img/icon-192.png',
+                        badge: 'assets/img/icon-192.png',
+                        data: { url: url }
+                    });
+                }).catch(() => {
+                    new Notification(title, { body: message, icon: 'assets/img/icon-192.png' });
+                });
+            } else {
+                new Notification(title, { body: message, icon: 'assets/img/icon-192.png' });
+            }
+        }
+    }
+};
+
+// Unified Notifications Manager
+const StoppNotifications = {
+    hasPermission: () => StoppBridge.hasNotificationPermission(),
+    requestPermission: () => StoppBridge.requestNotificationPermission(),
+    send: (title, message, url = './index.html') => {
+        StoppBridge.sendNotification(title, message, url);
+        showStoreToast(title + ': ' + message, 'info');
     }
 };
 
@@ -302,9 +372,13 @@ async function checkStoreAndAppUpdates(isManual = false) {
                     triggerAppDownload('Stopp Store', data.store_apk_url, 15);
                 };
             }
-            if (isManual) {
-                showStoreToast('Nova versao da Stopp Store pronta: v' + data.store_version_name, 'warning');
-            }
+            
+            // Envio de notificacao do sistema
+            StoppNotifications.send(
+                'Atualizacao da Stopp Store',
+                'Nova versao v' + data.store_version_name + ' da Stopp Store pronta para instalacao.',
+                './index.html'
+            );
         } else {
             if (statusText) {
                 statusText.className = 'store-status-text status-success';
@@ -324,7 +398,12 @@ async function checkStoreAndAppUpdates(isManual = false) {
                 if (StoppBridge.isAppInstalled(pkg)) {
                     const currentCode = StoppBridge.getAppVersionCode(pkg);
                     if (currentCode >= 0 && currentCode < appMeta.version_code) {
-                        showStoreToast('Atualizacao automatica: ' + appMeta.name + ' (v' + appMeta.version_name + ') disponivel.', 'warning');
+                        const targetUrl = pkg === 'com.vera_watt' ? './verawatt.html' : './index.html';
+                        StoppNotifications.send(
+                            'Atualizacao Disponivel: ' + appMeta.name,
+                            'A versao v' + appMeta.version_name + ' de ' + appMeta.name + ' esta disponivel para download.',
+                            targetUrl
+                        );
                     }
                 }
             }
@@ -399,6 +478,22 @@ function renderSettingsOverview() {
         storeVersionLabel.textContent = 'v' + StoppBridge.getStoreVersionName() + ' (Build ' + StoppBridge.getStoreVersionCode() + ')';
     }
 
+    // Estado das Notificacoes do Sistema
+    const notifStatusPill = document.getElementById('settings-notif-status');
+    const notifRequestBtn = document.getElementById('btn-request-notif-perm');
+    if (notifStatusPill) {
+        const hasPerm = StoppNotifications.hasPermission();
+        if (hasPerm) {
+            notifStatusPill.className = 'env-pill env-native';
+            notifStatusPill.innerHTML = '<span class="env-dot"></span> Ativas';
+            if (notifRequestBtn) notifRequestBtn.style.display = 'none';
+        } else {
+            notifStatusPill.className = 'env-pill env-web';
+            notifStatusPill.innerHTML = '<span class="env-dot"></span> Desativadas';
+            if (notifRequestBtn) notifRequestBtn.style.display = 'inline-block';
+        }
+    }
+
     // Bloco de simulacao de browser (apenas se nao for nativo)
     const simSection = document.getElementById('settings-simulation-section');
     if (simSection) {
@@ -435,6 +530,18 @@ function handleAutoUpdateToggle(checkbox) {
 
 function handleManualCheckStore() {
     checkStoreAndAppUpdates(true);
+}
+
+function handleRequestNotificationPermission() {
+    StoppNotifications.requestPermission();
+}
+
+function handleTestNotification() {
+    StoppNotifications.send(
+        'Stopp Store Notificacoes',
+        'As notificacoes do sistema estao configuradas e a funcionar com sucesso!',
+        './index.html'
+    );
 }
 
 // Simulador Web para Testes Locais de UI
@@ -600,7 +707,10 @@ window.openSettingsModal = openSettingsModal;
 window.closeSettingsModal = closeSettingsModal;
 window.handleAutoUpdateToggle = handleAutoUpdateToggle;
 window.handleManualCheckStore = handleManualCheckStore;
+window.handleRequestNotificationPermission = handleRequestNotificationPermission;
+window.handleTestNotification = handleTestNotification;
 window.openInstalledApp = openInstalledApp;
 window.uninstallInstalledApp = uninstallInstalledApp;
 window.simSetVeraWattInstalled = simSetVeraWattInstalled;
 window.refreshAllAppStatus = refreshAllAppStatus;
+window.StoppNotifications = StoppNotifications;

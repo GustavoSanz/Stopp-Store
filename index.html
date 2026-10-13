@@ -353,7 +353,26 @@
                 </div>
             </div>
 
-            <!-- Section 2: Store Self-Update -->
+            <!-- Section 2: System Notifications -->
+            <div class="settings-section">
+                <div class="toggle-switch-row" style="margin-bottom: 8px;">
+                    <div class="toggle-switch-label">
+                        <div class="settings-section-title">Notificações do Sistema</div>
+                        <div class="settings-section-desc">Alertas na barra de notificações quando surgirem novas atualizações ou downloads concluídos.</div>
+                    </div>
+                    <span id="settings-notif-status" class="env-pill env-web"><span class="env-dot"></span> Desativadas</span>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button id="btn-request-notif-perm" class="btn-secondary" style="flex: 1; font-size: 0.82rem; padding: 10px 12px;" onclick="handleRequestNotificationPermission()">
+                        Ativar Notificações
+                    </button>
+                    <button class="btn-secondary" style="flex: 1; font-size: 0.82rem; padding: 10px 12px;" onclick="handleTestNotification()">
+                        Testar Notificação
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 3: Store Self-Update -->
             <div class="settings-section">
                 <div class="settings-section-title">Atualização da Stopp Store</div>
                 <div class="settings-section-desc">Garante que a própria aplicação da loja possui as correções e ligações nativas mais recentes.</div>
@@ -398,7 +417,7 @@
         </div>
     </div>
 
-    <script src="assets/js/app.js?v=6"></script>
-    <script src="assets/js/download.js?v=6"></script>
+    <script src="assets/js/app.js?v=7"></script>
+    <script src="assets/js/download.js?v=7"></script>
 </body>
 </html>
