@@ -4,6 +4,17 @@
 const CURRENT_STORE_VERSION_CODE = 2;
 const CURRENT_STORE_VERSION_NAME = "0.2-Beta";
 
+function resolveStoreUrl(url) {
+    try {
+        if (!url || url === './index.html' || url === 'index.html') {
+            return 'https://gustavosanz.github.io/Stopp-Store/';
+        }
+        return new URL(url, 'https://gustavosanz.github.io/Stopp-Store/').href;
+    } catch (e) {
+        return 'https://gustavosanz.github.io/Stopp-Store/';
+    }
+}
+
 // Native Android Bridge & Web Fallback Interface
 const StoppBridge = {
     isNative: function () {
@@ -156,10 +167,11 @@ const StoppBridge = {
         }
     },
 
-    sendNotification: function (title, message, url = './index.html') {
+    sendNotification: function (title, message, url = 'https://gustavosanz.github.io/Stopp-Store/') {
+        const targetUrl = resolveStoreUrl(url);
         if (this.isNative() && typeof window.StoppStoreNative.sendNotification === 'function') {
             try {
-                window.StoppStoreNative.sendNotification(title, message, url);
+                window.StoppStoreNative.sendNotification(title, message, targetUrl);
                 return;
             } catch (err) {
                 console.error('Erro ao enviar notificacao nativa:', err);
@@ -173,7 +185,7 @@ const StoppBridge = {
                         body: message,
                         icon: 'assets/img/icon-192.png',
                         badge: 'assets/img/icon-192.png',
-                        data: { url: url }
+                        data: { url: targetUrl }
                     });
                 }).catch(() => {
                     new Notification(title, { body: message, icon: 'assets/img/icon-192.png' });
@@ -189,7 +201,7 @@ const StoppBridge = {
 const StoppNotifications = {
     hasPermission: () => StoppBridge.hasNotificationPermission(),
     requestPermission: () => StoppBridge.requestNotificationPermission(),
-    send: (title, message, url = './index.html') => {
+    send: (title, message, url = 'https://gustavosanz.github.io/Stopp-Store/') => {
         StoppBridge.sendNotification(title, message, url);
         showStoreToast(title + ': ' + message, 'info');
     }
@@ -471,7 +483,7 @@ async function checkStoreAndAppUpdates(isManual = false) {
             StoppNotifications.send(
                 'Atualizacao da Stopp Store',
                 'Nova versao v' + data.store_version_name + ' da Stopp Store pronta para instalacao.',
-                './index.html'
+                resolveStoreUrl('index.html')
             );
         } else {
             if (statusText) {
@@ -492,7 +504,7 @@ async function checkStoreAndAppUpdates(isManual = false) {
                 if (StoppBridge.isAppInstalled(pkg)) {
                     const currentCode = StoppBridge.getAppVersionCode(pkg);
                     if (currentCode >= 0 && currentCode < appMeta.version_code) {
-                        const targetUrl = pkg === 'com.vera_watt' ? './verawatt.html' : './index.html';
+                        const targetUrl = resolveStoreUrl(pkg === 'com.vera_watt' ? 'verawatt.html' : 'index.html');
                         StoppNotifications.send(
                             'Atualizacao Disponivel: ' + appMeta.name,
                             'A versao v' + appMeta.version_name + ' de ' + appMeta.name + ' esta disponivel para download.',
@@ -634,7 +646,7 @@ function handleTestNotification() {
     StoppNotifications.send(
         'Stopp Store Notificacoes',
         'As notificacoes do sistema estao configuradas e a funcionar com sucesso!',
-        './index.html'
+        resolveStoreUrl('index.html')
     );
 }
 
