@@ -50,6 +50,16 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
                 document.body.appendChild(tempLink);
                 tempLink.click();
                 document.body.removeChild(tempLink);
+
+                // Em modo web/simulacao, atualiza o estado da aplicacao para instalada
+                if (apkUrl.includes('VeraWatt') && typeof StoppBridge !== 'undefined' && !StoppBridge.isNative()) {
+                    localStorage.setItem('sim_installed_com.vera_watt', 'true');
+                    localStorage.setItem('sim_version_code_com.vera_watt', '4');
+                    localStorage.setItem('sim_version_name_com.vera_watt', '0.4-Beta');
+                    if (typeof refreshAllAppStatus === 'function') {
+                        setTimeout(() => refreshAllAppStatus(), 600);
+                    }
+                }
             }
 
             // Trigger Post-Install Celebration Animation

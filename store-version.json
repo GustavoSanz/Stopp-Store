@@ -1,0 +1,16 @@
+{
+  "store_version_code": 1,
+  "store_version_name": "1.0",
+  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v1.0.apk",
+  "store_update_message": "A Stopp Store esta na versao mais recente (v1.0).",
+  "apps": {
+    "com.vera_watt": {
+      "name": "Vera Watt",
+      "version_code": 4,
+      "version_name": "0.4-Beta",
+      "apk_url": "assets/apks/VeraWatt-v0.4-Beta.apk",
+      "package_name": "com.vera_watt",
+      "size_mb": 67
+    }
+  }
+}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stopp-store-v3';
+const CACHE_NAME = 'stopp-store-v4';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -37,8 +37,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Nao armazenar em cache downloads pesados de APK
-  if (url.pathname.endsWith('.apk')) {
+  // Nao armazenar em cache downloads pesados de APK nem verificador dinamico de versao
+  if (url.pathname.endsWith('.apk') || url.pathname.endsWith('store-version.json')) {
     return;
   }
 
