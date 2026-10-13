@@ -144,6 +144,27 @@ header {
     border-color: var(--glass-border);
 }
 
+.btn-install-app {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #10b981, #0ea5e9);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-install-app:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+
 /* Hero Showcase */
 .hero {
     text-align: center;
