@@ -683,27 +683,6 @@ footer a:hover {
     height: auto;
 }
 
-/* Web Showcase Card */
-.web-showcase-card {
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-    margin: 1.2rem 0 2rem;
-    transition: transform 0.3s ease, border-color 0.3s ease;
-}
-
-.web-showcase-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(16, 185, 129, 0.4);
-}
-
-.web-showcase-card img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
 /* Feature Highlights & Specs */
 .content-grid {
     display: grid;
