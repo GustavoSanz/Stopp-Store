@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopp App Store | Software & Experimental Projects</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%3E<text y=%2226%22 font-size=%2226%22>⚡</text></svg>">
+</head>
+<body>
+    <div class="glow-bg">
+        <div class="glow-orb glow-1"></div>
+        <div class="glow-orb glow-2"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="brand">
+                <div class="brand-logo">S</div>
+                <div class="brand-text">
+                    <h1>STOPP<span>.STORE</span></h1>
+                    <p>Developer Hub & Applications</p>
+                </div>
+            </div>
+            <div class="header-links">
+                <a href="#apps">Aplicações</a>
+                <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-badge">Portal Oficial de Distribuição</div>
+            <h2>Aplicações Nativas & <span>Projetos Stopp</span></h2>
+            <p>Catálogo centralizado de ferramentas, jogos e aplicações experimentais prontas para instalação direta em Android e desktop.</p>
+        </section>
+
+        <!-- Category Filters -->
+        <div class="filter-tabs" id="apps">
+            <button class="tab-btn active" data-category="all">Todas as Criações</button>
+            <button class="tab-btn" data-category="energia">Energia & IoT</button>
+            <button class="tab-btn" data-category="gaming">Gaming & Companion</button>
+            <button class="tab-btn" data-category="ferramentas">Ferramentas</button>
+        </div>
+
+        <!-- Apps Grid -->
+        <main class="apps-grid">
+            <!-- App 1: Vera Watt -->
+            <article class="app-card" data-category="energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
+                <div>
+                    <div class="card-header">
+                        <div class="app-icon icon-verawatt">⚡</div>
+                        <span class="badge-version badge-green">v0.3-Beta</span>
+                    </div>
+
+                    <h3 class="app-title">Vera Watt</h3>
+                    <div class="app-tags">
+                        <span class="tag">Energia Inteligente</span>
+                        <span class="tag">Jetpack Compose</span>
+                        <span class="tag">Nothing Glyph SDK</span>
+                        <span class="tag">Glassmorphism</span>
+                    </div>
+
+                    <p class="app-desc">
+                        Monitorização de energia residencial em tempo real com telemetria direta ligada aos LEDs traseiros do Nothing Phone (2a). Inclui gestão de faturas com portal web embutido, simulador solar interativo e pegada ecológica.
+                    </p>
+
+                    <div class="app-specs">
+                        <div class="spec-item">
+                            <span>Plataforma</span>
+                            <strong>Android 13+</strong>
+                        </div>
+                        <div class="spec-item">
+                            <span>Formato</span>
+                            <strong>APK Direto</strong>
+                        </div>
+                        <div class="spec-item">
+                            <span>Tamanho</span>
+                            <strong>~64 MB</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <a href="assets/apks/VeraWatt-v0.3-Beta.apk" download class="btn-download">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Instalar APK
+                    </a>
+                    <a href="https://gustavosanz.taila8ef3d.ts.net/2%C2%BA_Ano/VeraWatt/" target="_blank" rel="noopener" class="btn-secondary" title="Abrir Portal Web">
+                        Web
+                    </a>
+                </div>
+            </article>
+
+            <!-- App 2: Son of Echoes -->
+            <article class="app-card" data-category="gaming ferramentas" style="--card-accent: #f59e0b; --btn-color-start: #f59e0b; --btn-color-end: #ef4444;">
+                <div>
+                    <div class="card-header">
+                        <div class="app-icon icon-forest">🌲</div>
+                        <span class="badge-version badge-amber">v1.2 Stable</span>
+                    </div>
+
+                    <h3 class="app-title">Son of Echoes</h3>
+                    <div class="app-tags">
+                        <span class="tag">Sons of the Forest</span>
+                        <span class="tag">Companion Tool</span>
+                        <span class="tag">Radar & GPS</span>
+                    </div>
+
+                    <p class="app-desc">
+                        Ferramenta companheira de sobrevivência para Sons of the Forest. Fornece mapeamento de cavernas em tempo real, localização de bunkers secretos, base de dados de receitas de crafting e rastreador de pontos de interesse.
+                    </p>
+
+                    <div class="app-specs">
+                        <div class="spec-item">
+                            <span>Plataforma</span>
+                            <strong>Android / PC</strong>
+                        </div>
+                        <div class="spec-item">
+                            <span>Jogo Alvo</span>
+                            <strong>SOTF</strong>
+                        </div>
+                        <div class="spec-item">
+                            <span>Estado</span>
+                            <strong>Ativo</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-download" onclick="alert('O instalador do Son of Echoes será sincronizado em breve com a nova versão.')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Instalar App
+                    </button>
+                </div>
+            </article>
+
+            <!-- App 3: Laboratório Experimental -->
+            <article class="app-card" data-category="ferramentas" style="--card-accent: #8b5cf6; --btn-color-start: #8b5cf6; --btn-color-end: #6366f1;">
+                <div>
+                    <div class="card-header">
+                        <div class="app-icon icon-future">🧪</div>
+                        <span class="badge-version badge-indigo">Lab / Em Breve</span>
+                    </div>
+
+                    <h3 class="app-title">Stopp Experimental Lab</h3>
+                    <div class="app-tags">
+                        <span class="tag">Em Desenvolvimento</span>
+                        <span class="tag">Projetos Futuros</span>
+                    </div>
+
+                    <p class="app-desc">
+                        Próximas aplicações e utilitários em desenvolvimento pela Stopp Studio. Novas integrações com sensores móveis, micro-serviços e ferramentas de apoio a videojogos serão publicadas aqui diretamente.
+                    </p>
+
+                    <div class="app-specs">
+                        <div class="spec-item">
+                            <span>Estado</span>
+                            <strong>R&D</strong>
+                        </div>
+                        <div class="spec-item">
+                            <span>Fase</span>
+                            <strong>Design</strong>
+                        </div>
+                        <div class="spec-item">
+                            <span>Acesso</span>
+                            <strong>Privado</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-download" style="opacity: 0.6; cursor: not-allowed;" disabled>
+                        Em Breve
+                    </button>
+                </div>
+            </article>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2026 Stopp Developer Studio. Todos os direitos reservados.</p>
+            <p>Criado por Gustavo Sanz (Stopp) &bull; Alojado via GitHub Pages</p>
+        </footer>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
