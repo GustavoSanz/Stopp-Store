@@ -278,6 +278,9 @@ header {
     max-width: 85%;
     max-height: 85%;
     object-fit: contain;
+}
+
+.icon-forest img {
     image-rendering: pixelated;
 }
 
@@ -288,6 +291,12 @@ header {
     object-fit: contain;
     margin: 0.5rem 0 1rem;
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+}
+
+.verawatt-title-banner {
+    max-height: 48px;
+    margin: 0.75rem 0 1.1rem;
+    filter: drop-shadow(0 4px 15px rgba(16, 185, 129, 0.35));
 }
 
 .icon-verawatt {
@@ -548,6 +557,9 @@ footer a:hover {
     max-width: 85%;
     max-height: 85%;
     object-fit: contain;
+}
+
+.detail-app-icon.icon-forest img {
     image-rendering: pixelated;
 }
 
