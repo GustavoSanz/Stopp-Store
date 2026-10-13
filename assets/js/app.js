@@ -72,7 +72,7 @@ if ('serviceWorker' in navigator) {
 function openAppModal() {
     const modal = document.getElementById('app-features-modal');
     if (modal) {
-        modal.style.display = 'flex';
+        modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 }
@@ -80,7 +80,7 @@ function openAppModal() {
 function closeAppModal() {
     const modal = document.getElementById('app-features-modal');
     if (modal) {
-        modal.style.display = 'none';
+        modal.classList.remove('active');
         document.body.style.overflow = '';
     }
 }

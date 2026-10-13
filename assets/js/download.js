@@ -8,6 +8,11 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
     const progressBox = document.getElementById('dl-progress-container');
     const modalTitle = document.getElementById('dl-modal-title');
 
+    if (typeof closeAppModal === 'function') {
+        closeAppModal();
+    }
+    document.body.style.overflow = 'hidden';
+
     modalTitle.textContent = `A transferir ${appName}`;
     progressBar.style.width = '0%';
     progressText.textContent = '0%';
@@ -59,8 +64,19 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
 
 function closeDownloadModal() {
     const modal = document.getElementById('download-modal');
-    modal.classList.remove('active');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+    document.body.style.overflow = '';
 }
+
+// Fechar modal de download ao clicar fora do conteudo
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('download-modal');
+    if (modal && e.target === modal) {
+        closeDownloadModal();
+    }
+});
 
 // Confetti Particle Burst Animation
 function createConfetti() {
