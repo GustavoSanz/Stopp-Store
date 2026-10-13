@@ -1619,3 +1619,206 @@ body.is-native-app #app-features-modal,
 body.is-native-app #btn-pwa-install {
     display: none !important;
 }
+
+/* Gestor de Aplicacoes & Atualizacoes */
+.modal-manager {
+    max-width: 580px;
+    text-align: left;
+}
+
+.btn-manager-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(14, 165, 233, 0.12);
+    border: 1px solid rgba(14, 165, 233, 0.35);
+    color: #38bdf8;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    position: relative;
+}
+
+.btn-manager-nav:hover {
+    background: rgba(14, 165, 233, 0.22);
+    border-color: rgba(14, 165, 233, 0.6);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.badge-count {
+    background: #10b981;
+    color: #0f172a;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 10px;
+    line-height: 1.2;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+.badge-count.has-updates {
+    background: #f59e0b;
+    color: #0f172a;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+}
+
+.manager-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 1.2rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+}
+
+.manager-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.manager-tab-btn.active {
+    background: rgba(14, 165, 233, 0.2);
+    border-color: #0ea5e9;
+    color: #fff;
+}
+
+.manager-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 4px 2px;
+}
+
+.btn-update-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-update-all:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.manager-app-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    transition: background 0.2s ease;
+}
+
+.manager-app-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.manager-app-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.manager-app-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.manager-app-meta h4 {
+    font-size: 0.98rem;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.manager-app-meta p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    line-height: 1.3;
+}
+
+.manager-app-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.tag-platform {
+    font-size: 0.75rem !important;
+    padding: 3px 8px !important;
+    font-weight: 700 !important;
+}
+
+.tag-android {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #34d399 !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+.tag-pc {
+    background: rgba(14, 165, 233, 0.15) !important;
+    color: #38bdf8 !important;
+    border-color: rgba(14, 165, 233, 0.35) !important;
+}
+
+.empty-state-box {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+}
+
+.empty-state-box h4 {
+    color: #10b981;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+}
+
+.empty-state-box p {
+    color: #94a3b8;
+    font-size: 0.88rem;
+}
+

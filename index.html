@@ -30,6 +30,11 @@
                 </div>
             </div>
             <div class="header-links">
+                <button class="btn-manager-nav" onclick="openAppManagerModal()" title="Gestor de Aplicacoes e Atualizacoes">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Gestor de Apps
+                    <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
+                </button>
                 <button class="btn-settings-nav" onclick="openSettingsModal()" title="Definições e Gestão da Loja">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                     Definições
@@ -61,6 +66,8 @@
         <!-- Category Filters -->
         <div class="filter-tabs" id="apps">
             <button class="tab-btn active" data-category="all">Todas as Criações</button>
+            <button class="tab-btn" data-category="android">Android (APK)</button>
+            <button class="tab-btn" data-category="pc">PC & Desktop</button>
             <button class="tab-btn" data-category="energia">Energia & IoT</button>
             <button class="tab-btn" data-category="gaming">Gaming & Companion</button>
             <button class="tab-btn" data-category="ferramentas">Ferramentas</button>
@@ -69,7 +76,7 @@
         <!-- Apps Grid -->
         <main class="apps-grid">
             <!-- App 0: Stopp Store (Oficial) -->
-            <article class="app-card" id="app-card-com.stopp.store" data-package="com.stopp.store" data-target-version-code="2" data-target-version-name="0.2-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.2-Beta.apk" data-apk-size="1" data-category="ferramentas" style="--card-accent: #0ea5e9; --btn-color-start: #0ea5e9; --btn-color-end: #10b981;">
+            <article class="app-card" id="app-card-com.stopp.store" data-package="com.stopp.store" data-target-version-code="2" data-target-version-name="0.2-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.2-Beta.apk" data-apk-size="1" data-category="android ferramentas" style="--card-accent: #0ea5e9; --btn-color-start: #0ea5e9; --btn-color-end: #10b981;">
                 <div>
                     <div class="card-header">
                         <div class="app-icon" style="background: linear-gradient(135deg, #10b981, #0ea5e9); color: #fff; font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 18px; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);">
@@ -83,8 +90,8 @@
 
                     <h3 class="app-title" style="display: block; font-size: 1.4rem; margin-top: 14px; margin-bottom: 6px;">Stopp Store</h3>
                     <div class="app-tags">
+                        <span class="tag tag-platform tag-android">Android (APK)</span>
                         <span class="tag">Hub Oficial</span>
-                        <span class="tag">Android Nativo</span>
                         <span class="tag">Gestor APKs</span>
                         <span class="tag">Auto-Update</span>
                     </div>
@@ -121,7 +128,7 @@
             </article>
 
             <!-- App 1: Vera Watt -->
-            <article class="app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="4" data-target-version-name="0.4-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.4-Beta.apk" data-apk-size="67" data-category="energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
+            <article class="app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="4" data-target-version-name="0.4-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.4-Beta.apk" data-apk-size="67" data-category="android pc energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
                 <div>
                     <div class="card-header">
                         <div class="app-icon icon-verawatt" title="Vera Watt">
@@ -137,6 +144,8 @@
 
                     <h3 class="app-title" style="display: none;">Vera Watt</h3>
                     <div class="app-tags">
+                        <span class="tag tag-platform tag-android">Android (APK)</span>
+                        <span class="tag tag-platform tag-pc">PC Web</span>
                         <span class="tag">Energia Inteligente</span>
                         <span class="tag">Jetpack Compose</span>
                         <span class="tag">Nothing Glyph SDK</span>
@@ -150,11 +159,11 @@
                     <div class="app-specs">
                         <div class="spec-item">
                             <span>Plataforma</span>
-                            <strong>Android 13+</strong>
+                            <strong>Android 13+ & Web</strong>
                         </div>
                         <div class="spec-item">
                             <span>Formato</span>
-                            <strong>APK Direto</strong>
+                            <strong>APK Direto / Web</strong>
                         </div>
                         <div class="spec-item">
                             <span>Tamanho</span>
@@ -175,7 +184,7 @@
             </article>
 
             <!-- App 2: Sons of Echoes -->
-            <article class="app-card" data-category="gaming" style="--card-accent: #f59e0b; --btn-color-start: #f59e0b; --btn-color-end: #ef4444;">
+            <article class="app-card" data-category="pc gaming" style="--card-accent: #f59e0b; --btn-color-start: #f59e0b; --btn-color-end: #ef4444;">
                 <div>
                     <div class="card-header">
                         <div class="app-icon icon-forest" title="Orin">
@@ -188,6 +197,7 @@
 
                     <h3 class="app-title" style="display: none;">Sons of Echoes</h3>
                     <div class="app-tags">
+                        <span class="tag tag-platform tag-pc">PC & Desktop</span>
                         <span class="tag">GameMaker</span>
                         <span class="tag">Acao & Aventura 2D</span>
                         <span class="tag">Orin Protagonist</span>
@@ -200,8 +210,8 @@
 
                     <div class="app-specs">
                         <div class="spec-item">
-                            <span>Engine</span>
-                            <strong>GameMaker</strong>
+                            <span>Plataforma</span>
+                            <strong>PC & Windows</strong>
                         </div>
                         <div class="spec-item">
                             <span>Protagonista</span>
@@ -226,7 +236,7 @@
             </article>
 
             <!-- App 3: Laboratório Experimental -->
-            <article class="app-card" data-category="ferramentas" style="--card-accent: #8b5cf6; --btn-color-start: #8b5cf6; --btn-color-end: #6366f1;">
+            <article class="app-card" data-category="android pc ferramentas" style="--card-accent: #8b5cf6; --btn-color-start: #8b5cf6; --btn-color-end: #6366f1;">
                 <div>
                     <div class="card-header">
                         <div class="app-icon icon-future">
@@ -237,6 +247,7 @@
 
                     <h3 class="app-title">Stopp Experimental Lab</h3>
                     <div class="app-tags">
+                        <span class="tag tag-platform">Multiplataforma</span>
                         <span class="tag">Em Desenvolvimento</span>
                         <span class="tag">Projetos Futuros</span>
                     </div>
@@ -464,6 +475,55 @@
             </div>
 
             <button class="btn-secondary" style="width: 100%; margin-top: 6px;" onclick="closeSettingsModal()">
+                Concluir
+            </button>
+        </div>
+    </div>
+
+    <!-- App Manager & Updates Modal -->
+    <div class="modal-backdrop" id="app-manager-modal">
+        <div class="modal-card modal-manager">
+            <div class="modal-header-app">
+                <div class="app-icon-badge">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                <div>
+                    <h3 style="margin-top: 4px;">Gestor de Aplicacoes</h3>
+                    <p style="font-size: 0.82rem; color: #94a3b8; margin: 0;">Gestao de atualizacoes e instalacoes</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeAppManagerModal()" aria-label="Fechar">✕</button>
+            </div>
+
+            <!-- Manager Tabs -->
+            <div class="manager-tabs">
+                <button class="manager-tab-btn active" id="tab-btn-pending" onclick="switchManagerTab('pending')">
+                    Atualizacoes Pendentes
+                    <span class="badge-count" id="manager-pending-tab-badge" style="display: none;">0</span>
+                </button>
+                <button class="manager-tab-btn" id="tab-btn-installed" onclick="switchManagerTab('installed')">
+                    Instaladas no Dispositivo
+                    <span class="badge-count" id="manager-installed-tab-badge" style="display: none;">0</span>
+                </button>
+            </div>
+
+            <!-- Tab 1: Pending Updates -->
+            <div id="manager-tab-pending-content">
+                <div class="manager-header-bar" id="manager-pending-header-bar" style="display: none;">
+                    <span id="manager-pending-count-label" style="font-size: 0.85rem; color: #94a3b8;">1 atualizacao pronta</span>
+                    <button class="btn-update-all" onclick="updateAllPendingApps()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Atualizar Todas
+                    </button>
+                </div>
+                <div id="manager-pending-list"></div>
+            </div>
+
+            <!-- Tab 2: Installed Apps -->
+            <div id="manager-tab-installed-content" style="display: none;">
+                <div id="manager-installed-list"></div>
+            </div>
+
+            <button class="btn-secondary" style="width: 100%; margin-top: 14px;" onclick="closeAppManagerModal()">
                 Concluir
             </button>
         </div>
