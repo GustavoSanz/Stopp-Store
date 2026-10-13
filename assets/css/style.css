@@ -658,8 +658,7 @@ footer a:hover {
 
 .screenshot-item img {
     width: 100%;
-    height: 480px;
-    object-fit: cover;
+    height: auto;
     display: block;
 }
 
@@ -668,7 +667,8 @@ footer a:hover {
 }
 
 .screenshot-item.landscape img {
-    height: 280px;
+    width: 100%;
+    height: auto;
 }
 
 /* Feature Highlights & Specs */
