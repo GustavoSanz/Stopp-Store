@@ -22,30 +22,53 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
 
     const isNative = typeof StoppBridge !== 'undefined' && StoppBridge.isNative();
 
-    // Em modo nativo Android, iniciar imediatamente o download e instalacao pelo sistema
-    if (isNative && window.StoppStoreNative && typeof window.StoppStoreNative.downloadAndInstall === 'function') {
-        const fullUrl = new URL(apkUrl, window.location.href).href;
-        const fileName = apkUrl.split('/').pop() || 'app.apk';
-        window.StoppStoreNative.downloadAndInstall(fullUrl, fileName);
-        if (typeof showStoreToast === 'function') {
-            showStoreToast('A transferir ' + appName + '... O instalador abrira automaticamente.', 'info');
-        }
-    }
-
     modalTitle.textContent = `A transferir ${appName}`;
     progressBar.style.width = '0%';
     progressText.textContent = '0%';
     statusText.textContent = isNative
-        ? 'A transferir pacote APK em segundo plano...'
+        ? 'A iniciar transferência segura...'
         : 'A estabelecer ligação segura...';
     
     progressBox.style.display = 'block';
     successBox.style.display = 'none';
     modal.classList.add('active');
 
+    // Em modo nativo Android, iniciar download real e escutar progresso direto
+    if (isNative && window.StoppStoreNative && typeof window.StoppStoreNative.downloadAndInstall === 'function') {
+        const fullUrl = new URL(apkUrl, window.location.href).href;
+        const fileName = apkUrl.split('/').pop() || 'app.apk';
+
+        window.updateNativeDownloadProgress = function(percent, downloadedMb, totalMb) {
+            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (progressText) progressText.textContent = `${percent}%`;
+            if (statusText) {
+                if (totalMb > 0) {
+                    statusText.textContent = `A descarregar pacote APK (${downloadedMb} MB de ${totalMb} MB)...`;
+                } else {
+                    statusText.textContent = `A transferir pacote APK (${percent}%)...`;
+                }
+            }
+        };
+
+        window.onNativeDownloadCompleted = function() {
+            if (progressBar) progressBar.style.width = '100%';
+            if (progressText) progressText.textContent = '100%';
+            if (statusText) statusText.textContent = 'Transferência concluída! A abrir instalador do Android...';
+            setTimeout(() => {
+                if (progressBox) progressBox.style.display = 'none';
+                if (successBox) successBox.style.display = 'block';
+                createConfetti();
+                setTimeout(() => closeDownloadModal(), 2000);
+            }, 400);
+        };
+
+        window.StoppStoreNative.downloadAndInstall(fullUrl, fileName);
+        return;
+    }
+
+    // Modo Web / Navegador: simulacao com animacao e descarregamento de ficheiro
     let current = 0;
     const interval = setInterval(() => {
-        // Dynamic increments for realistic download feel
         const inc = Math.floor(Math.random() * 8) + 3;
         current = Math.min(current + inc, 100);
         
@@ -58,55 +81,42 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
         } else if (current < 85) {
             statusText.textContent = `A descarregar pacote APK (${downloadedMb} MB)...`;
         } else if (current < 100) {
-            statusText.textContent = isNative
-                ? 'A preparar instalador do pacote...'
-                : 'A verificar integridade do pacote...';
+            statusText.textContent = `A verificar integridade do pacote...`;
         } else {
             clearInterval(interval);
-            statusText.textContent = isNative
-                ? 'Transferencia em curso. O instalador do Android sera aberto automaticamente.'
-                : 'Concluído com sucesso!';
+            statusText.textContent = 'Concluído com sucesso!';
 
-            // Download trigger apenas para Web/Browser
-            if (!isNative) {
-                const tempLink = document.createElement('a');
-                tempLink.href = apkUrl;
-                tempLink.download = apkUrl.split('/').pop();
-                document.body.appendChild(tempLink);
-                tempLink.click();
-                document.body.removeChild(tempLink);
+            const tempLink = document.createElement('a');
+            tempLink.href = apkUrl;
+            tempLink.download = apkUrl.split('/').pop();
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            document.body.removeChild(tempLink);
 
-                // Em modo web/simulacao, atualiza o estado da aplicacao para instalada
-                if (apkUrl.includes('VeraWatt')) {
-                    localStorage.setItem('sim_installed_com.vera_watt', 'true');
-                    localStorage.setItem('sim_version_code_com.vera_watt', '4');
-                    localStorage.setItem('sim_version_name_com.vera_watt', '0.4-Beta');
-                    if (typeof refreshAllAppStatus === 'function') {
-                        setTimeout(() => refreshAllAppStatus(), 600);
-                    }
-                }
-
-                // Envio de notificacao do sistema web ao concluir
-                if (typeof StoppNotifications !== 'undefined' && typeof StoppNotifications.send === 'function') {
-                    const targetUrl = typeof resolveStoreUrl === 'function'
-                        ? resolveStoreUrl(apkUrl && apkUrl.includes('VeraWatt') ? 'verawatt.html' : 'index.html')
-                        : 'https://gustavosanz.github.io/Stopp-Store/';
-                    StoppNotifications.send(
-                        'Transferencia Concluida: ' + appName,
-                        'O pacote APK foi descarregado com sucesso.',
-                        targetUrl
-                    );
+            if (apkUrl.includes('VeraWatt')) {
+                localStorage.setItem('sim_installed_com.vera_watt', 'true');
+                localStorage.setItem('sim_version_code_com.vera_watt', '4');
+                localStorage.setItem('sim_version_name_com.vera_watt', '0.4-Beta');
+                if (typeof refreshAllAppStatus === 'function') {
+                    setTimeout(() => refreshAllAppStatus(), 600);
                 }
             }
 
-            // Trigger Post-Install Celebration Animation
+            if (typeof StoppNotifications !== 'undefined' && typeof StoppNotifications.send === 'function') {
+                const targetUrl = typeof resolveStoreUrl === 'function'
+                    ? resolveStoreUrl(apkUrl && apkUrl.includes('VeraWatt') ? 'verawatt.html' : 'index.html')
+                    : 'https://gustavosanz.github.io/Stopp-Store/';
+                StoppNotifications.send(
+                    'Transferencia Concluida: ' + appName,
+                    'O pacote APK foi descarregado com sucesso.',
+                    targetUrl
+                );
+            }
+
             setTimeout(() => {
                 progressBox.style.display = 'none';
                 successBox.style.display = 'block';
                 createConfetti();
-                if (isNative) {
-                    setTimeout(() => closeDownloadModal(), 1800);
-                }
             }, 400);
         }
     }, 120);
