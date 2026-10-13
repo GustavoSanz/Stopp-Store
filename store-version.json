@@ -1,8 +1,8 @@
 {
-  "store_version_code": 1,
-  "store_version_name": "0.1-Beta",
-  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.1-Beta.apk",
-  "store_update_message": "A Stopp Store esta na versao mais recente (v0.1-Beta).",
+  "store_version_code": 2,
+  "store_version_name": "0.2-Beta",
+  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.2-Beta.apk",
+  "store_update_message": "Nova versao v0.2-Beta disponivel com instalador automatico e supressao de promocoes nativas.",
   "apps": {
     "com.vera_watt": {
       "name": "Vera Watt",
