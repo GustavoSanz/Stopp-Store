@@ -2,7 +2,7 @@
 // Strictly Zero Emojis Compliance
 
 const CURRENT_STORE_VERSION_CODE = 1;
-const CURRENT_STORE_VERSION_NAME = "1.0";
+const CURRENT_STORE_VERSION_NAME = "0.1-Beta";
 
 // Native Android Bridge & Web Fallback Interface
 const StoppBridge = {
