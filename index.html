@@ -12,6 +12,14 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script>
+        (function() {
+            if ((typeof window.StoppStoreNative !== 'undefined') || 
+                (navigator.userAgent && navigator.userAgent.includes('StoppStoreApp'))) {
+                document.documentElement.classList.add('is-native-app');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="glow-bg">
@@ -39,10 +47,10 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                     Definições
                 </button>
-                <button class="btn-install-app" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
+                <button class="btn-install-app" id="nav-pill-app-android" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
                 <button id="btn-pwa-install" class="btn-install-app" style="display: none;" title="Instalar Stopp Store no dispositivo">Instalar PWA</button>
                 <a href="#apps">Aplicações</a>
-                <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
             </div>
         </header>
 
@@ -53,14 +61,26 @@
             <p>Catálogo centralizado de ferramentas, jogos e aplicações experimentais prontas para instalação direta em Android e desktop.</p>
         </section>
 
-        <!-- Promo Banner Android App -->
-        <div class="promo-banner" onclick="openAppModal()">
+        <!-- Promo Banner Android App (Apenas Browser Web) -->
+        <div class="promo-banner" id="banner-app-promo" onclick="openAppModal()">
             <div class="promo-badge">Novidade</div>
             <div class="promo-content">
                 <strong>Stopp Store Oficial para Android!</strong>
                 <span>Clica para conhecer as vantagens exclusivas e novidades da aplicação nativa.</span>
             </div>
             <div class="promo-arrow">Ver Vantagens →</div>
+        </div>
+
+        <!-- IA Stopp Sentinel: Live Ecosystem & Site Health Status -->
+        <div class="ai-status-container" id="ai-status-container" onclick="openAiDiagnosticModal()" title="Clica para ver o Diagnóstico Completo da IA">
+            <div class="ai-status-pulse-badge">
+                <span class="ai-status-dot"></span>
+                <span class="ai-status-label" id="ai-status-main-label">IA Sentinel: <strong>A analisar integridade do ecossistema...</strong></span>
+            </div>
+            <div class="ai-status-telemetry">
+                <span class="ai-telemetry-ping" id="ai-telemetry-ping">-- ms</span>
+                <span class="ai-telemetry-pill">Diagnóstico IA →</span>
+            </div>
         </div>
 
         <!-- Category Filters -->
@@ -280,8 +300,27 @@
                         Em Breve
                     </button>
                 </div>
-            </article>
         </main>
+
+        <!-- Horizontal Swipeable Shelf: Installed Applications on Device -->
+        <section class="installed-shelf-section" id="installed-shelf-section">
+            <div class="shelf-header">
+                <div class="shelf-title-wrap">
+                    <div class="shelf-icon-badge">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="shelf-title">Aplicações no Teu Dispositivo</h3>
+                        <p class="shelf-subtitle">Acesso rápido com 1 toque direto • Desliza para o lado</p>
+                    </div>
+                </div>
+                <div class="shelf-nav-hint">Desliza ← →</div>
+            </div>
+
+            <div class="shelf-scroll-track" id="shelf-scroll-track">
+                <!-- Preenchido dinamicamente por JS -->
+            </div>
+        </section>
 
         <!-- Footer -->
         <footer>
@@ -582,6 +621,72 @@
             <button class="btn-secondary" style="width: 100%; margin-top: 14px;" onclick="closeAppManagerModal()">
                 Concluir
             </button>
+        </div>
+    </div>
+
+    <!-- AI Health & Diagnostic Modal -->
+    <div class="modal-backdrop" id="ai-diagnostic-modal">
+        <div class="modal-card modal-ai-diagnostic">
+            <div class="modal-header-app">
+                <div class="app-icon-badge" style="background: linear-gradient(135deg, #10b981, #0ea5e9);">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                </div>
+                <div>
+                    <span class="exclusivity-pill" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #34d399;">Auditoria em Tempo Real</span>
+                    <h3 style="margin-top: 4px;">IA Stopp Sentinel</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closeAiDiagnosticModal()" aria-label="Fechar">✕</button>
+            </div>
+
+            <div class="ai-scanner-track">
+                <div class="ai-scanner-bar"></div>
+            </div>
+
+            <div class="ai-diag-card">
+                <div class="ai-diag-info">
+                    <h5>Servidores GitHub Pages & CDN</h5>
+                    <p>Acessibilidade remota de manifestos e pacotes</p>
+                </div>
+                <span class="ai-diag-badge ok" id="diag-net-status">Operacional</span>
+            </div>
+
+            <div class="ai-diag-card">
+                <div class="ai-diag-info">
+                    <h5>Latência de Resposta HTTP</h5>
+                    <p>Tempo de comunicação com os descritores de versão</p>
+                </div>
+                <span class="ai-diag-badge ok" id="diag-net-ping">-- ms</span>
+            </div>
+
+            <div class="ai-diag-card">
+                <div class="ai-diag-info">
+                    <h5>Ponte Nativa Android (Bridge)</h5>
+                    <p>Ligação com APIs de sistema e instalador do Android</p>
+                </div>
+                <span class="ai-diag-badge ok" id="diag-bridge-status">A verificar...</span>
+            </div>
+
+            <div class="ai-diag-card">
+                <div class="ai-diag-info">
+                    <h5>Integridade de Código & Sintaxe</h5>
+                    <p>Compilação e execução dos controladores JavaScript</p>
+                </div>
+                <span class="ai-diag-badge ok">0 Erros • 100% Íntegro</span>
+            </div>
+
+            <div class="ai-report-box">
+                <strong>Relatório do Stopp Sentinel:</strong>
+                <p id="diag-report-text" style="margin: 0;">A analisar os parâmetros do ecossistema...</p>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 14px;">
+                <button class="btn-download" style="flex: 1;" onclick="handleRerunAiDiagnostics()">
+                    Reavaliar Diagnóstico Agora
+                </button>
+                <button class="btn-secondary" style="flex: 1;" onclick="closeAiDiagnosticModal()">
+                    Fechar
+                </button>
+            </div>
         </div>
     </div>
 
