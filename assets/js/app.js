@@ -1434,6 +1434,31 @@ const StoppAiSentinel = {
 
         this.updateModalUi();
 
+        // 7. Alerta Autónomo da IA Stopp Sentinel ao detetar Instabilidade de Rede/Servidores
+        if (!this.state.apiOk) {
+            const now = Date.now();
+            const lastAlert = parseInt(localStorage.getItem('stopp_sentinel_last_instability_alert') || '0', 10);
+            const ALERT_COOLDOWN = 15 * 60 * 1000; // 15 minutos entre alertas automaticos para evitar repeticoes
+
+            if (now - lastAlert > ALERT_COOLDOWN) {
+                localStorage.setItem('stopp_sentinel_last_instability_alert', now.toString());
+                const alertTitle = 'Alerta Stopp Sentinel: Instabilidade Detetada';
+                const alertMsg = 'A IA Sentinel detetou anomalias no carregamento ou resposta dos servidores da Stopp Store. A acompanhar estabilidade.';
+
+                StoppNotifications.send(alertTitle, alertMsg, resolveStoreUrl('index.html'));
+
+                if (!StoppSystemNotice.state.active) {
+                    StoppSystemNotice.state.active = true;
+                    StoppSystemNotice.state.level = 'error';
+                    StoppSystemNotice.state.title = alertTitle;
+                    StoppSystemNotice.state.message = alertMsg;
+                    const dateNow = new Date();
+                    StoppSystemNotice.state.timestamp = ('0' + dateNow.getDate()).slice(-2) + '/' + ('0' + (dateNow.getMonth() + 1)).slice(-2) + '/' + dateNow.getFullYear() + ' ' + ('0' + dateNow.getHours()).slice(-2) + ':' + ('0' + dateNow.getMinutes()).slice(-2);
+                    StoppSystemNotice.render();
+                }
+            }
+        }
+
         if (showFeedback) {
             if (this.state.status === 'HEALTHY') {
                 showStoreToast('Diagnóstico da IA: 0 Erros. Layout e fluidez 100% íntegros.', 'success');
@@ -1599,6 +1624,17 @@ const StoppSystemNotice = {
         this.state.timestamp = remoteNotice.timestamp || '';
         this.state.dismissed = sessionStorage.getItem('stopp_notice_dismissed') === 'true';
         this.render();
+
+        // Disparo de notificacao global para todos os utilizadores ao receberem aviso oficial do servidor
+        const lastAlertedTs = localStorage.getItem('stopp_last_alerted_notice_ts');
+        if (this.state.timestamp && this.state.timestamp !== lastAlertedTs) {
+            localStorage.setItem('stopp_last_alerted_notice_ts', this.state.timestamp);
+            StoppNotifications.send(
+                this.state.title,
+                this.state.message,
+                resolveStoreUrl('index.html')
+            );
+        }
     },
 
     render: function () {
@@ -1730,6 +1766,36 @@ const StoppSystemNotice = {
             if (chips[2]) chips[2].classList.add('active');
             if (titleInput) titleInput.value = 'Stopp Store: Sistemas 100% Operacionais';
             if (msgInput) msgInput.value = 'Todas as anomalias de ligação e carregamento foram corrigidas com sucesso. A loja opera com máxima fluidez e velocidade.';
+        }
+    },
+
+    copyGlobalNoticeConfig: function () {
+        StoppAudio.play('tap');
+        const titleInput = document.getElementById('admin-notice-title');
+        const msgInput = document.getElementById('admin-notice-msg');
+        const title = (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : 'Aviso: Instabilidade no Carregamento da App';
+        const message = (msgInput && msgInput.value.trim()) ? msgInput.value.trim() : 'A aplicação e os servidores da Stopp Store estão temporariamente a experienciar lentidão ou problemas no carregamento. Estamos a atuar para resolver a anomalia com a máxima brevidade.';
+        const now = new Date();
+        const timeStr = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear() + ' ' + ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+
+        const config = {
+            active: true,
+            level: 'warning',
+            title: title,
+            message: message,
+            timestamp: timeStr,
+            dismissible: true
+        };
+
+        const jsonStr = JSON.stringify(config, null, 2);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(jsonStr).then(() => {
+                showStoreToast('Configuração copiada! Ao atualizar store-version.json, todos os utilizadores receberão este alerta.', 'success');
+            }).catch(() => {
+                prompt('Configuração JSON para store-version.json (Broadcast Global):', jsonStr);
+            });
+        } else {
+            prompt('Configuração JSON para store-version.json (Broadcast Global):', jsonStr);
         }
     }
 };
