@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stopp-store-v11';
+const CACHE_NAME = 'stopp-store-v12';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -82,10 +82,33 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Estrategia Stale-While-Revalidate para recursos estaticos (CSS, JS, Imagens)
+  // Estrategia Network-First para scripts e estilos (garante codigo atualizado imediatamente)
+  const isCodeAsset = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
+  if (isCodeAsset) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone).catch(() => {}));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request, { ignoreSearch: true })
+            .then((cached) => cached || (url.pathname.endsWith('.js')
+              ? new Response('/* Stopp Store offline fallback */', { headers: { 'Content-Type': 'application/javascript' } })
+              : new Response('/* Stopp Store offline fallback */', { headers: { 'Content-Type': 'text/css' } })));
+        })
+    );
+    return;
+  }
+
+  // Estrategia Cache-First com fallback para imagens e outros recursos estaticos
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
+      if (cachedResponse) return cachedResponse;
+      return fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -94,17 +117,8 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        if (cachedResponse) return cachedResponse;
-        if (url.pathname.endsWith('.js')) {
-          return new Response('/* Stopp Store offline fallback */', { headers: { 'Content-Type': 'application/javascript' } });
-        }
-        if (url.pathname.endsWith('.css')) {
-          return new Response('/* Stopp Store offline fallback */', { headers: { 'Content-Type': 'text/css' } });
-        }
         return new Response('', { status: 408, statusText: 'Request Timed Out' });
       });
-
-      return cachedResponse || fetchPromise;
     })
   );
 });

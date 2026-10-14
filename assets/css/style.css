@@ -3096,9 +3096,7 @@ body.is-native-app #app-features-modal {
     justify-content: space-around;
     width: calc(100% - 28px);
     max-width: 480px;
-    background: rgba(15, 23, 42, 0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(15, 23, 42, 0.96);
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 22px;
     padding: 6px 8px;
@@ -3323,9 +3321,7 @@ body:has(.modal-backdrop[style*="display: flex"]) .bottom-nav-dock,
 .modal-changelog-card {
     max-width: 520px;
     width: 92%;
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(28px);
-    -webkit-backdrop-filter: blur(28px);
+    background: rgba(15, 23, 42, 0.98);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(16, 185, 129, 0.15);
     border-radius: 26px;

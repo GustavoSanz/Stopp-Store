@@ -41,18 +41,10 @@ function syncModalBodyState() {
     }
 }
 
-if (typeof MutationObserver !== 'undefined') {
-    const modalObserver = new MutationObserver(() => {
-        syncModalBodyState();
-    });
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            modalObserver.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class', 'style'] });
-        });
-    } else {
-        modalObserver.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class', 'style'] });
-    }
-}
+// Observador de mutacao global removido: causava tempestade de recalculacoes de layout
+// e congelamentos de thread ao observar toda a arvore do document.body.
+// O estado dos modais e controlado diretamente pelas funcoes open/close correspondentes.
+
 
 const CURRENT_STORE_VERSION_CODE = 6;
 const CURRENT_STORE_VERSION_NAME = "0.6-Beta";
@@ -1254,7 +1246,6 @@ const StoppAiSentinel = {
         if (!this.state.freezeErrors.includes(msg)) {
             this.state.freezeErrors.push(msg);
         }
-        this.runDiagnostics(false);
     },
 
     auditDomLayout: function () {
@@ -2399,7 +2390,7 @@ if (document.readyState === 'loading') {
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=11')
+        navigator.serviceWorker.register('./sw.js?v=12')
             .then(reg => {
                 reg.update();
             })
@@ -2408,7 +2399,7 @@ if ('serviceWorker' in navigator) {
         if ('caches' in window) {
             caches.keys().then(keys => {
                 keys.forEach(k => {
-                    if (k !== 'stopp-store-v11') {
+                    if (k !== 'stopp-store-v12') {
                         caches.delete(k);
                     }
                 });
