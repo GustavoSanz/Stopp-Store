@@ -1523,6 +1523,189 @@ function uninstallInstalledApp(packageName, appName) {
     StoppBridge.uninstallApp(packageName, appName);
 }
 
+// Official System Notice & Incident Communications Controller
+const StoppSystemNotice = {
+    state: {
+        active: false,
+        level: 'warning',
+        title: '',
+        message: '',
+        timestamp: '',
+        dismissed: false
+    },
+
+    init: function () {
+        const localNotice = localStorage.getItem('stopp_admin_notice');
+        if (localNotice) {
+            try {
+                const parsed = JSON.parse(localNotice);
+                if (parsed && parsed.active) {
+                    this.state = Object.assign({}, this.state, parsed);
+                }
+            } catch (e) {}
+        }
+        this.render();
+    },
+
+    syncNotice: function (remoteNotice) {
+        if (!remoteNotice) return;
+        const localNotice = localStorage.getItem('stopp_admin_notice');
+        if (localNotice) {
+            try {
+                const parsed = JSON.parse(localNotice);
+                if (parsed && parsed.userOverridden) {
+                    this.render();
+                    return;
+                }
+            } catch (e) {}
+        }
+
+        if (remoteNotice.active) {
+            this.state.active = true;
+            this.state.level = remoteNotice.level || 'warning';
+            this.state.title = remoteNotice.title || 'Aviso do Sistema';
+            this.state.message = remoteNotice.message || '';
+            this.state.timestamp = remoteNotice.timestamp || '';
+            this.state.dismissed = sessionStorage.getItem('stopp_notice_dismissed') === 'true';
+        } else {
+            this.state.active = false;
+        }
+        this.render();
+    },
+
+    render: function () {
+        const banner = document.getElementById('system-notice-banner');
+        if (!banner) return;
+
+        if (this.state.active && !this.state.dismissed) {
+            const titleEl = document.getElementById('notice-title');
+            const msgEl = document.getElementById('notice-message');
+            const timeEl = document.getElementById('notice-timestamp');
+            const badgeEl = document.getElementById('notice-badge-text');
+
+            if (titleEl) titleEl.textContent = this.state.title;
+            if (msgEl) msgEl.textContent = this.state.message;
+            if (timeEl) timeEl.textContent = this.state.timestamp ? ('Registo: ' + this.state.timestamp) : '';
+            if (badgeEl) {
+                badgeEl.textContent = this.state.level === 'error' ? 'Alerta Crítico' : 'Aviso Oficial do Sistema';
+            }
+
+            banner.style.display = 'block';
+            banner.style.opacity = '1';
+            banner.style.transform = 'translateY(0)';
+        } else {
+            banner.style.display = 'none';
+        }
+
+        this.syncUiButton();
+    },
+
+    dismissBanner: function () {
+        StoppAudio.play('tap');
+        this.state.dismissed = true;
+        sessionStorage.setItem('stopp_notice_dismissed', 'true');
+        const banner = document.getElementById('system-notice-banner');
+        if (banner) {
+            banner.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+            banner.style.opacity = '0';
+            banner.style.transform = 'translateY(-6px)';
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 250);
+        }
+    },
+
+    emitFromUi: function (sendPush = true) {
+        StoppAudio.play('tap');
+        const titleInput = document.getElementById('admin-notice-title');
+        const msgInput = document.getElementById('admin-notice-msg');
+        const title = (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : 'Aviso: Instabilidade no Carregamento';
+        const message = (msgInput && msgInput.value.trim()) ? msgInput.value.trim() : 'A aplicação está temporariamente a experienciar lentidão ou problemas no carregamento.';
+
+        const now = new Date();
+        const timeStr = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear() + ' ' + ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+
+        this.state.active = true;
+        this.state.level = 'warning';
+        this.state.title = title;
+        this.state.message = message;
+        this.state.timestamp = timeStr;
+        this.state.dismissed = false;
+        sessionStorage.removeItem('stopp_notice_dismissed');
+
+        localStorage.setItem('stopp_admin_notice', JSON.stringify({
+            active: true,
+            level: 'warning',
+            title: title,
+            message: message,
+            timestamp: timeStr,
+            userOverridden: true
+        }));
+
+        this.render();
+
+        if (sendPush) {
+            StoppNotifications.send(
+                title,
+                message,
+                resolveStoreUrl('index.html')
+            );
+            showStoreToast('Notificação de aviso enviada e afixada na loja!', 'success');
+        } else {
+            showStoreToast('Aviso afixado na loja com sucesso.', 'success');
+        }
+    },
+
+    toggleBannerFromUi: function () {
+        StoppAudio.play('tap');
+        if (this.state.active && !this.state.dismissed) {
+            this.state.active = false;
+            this.state.dismissed = true;
+            localStorage.setItem('stopp_admin_notice', JSON.stringify({ active: false, userOverridden: true }));
+            this.render();
+            showStoreToast('Aviso removido do topo da loja.', 'info');
+        } else {
+            this.emitFromUi(false);
+        }
+    },
+
+    syncUiButton: function () {
+        const toggleBtn = document.getElementById('btn-toggle-store-banner');
+        if (toggleBtn) {
+            if (this.state.active && !this.state.dismissed) {
+                toggleBtn.textContent = 'Remover Aviso da Loja';
+                toggleBtn.className = 'btn-secondary active';
+            } else {
+                toggleBtn.textContent = 'Afixar Aviso na Loja';
+                toggleBtn.className = 'btn-secondary';
+            }
+        }
+    },
+
+    applyPreset: function (type) {
+        StoppAudio.play('tap');
+        const chips = document.querySelectorAll('.preset-chip');
+        chips.forEach(c => c.classList.remove('active'));
+
+        const titleInput = document.getElementById('admin-notice-title');
+        const msgInput = document.getElementById('admin-notice-msg');
+
+        if (type === 'loading') {
+            if (chips[0]) chips[0].classList.add('active');
+            if (titleInput) titleInput.value = 'Aviso: Instabilidade no Carregamento da App';
+            if (msgInput) msgInput.value = 'A aplicação e os servidores da Stopp Store estão temporariamente a experienciar lentidão ou problemas no carregamento. Estamos a atuar para resolver a anomalia com a máxima brevidade.';
+        } else if (type === 'maintenance') {
+            if (chips[1]) chips[1].classList.add('active');
+            if (titleInput) titleInput.value = 'Aviso: Manutenção Técnica Programada';
+            if (msgInput) msgInput.value = 'Os serviços de distribuição da Stopp Store encontram-se em tarefas de otimização de infraestrutura. Todas as funcionalidades serão repostas em breve.';
+        } else if (type === 'resolved') {
+            if (chips[2]) chips[2].classList.add('active');
+            if (titleInput) titleInput.value = 'Stopp Store: Sistemas 100% Operacionais';
+            if (msgInput) msgInput.value = 'Todas as anomalias de ligação e carregamento foram corrigidas com sucesso. A loja opera com máxima fluidez e velocidade.';
+        }
+    }
+};
+
 // Verificacao Exclusiva de Atualizacao da Propria Loja
 async function checkStoreUpdatesOnly(isManual = false) {
     const statusText = document.getElementById('store-update-status-text');
@@ -1537,6 +1720,11 @@ async function checkStoreUpdatesOnly(isManual = false) {
         const response = await fetch('store-version.json?t=' + Date.now(), { cache: 'no-store' });
         if (!response.ok) throw new Error('Falha HTTP ao carregar versao');
         const data = await response.json();
+
+        // Sincronizar Aviso Oficial de Sistema/Instabilidade
+        if (data.system_notice) {
+            StoppSystemNotice.syncNotice(data.system_notice);
+        }
 
         // Verificacao apenas da Stopp Store
         const currentStoreCode = StoppBridge.getStoreVersionCode();
@@ -2010,12 +2198,20 @@ function dismissSplashScreen(e) {
     const splash = document.getElementById('stopp-splash-screen');
     if (splash) {
         splash.classList.add('splash-dismissed');
+        splash.style.pointerEvents = 'none';
+        splash.style.opacity = '0';
         try { StoppAudio.play('tap'); } catch (err) {}
-        setTimeout(() => {
+        if (window.__splashDismissed) {
             splash.style.display = 'none';
-        }, 400);
+        } else {
+            window.__splashDismissed = true;
+            setTimeout(() => {
+                if (splash) splash.style.display = 'none';
+            }, 250);
+        }
+    } else {
+        window.__splashDismissed = true;
     }
-    window.__splashDismissed = true;
 }
 
 function replaySplashScreen() {
@@ -2178,6 +2374,7 @@ function bootstrapStore() {
     updateVeraWattThemeIcons();
     refreshAllAppStatus();
     checkStoreAndAppUpdates(false);
+    StoppSystemNotice.init();
     StoppAiSentinel.init();
 }
 
@@ -2319,6 +2516,7 @@ window.openPlayProtectModal = openPlayProtectModal;
 window.closePlayProtectModal = closePlayProtectModal;
 window.toggleSoundFx = toggleSoundFx;
 window.bootstrapStore = bootstrapStore;
+window.StoppSystemNotice = StoppSystemNotice;
 window.updateVeraWattThemeIcons = updateVeraWattThemeIcons;
 window.getVeraWattDynamicIcon = getVeraWattDynamicIcon;
 

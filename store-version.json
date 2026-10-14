@@ -11,6 +11,14 @@
     "Aprimoramento do motor de diagnostico IA Stopp Sentinel com telemetria em tempo real e deteccao de anomalias.",
     "Otimizacoes de desempenho, transicoes fluidas e correcao de sobreposicoes na barra inferior de navegacao."
   ],
+  "system_notice": {
+    "active": true,
+    "level": "warning",
+    "title": "Aviso: Instabilidade Temporária no Carregamento",
+    "message": "A Stopp Store está temporariamente a experienciar lentidão ou problemas no carregamento dos servidores. As nossas equipas estão a intervir para restabelecer o desempenho a 100%.",
+    "timestamp": "14/10/2026 11:20",
+    "dismissible": true
+  },
   "apps": {
     "com.vera_watt": {
       "name": "Vera Watt",

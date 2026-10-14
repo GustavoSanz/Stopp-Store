@@ -3464,6 +3464,170 @@ body:has(.modal-backdrop[style*="display: flex"]) .bottom-nav-dock,
     line-height: 1.5;
 }
 
+/* 7. Stopp Store Official System Notice & Incident Banner */
+.system-notice-banner {
+    position: relative;
+    margin: 12px 0 18px 0;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(239, 68, 68, 0.08));
+    border: 1.5px solid rgba(245, 158, 11, 0.45);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.2);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    overflow: hidden;
+    animation: noticeBannerEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    z-index: 50;
+}
 
+@keyframes noticeBannerEntrance {
+    0% { transform: translateY(-8px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
 
+.notice-banner-glow {
+    position: absolute;
+    top: -20px;
+    left: 20%;
+    width: 180px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
+    filter: blur(25px);
+    pointer-events: none;
+}
 
+.notice-banner-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.notice-banner-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, 0.18);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fcd34d;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.notice-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+    animation: noticePulse 1.8s infinite alternate;
+}
+
+@keyframes noticePulse {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    100% { transform: scale(1.3); opacity: 1; }
+}
+
+.notice-text-content .notice-title {
+    margin: 0 0 4px 0;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.notice-text-content .notice-message {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: #cbd5e1;
+}
+
+.notice-banner-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.notice-timestamp {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-family: monospace;
+}
+
+.btn-dismiss-notice {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-dismiss-notice:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Notice Emitter Form Controls in Settings Modal */
+.notice-emitter-section {
+    border-left: 3px solid #f59e0b;
+    padding-left: 12px;
+}
+
+.notice-preset-chips {
+    margin-bottom: 4px;
+}
+
+.preset-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 5px 12px;
+    color: #cbd5e1;
+    font-size: 0.73rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-chip:hover,
+.preset-chip.active {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: #fef08a;
+}
+
+.settings-input,
+.settings-textarea {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 0.82rem;
+    padding: 9px 12px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.settings-input:focus,
+.settings-textarea:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}

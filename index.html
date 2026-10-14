@@ -57,16 +57,22 @@
             window.dismissSplashScreen = function(e) {
                 if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
                 var s = document.getElementById('stopp-splash-screen');
-                if (s && !window.__splashDismissed) {
-                    window.__splashDismissed = true;
+                if (s) {
                     s.classList.add('splash-dismissed');
-                    setTimeout(function() { s.style.display = 'none'; }, 400);
+                    s.style.pointerEvents = 'none';
+                    s.style.opacity = '0';
+                    if (window.__splashDismissed) {
+                        s.style.display = 'none';
+                    } else {
+                        window.__splashDismissed = true;
+                        setTimeout(function() { if (s) s.style.display = 'none'; }, 250);
+                    }
                 }
             };
-            // Temporizador de Seguranca Absoluto (maximo 2.2 segundos)
+            // Temporizador de Seguranca Absoluto (maximo 1.8 segundos)
             setTimeout(function() {
                 window.dismissSplashScreen();
-            }, 2200);
+            }, 1800);
         })();
     </script>
 
@@ -76,6 +82,25 @@
     </div>
 
     <div class="container">
+        <!-- Stopp Store Official System Notice & Incident Banner -->
+        <div id="system-notice-banner" class="system-notice-banner" style="display: none;">
+            <div class="notice-banner-glow"></div>
+            <div class="notice-banner-content">
+                <div class="notice-banner-badge">
+                    <span class="notice-pulse-dot"></span>
+                    <span class="notice-badge-text" id="notice-badge-text">Aviso Oficial do Sistema</span>
+                </div>
+                <div class="notice-text-content">
+                    <h4 class="notice-title" id="notice-title">Aviso: Instabilidade no Carregamento</h4>
+                    <p class="notice-message" id="notice-message">A Stopp Store está temporariamente a experienciar lentidão ou problemas no carregamento dos servidores. As nossas equipas estão a intervir.</p>
+                </div>
+                <div class="notice-banner-actions">
+                    <span class="notice-timestamp" id="notice-timestamp"></span>
+                    <button type="button" class="btn-dismiss-notice" onclick="StoppSystemNotice.dismissBanner()" title="Ocultar este aviso temporariamente">Dispensar</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Header -->
         <header class="app-main-header">
             <div class="brand">
@@ -632,6 +657,33 @@
                     <button class="btn-secondary" style="flex: 1; font-size: 0.82rem; padding: 10px 12px;" onclick="handleTestNotification()">
                         Testar Notificação
                     </button>
+                </div>
+            </div>
+
+            <!-- Section 2.4: Emissor de Avisos de Instabilidade & Estado da App -->
+            <div class="settings-section notice-emitter-section">
+                <div class="settings-section-title">Emissor de Avisos &amp; Alertas aos Utilizadores</div>
+                <div class="settings-section-desc">Dispara notificações ao telemóvel e afixa avisos de instabilidade ou manutenção no topo da loja.</div>
+                
+                <div class="notice-emitter-controls" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                    <div class="notice-preset-chips" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <button type="button" class="preset-chip active" onclick="StoppSystemNotice.applyPreset('loading')">Instabilidade de Loading</button>
+                        <button type="button" class="preset-chip" onclick="StoppSystemNotice.applyPreset('maintenance')">Manutenção de Servidores</button>
+                        <button type="button" class="preset-chip" onclick="StoppSystemNotice.applyPreset('resolved')">Normalizar (100% OK)</button>
+                    </div>
+
+                    <input type="text" id="admin-notice-title" class="settings-input" placeholder="Título do Aviso (ex: Aviso de Instabilidade no Carregamento)" value="Aviso: Instabilidade no Carregamento da App">
+                    <textarea id="admin-notice-msg" class="settings-textarea" rows="3" placeholder="Mensagem do aviso para os utilizadores...">A aplicação e os servidores da Stopp Store estão temporariamente a experienciar lentidão ou problemas no carregamento. Estamos a atuar para resolver a anomalia com a máxima brevidade.</textarea>
+
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                        <button type="button" class="btn-primary" style="flex: 1.2; min-width: 160px; font-size: 0.82rem; padding: 10px 12px;" onclick="StoppSystemNotice.emitFromUi(true)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            Enviar Notificação ao Telemóvel
+                        </button>
+                        <button type="button" class="btn-secondary" style="flex: 1; min-width: 140px; font-size: 0.82rem; padding: 10px 12px;" id="btn-toggle-store-banner" onclick="StoppSystemNotice.toggleBannerFromUi()">
+                            Afixar Aviso na Loja
+                        </button>
+                    </div>
                 </div>
             </div>
 
