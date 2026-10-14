@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stopp-store-v5';
+const CACHE_NAME = 'stopp-store-v6';
 const STATIC_ASSETS = [
   './',
   './index.html',

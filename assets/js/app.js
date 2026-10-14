@@ -986,7 +986,6 @@ function refreshAllAppStatus() {
 
     renderAppManager();
 }
-}
 
 function openInstalledApp(packageName) {
     StoppBridge.openApp(packageName);
