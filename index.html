@@ -151,6 +151,12 @@
                     <span>Definições</span>
                 </button>
 
+                <!-- Admin Login / Account -->
+                <button class="btn-auth-nav" id="nav-auth-btn" onclick="StoppAuth.openLoginModal()" title="Iniciar Sessão de Administrador">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span class="auth-text">Login Admin</span>
+                </button>
+
                 <!-- Atalhos da Loja -->
                 <button class="btn-install-app" id="nav-pill-app-android" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
                 <button id="btn-pwa-install" class="btn-install-app" style="display: none;" title="Instalar Stopp Store no dispositivo">Instalar PWA</button>
@@ -424,9 +430,9 @@
                     </div>
                 </div>
 
-                <div class="card-actions">
-                    <button class="btn-download" style="opacity: 0.6; cursor: not-allowed;" disabled>
-                        Em Breve
+                <div class="card-actions" id="lab-card-actions">
+                    <button class="btn-download" style="opacity: 0.7;" onclick="StoppAuth.openLoginModal()">
+                        Bloqueado (Requer Login Admin)
                     </button>
                 </div>
         </main>
@@ -664,6 +670,12 @@
                 <div class="settings-section-title">Emissor de Avisos &amp; Alertas aos Utilizadores</div>
                 <div class="settings-section-desc">Dispara notificações ao telemóvel e afixa avisos de instabilidade ou manutenção no topo da loja.</div>
                 
+                <div id="emitter-lock-notice" style="display: none; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; margin-top: 10px;">
+                    <div style="font-size: 0.88rem; color: #f87171; font-weight: 600; margin-bottom: 4px;">Funcionalidade Reservada a Administradores</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Inicia sessão com a conta oficial do Stopp Studio para poderes disparar notificações globais e afixar avisos a todos os utilizadores.</div>
+                    <button type="button" class="btn-primary" style="font-size: 0.82rem; padding: 8px 14px;" onclick="closeSettingsModal(); StoppAuth.openLoginModal();">Iniciar Sessão de Admin</button>
+                </div>
+
                 <div class="notice-emitter-controls" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
                     <div class="notice-preset-chips" style="display: flex; gap: 6px; flex-wrap: wrap;">
                         <button type="button" class="preset-chip active" onclick="StoppSystemNotice.applyPreset('loading')">Instabilidade de Loading</button>
@@ -1049,7 +1061,101 @@
         </div>
     </div>
 
-    <script src="assets/js/app.js?v=17"></script>
-    <script src="assets/js/download.js?v=17"></script>
+    <!-- Dedicated Error Screen & Diagnostic Troubleshooting Modal -->
+    <div class="modal-backdrop" id="error-modal" style="display: none;">
+        <div class="modal-card modal-error-card">
+            <div class="error-header-badge">
+                <div class="error-icon-circle">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </div>
+                <div>
+                    <span class="error-status-pill">Alerta de Falha do Sistema</span>
+                    <h3 id="error-modal-title" style="margin-top: 4px;">Falha na Instalação</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closeErrorModal()" aria-label="Fechar">&times;</button>
+            </div>
+
+            <p class="modal-lead" id="error-modal-message">
+                Ocorreu um erro crítico durante a instalação ou download do pacote da aplicação.
+            </p>
+
+            <div class="error-troubleshoot-box">
+                <div class="troubleshoot-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span>Guia de Diagnóstico e Resolução Imediata</span>
+                </div>
+                <p id="error-modal-details-text" class="error-details-text">
+                    Possível conflito de assinaturas com uma versão anterior instalada ou permissões de fontes desconhecidas pendentes.
+                </p>
+                <ul class="error-steps-list">
+                    <li><strong>Conflito de Assinatura:</strong> Se já tinhas uma versão anterior instalada deste APK no telemóvel, o instalador do Android recusa atualizações de fontes com assinaturas diferentes. Clica no botão abaixo para desinstalar a versão antiga e depois reinstalar.</li>
+                    <li><strong>Fontes Desconhecidas:</strong> Certifica-te de que autorizaste a Stopp Store a instalar aplicações nas definições do teu Android.</li>
+                    <li><strong>Armazenamento:</strong> Garante pelo menos 150 MB livres no teu dispositivo móvel.</li>
+                </ul>
+            </div>
+
+            <div class="error-modal-actions">
+                <button class="btn-uninstall-app btn-large" id="btn-error-uninstall" style="display: none;" onclick="handleErrorUninstall()">
+                    Desinstalar Versão Antiga
+                </button>
+                <button class="btn-download btn-large" id="btn-error-retry" onclick="handleErrorRetry()">
+                    Tentar Novamente
+                </button>
+                <button class="btn-secondary btn-large" onclick="closeErrorModal(); openAiDiagnosticModal();">
+                    Consultar IA Sentinel
+                </button>
+                <button class="btn-secondary btn-large" onclick="closeErrorModal()">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dedicated Admin & User Authentication Modal -->
+    <div class="modal-backdrop" id="login-modal" style="display: none;">
+        <div class="modal-card modal-login-card">
+            <div class="modal-header-app">
+                <div class="app-icon-badge" style="background: linear-gradient(135deg, #0ea5e9, #8b5cf6); color: #fff; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div>
+                    <span class="auth-role-pill">Controlo de Acesso &amp; Privilégios</span>
+                    <h3 style="margin-top: 4px;">Iniciar Sessão</h3>
+                </div>
+                <button class="modal-close-btn" onclick="StoppAuth.closeLoginModal()" aria-label="Fechar">&times;</button>
+            </div>
+
+            <p class="modal-lead">
+                Inicia sessão com a tua conta de Administrador do Stopp Studio para gerir avisos globais aos utilizadores e aceder a aplicações exclusivas.
+            </p>
+
+            <form onsubmit="StoppAuth.handleLoginSubmit(event)" class="login-form-body">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="login-username-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Utilizador ou Administrador</label>
+                    <input type="text" id="login-username-input" class="settings-input" placeholder="ex: admin ou gustavo" autocomplete="username" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="login-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Palavra-passe ou PIN</label>
+                    <input type="password" id="login-password-input" class="settings-input" placeholder="Palavra-passe de admin ou PIN" autocomplete="current-password" required>
+                </div>
+
+                <div class="login-quick-hint">
+                    <strong>Acesso Administrador:</strong> Utilizador <code>admin</code> com senha <code>stopp2026</code> (ou introduz o PIN rápido <code>2026</code>).
+                </div>
+
+                <div class="login-actions" style="display: flex; gap: 8px; margin-top: 14px;">
+                    <button type="submit" class="btn-primary" style="flex: 1.5; padding: 12px 18px; font-size: 0.95rem;">
+                        Entrar como Administrador
+                    </button>
+                    <button type="button" class="btn-secondary" style="flex: 1;" onclick="StoppAuth.closeLoginModal()">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js?v=18"></script>
+    <script src="assets/js/download.js?v=18"></script>
 </body>
 </html>

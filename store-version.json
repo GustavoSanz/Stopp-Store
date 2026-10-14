@@ -12,11 +12,11 @@
     "Blindagem de carregamento contra congelamentos e cache persistente Network-First no Service Worker."
   ],
   "system_notice": {
-    "active": false,
-    "level": "info",
-    "title": "Stopp Store: Sistemas 100% Operacionais",
-    "message": "A versao v0.7-Beta esta totalmente estavel e otimizada.",
-    "timestamp": "14/10/2026 22:30",
+    "active": true,
+    "level": "warning",
+    "title": "Aviso: Instabilidade na Instalação & Atualizações",
+    "message": "Detetada anomalia na instalação de pacotes APK em alguns dispositivos. Se ocorrer erro de instalação, desinstala a versão anterior da aplicação no telemóvel antes de reinstalar para evitar conflitos de assinatura.",
+    "timestamp": "14/10/2026 23:20",
     "dismissible": true
   },
   "apps": {

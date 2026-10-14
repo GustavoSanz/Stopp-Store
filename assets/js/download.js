@@ -77,7 +77,13 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
 
     // Em modo nativo Android, iniciar download real e escutar progresso direto
     if (isNative && window.StoppStoreNative && typeof window.StoppStoreNative.downloadAndInstall === 'function') {
-        const fullUrl = new URL(apkUrl, window.location.href).href;
+        let fullUrl = apkUrl;
+        if (typeof resolveStoreUrl === 'function') {
+            fullUrl = resolveStoreUrl(apkUrl);
+        } else if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+            const cleanPath = fullUrl.replace(/^\.?\//, '');
+            fullUrl = 'https://gustavosanz.github.io/Stopp-Store/' + cleanPath;
+        }
         const fileName = apkUrl.split('/').pop() || 'app.apk';
 
         window.updateNativeDownloadProgress = function(percent, downloadedMb, totalMb) {
@@ -99,10 +105,39 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
             if (typeof window.StoppAudio !== 'undefined') window.StoppAudio.play('success');
             setTimeout(() => {
                 closeDownloadModal();
-                if (typeof onAppInstalledSuccess === 'function') {
-                    onAppInstalledSuccess(appName, appPkg);
-                }
-            }, 600);
+            }, 750);
+        };
+
+        window.onNativeDownloadFailed = function(failedName, errorMsg) {
+            closeDownloadModal();
+            if (typeof showErrorModal === 'function') {
+                showErrorModal({
+                    title: 'Falha na Transferência',
+                    message: 'Não foi possível concluir o download de ' + appName + '.',
+                    details: errorMsg || 'O servidor de distribuição da Stopp Store pode estar indisponível ou ocorreu uma quebra de ligação.',
+                    appName: appName,
+                    pkg: appPkg,
+                    retryFn: () => triggerAppDownload(appName, apkUrl, fileSizeMb)
+                });
+            } else if (typeof showStoreToast === 'function') {
+                showStoreToast('Erro no download: ' + errorMsg, 'error');
+            }
+        };
+
+        window.onNativeInstallFailed = function(failedApp, errorMsg) {
+            closeDownloadModal();
+            if (typeof showErrorModal === 'function') {
+                showErrorModal({
+                    title: 'Falha na Instalação de ' + appName,
+                    message: 'O instalador do Android recusou a instalação do pacote.',
+                    details: errorMsg || 'Provável conflito com uma versão anterior instalada com assinatura diferente, ou permissões de fontes desconhecidas pendentes.',
+                    appName: appName,
+                    pkg: appPkg,
+                    retryFn: () => triggerAppDownload(appName, apkUrl, fileSizeMb)
+                });
+            } else if (typeof showStoreToast === 'function') {
+                showStoreToast('Erro de instalação: ' + errorMsg, 'error');
+            }
         };
 
         window.StoppStoreNative.downloadAndInstall(fullUrl, fileName);

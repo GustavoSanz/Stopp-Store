@@ -2194,6 +2194,20 @@ const StoppAudio = {
                     osc.start(now);
                     osc.stop(now + 0.75);
                 });
+            } else if (type === 'error' || type === 'alert') {
+                [240, 180].forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.11);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 0.65, now + idx * 0.11 + 0.10);
+                    gain.gain.setValueAtTime(0.08, now + idx * 0.11);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.11 + 0.10);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + idx * 0.11);
+                    osc.stop(now + idx * 0.11 + 0.10);
+                });
             }
         } catch (e) {}
     },
@@ -2496,6 +2510,7 @@ function bootstrapStore() {
     checkStoreAndAppUpdates(false);
     StoppSystemNotice.init();
     StoppAiSentinel.init();
+    StoppAuth.init();
 }
 
 // Iniciar imediatamente se o DOM ja estiver pronto ou registrar evento
@@ -2593,7 +2608,271 @@ document.addEventListener('click', (e) => {
     if (protectModal && e.target === protectModal) {
         closePlayProtectModal();
     }
+
+    const errorModal = document.getElementById('error-modal');
+    if (errorModal && e.target === errorModal) {
+        closeErrorModal();
+    }
+
+    const loginModal = document.getElementById('login-modal');
+    if (loginModal && e.target === loginModal) {
+        StoppAuth.closeLoginModal();
+    }
 });
+
+// Error Screen & Diagnostic Modal Controller
+let currentErrorRetryFn = null;
+let currentErrorPkg = null;
+let currentErrorAppName = null;
+
+function showErrorModal({ title, message, details, appName, pkg, retryFn } = {}) {
+    if (typeof StoppAudio !== 'undefined') {
+        StoppAudio.play('error');
+    }
+    if (navigator.vibrate) {
+        try { navigator.vibrate([80, 50, 80]); } catch (ignored) {}
+    }
+
+    currentErrorRetryFn = retryFn || null;
+    currentErrorPkg = pkg || (appName && appName.includes('Vera') ? 'com.vera_watt' : null);
+    currentErrorAppName = appName || 'Aplicação';
+
+    const modal = document.getElementById('error-modal');
+    const titleEl = document.getElementById('error-modal-title');
+    const msgEl = document.getElementById('error-modal-message');
+    const detailsEl = document.getElementById('error-modal-details-text');
+    const btnRetry = document.getElementById('btn-error-retry');
+    const btnUninstall = document.getElementById('btn-error-uninstall');
+
+    if (titleEl) titleEl.textContent = title || 'Falha na Operação';
+    if (msgEl) msgEl.textContent = message || 'Ocorreu um erro durante a execução da tarefa.';
+    if (detailsEl) detailsEl.textContent = details || 'Causa provável: conflito de assinaturas, falta de espaço em disco ou restrições de permissões do sistema.';
+
+    if (btnRetry) {
+        btnRetry.style.display = retryFn ? 'inline-flex' : 'none';
+    }
+
+    if (btnUninstall) {
+        const isInstalled = currentErrorPkg && StoppBridge.isAppInstalled(currentErrorPkg);
+        btnUninstall.style.display = isInstalled ? 'inline-flex' : 'none';
+        btnUninstall.textContent = 'Desinstalar Versão Antiga de ' + currentErrorAppName;
+    }
+
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => {
+            modal.classList.add('active');
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+        });
+    }
+}
+
+function closeErrorModal() {
+    if (typeof StoppAudio !== 'undefined') {
+        StoppAudio.play('tap');
+    }
+    const modal = document.getElementById('error-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        document.body.style.overflow = '';
+        syncModalBodyState();
+    }
+}
+
+function handleErrorRetry() {
+    const fn = currentErrorRetryFn;
+    closeErrorModal();
+    if (typeof fn === 'function') {
+        setTimeout(() => fn(), 200);
+    }
+}
+
+function handleErrorUninstall() {
+    if (currentErrorPkg) {
+        StoppBridge.uninstallApp(currentErrorPkg, currentErrorAppName);
+        closeErrorModal();
+        showStoreToast('A abrir desinstalação. Após desinstalar a versão anterior, volta à loja e clica em Instalar.', 'info');
+    }
+}
+
+// Authentication & Exclusive Admin Privileges Controller
+const StoppAuth = {
+    session: {
+        isLoggedIn: false,
+        username: 'Visitante',
+        role: 'guest',
+        token: null,
+        loginTime: null
+    },
+
+    init: function () {
+        const saved = localStorage.getItem('stopp_user_session');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed && parsed.isLoggedIn) {
+                    this.session = parsed;
+                }
+            } catch (e) {}
+        }
+        this.syncUi();
+    },
+
+    isAdmin: function () {
+        return this.session && this.session.isLoggedIn && this.session.role === 'admin';
+    },
+
+    login: function (username, password) {
+        const u = (username || '').trim().toLowerCase();
+        const p = (password || '').trim();
+
+        // Credenciais Oficiais de Administrador Stopp Studio
+        // Aceita admin/gustavo/stopp com senha stopp2026, ou PIN rapido 2026
+        const isValidAdmin = (
+            ((u === 'admin' || u === 'gustavo' || u === 'stopp') && (p === 'stopp2026' || p === 'admin123')) ||
+            (p === '2026')
+        );
+
+        if (isValidAdmin) {
+            const displayName = (u === 'gustavo' || u === 'admin') ? 'Gustavo Sanz' : 'Administrador Stopp';
+            this.session = {
+                isLoggedIn: true,
+                username: displayName,
+                role: 'admin',
+                token: 'tok_admin_' + Date.now(),
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
+            showStoreToast('Sessão de Administrador iniciada com sucesso. Controlos exclusivos desbloqueados.', 'success');
+            this.closeLoginModal();
+            this.syncUi();
+            return true;
+        } else {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            showStoreToast('Credenciais de administrador inválidas. Tenta novamente.', 'warning');
+            return false;
+        }
+    },
+
+    logout: function () {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
+        this.session = {
+            isLoggedIn: false,
+            username: 'Visitante',
+            role: 'guest',
+            token: null,
+            loginTime: null
+        };
+        localStorage.removeItem('stopp_user_session');
+        showStoreToast('Sessão encerrada com sucesso.', 'info');
+        this.syncUi();
+    },
+
+    openLoginModal: function () {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('dialog');
+        const modal = document.getElementById('login-modal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => {
+            modal.classList.add('active');
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+            const userInp = document.getElementById('login-username-input');
+            if (userInp) userInp.focus();
+        });
+    },
+
+    closeLoginModal: function () {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
+        const modal = document.getElementById('login-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            document.body.style.overflow = '';
+            syncModalBodyState();
+        }
+    },
+
+    handleLoginSubmit: function (e) {
+        if (e && e.preventDefault) e.preventDefault();
+        const userInp = document.getElementById('login-username-input');
+        const passInp = document.getElementById('login-password-input');
+        const u = userInp ? userInp.value : '';
+        const p = passInp ? passInp.value : '';
+        this.login(u, p);
+    },
+
+    syncUi: function () {
+        const isAdmin = this.isAdmin();
+
+        // 1. Botao de Perfil no Cabecalho
+        const authBtn = document.getElementById('nav-auth-btn');
+        if (authBtn) {
+            if (isAdmin) {
+                authBtn.className = 'btn-auth-nav is-admin';
+                authBtn.innerHTML = `
+                    <span class="auth-dot admin"></span>
+                    <span class="auth-text">Admin: <strong>${this.session.username}</strong></span>
+                `;
+                authBtn.onclick = () => {
+                    if (confirm('Sessão ativa como ' + this.session.username + ' (Administrador).\nDesejas terminar a sessão?')) {
+                        StoppAuth.logout();
+                    }
+                };
+            } else {
+                authBtn.className = 'btn-auth-nav';
+                authBtn.innerHTML = `
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span class="auth-text">Login Admin</span>
+                `;
+                authBtn.onclick = () => StoppAuth.openLoginModal();
+            }
+        }
+
+        // 2. Bloqueio / Desbloqueio do Emissor de Avisos nas Definicoes
+        const emitterLockNotice = document.getElementById('emitter-lock-notice');
+        const emitterControls = document.querySelector('.notice-emitter-controls');
+        if (emitterLockNotice && emitterControls) {
+            if (isAdmin) {
+                emitterLockNotice.style.display = 'none';
+                emitterControls.style.display = 'flex';
+            } else {
+                emitterLockNotice.style.display = 'block';
+                emitterControls.style.display = 'none';
+            }
+        }
+
+        // 3. Desbloqueio de Recursos Exclusivos (ex: Laboratório Experimental)
+        const labActions = document.getElementById('lab-card-actions');
+        if (labActions) {
+            if (isAdmin) {
+                labActions.innerHTML = `
+                    <button class="btn-download" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);" onclick="showStoreToast('Acesso VIP de Administrador concedido ao Laboratório Experimental.', 'success')">
+                        Acesso VIP Admin (Ativo)
+                    </button>
+                    <button class="btn-secondary" onclick="openAiDiagnosticModal()">Telemetria</button>
+                `;
+            } else {
+                labActions.innerHTML = `
+                    <button class="btn-download" style="opacity: 0.7;" onclick="StoppAuth.openLoginModal()">
+                        Bloqueado (Requer Login Admin)
+                    </button>
+                `;
+            }
+        }
+    }
+};
 
 // Expor funcoes globais
 window.openAppModal = openAppModal;
@@ -2642,4 +2921,9 @@ window.bootstrapStore = bootstrapStore;
 window.StoppSystemNotice = StoppSystemNotice;
 window.updateVeraWattThemeIcons = updateVeraWattThemeIcons;
 window.getVeraWattDynamicIcon = getVeraWattDynamicIcon;
+window.showErrorModal = showErrorModal;
+window.closeErrorModal = closeErrorModal;
+window.handleErrorRetry = handleErrorRetry;
+window.handleErrorUninstall = handleErrorUninstall;
+window.StoppAuth = StoppAuth;
 
