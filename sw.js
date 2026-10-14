@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stopp-store-v6';
+const CACHE_NAME = 'stopp-store-v7';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -10,7 +10,7 @@ const STATIC_ASSETS = [
   './assets/img/icon.svg',
   './assets/img/icon-192.png',
   './assets/img/icon-512.png',
-  './assets/img/verawatt_icon.webp',
+  './assets/img/verawatt_logo.svg',
   './assets/img/verawatt_title.svg',
   './manifest.webmanifest'
 ];
@@ -43,20 +43,43 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Estrategia Network-First para documentos HTML (garante atualizacao imediata de layout)
+  const isHtmlRequest = event.request.mode === 'navigate' ||
+                        url.pathname.endsWith('.html') ||
+                        url.pathname === '/Stopp-Store/' ||
+                        url.pathname === '/' ||
+                        (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html'));
+
+  if (isHtmlRequest) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cached) => cached || caches.match('./index.html'));
+        })
+    );
+    return;
+  }
+
+  // Estrategia Stale-While-Revalidate para recursos estaticos (CSS, JS, Imagens)
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Retorna versao do cache e atualiza em background
-        fetch(event.request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, networkResponse.clone());
-            });
-          }
-        }).catch(() => {});
-        return cachedResponse;
-      }
-      return fetch(event.request);
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+          });
+        }
+        return networkResponse;
+      }).catch(() => cachedResponse);
+
+      return cachedResponse || fetchPromise;
     })
   );
 });
@@ -79,4 +102,3 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
-

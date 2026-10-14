@@ -1842,11 +1842,24 @@ document.addEventListener('DOMContentLoaded', () => {
     StoppAiSentinel.init();
 });
 
-// Service Worker Registration for PWA
+// Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('./sw.js?v=7')
+            .then(reg => {
+                reg.update();
+            })
             .catch(err => console.error('SW registration failed:', err));
+
+        if ('caches' in window) {
+            caches.keys().then(keys => {
+                keys.forEach(k => {
+                    if (k !== 'stopp-store-v7') {
+                        caches.delete(k);
+                    }
+                });
+            });
+        }
     });
 }
 
