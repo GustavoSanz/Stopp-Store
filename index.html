@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stopp App Store | Software & Experimental Projects</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=14">
+    <link rel="stylesheet" href="assets/css/style.css?v=15">
     <link rel="icon" type="image/svg+xml" href="assets/img/icon.svg">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
     <link rel="manifest" href="manifest.webmanifest">
@@ -29,17 +29,20 @@
             <div class="splash-logo-container">
                 <div class="splash-ripple-ring"></div>
                 <div class="splash-ripple-ring ring-2"></div>
-                <img src="assets/img/verawatt_logo_4x.png" alt="Vera Watt Logo" class="splash-verawatt-logo" id="splash-verawatt-logo">
+                <div class="splash-logo-symbol">
+                    <img src="assets/img/icon.svg" alt="Stopp Store" class="splash-stopp-logo" id="splash-stopp-logo">
+                </div>
             </div>
-            <img src="assets/img/verawatt_tipo1_4x.png" alt="Vera Watt" class="splash-verawatt-typography" id="splash-verawatt-typography">
+            <h1 class="splash-brand-title">STOPP<span>.STORE</span></h1>
+            <p class="splash-brand-sub">Developer Hub &amp; Applications</p>
             <div class="splash-ecosystem-pill">
                 <span class="splash-dot"></span>
-                <span>STOPP STORE &bull; v0.5-Beta</span>
+                <span>STOPP STORE &bull; v0.6-Beta</span>
             </div>
             <div class="splash-loader-bar">
                 <div class="splash-loader-progress" id="splash-loader-progress"></div>
             </div>
-            <div class="splash-status-text" id="splash-status-text">A carregar Vera Watt &amp; Stopp Ecosystem v0.5-Beta...</div>
+            <div class="splash-status-text" id="splash-status-text">A inicializar Stopp Store v0.6-Beta...</div>
             <div class="splash-skip-hint">Toca no ecrã para avançar</div>
         </div>
     </div>
@@ -57,7 +60,7 @@
                 <div class="brand-text">
                     <div style="display: flex; align-items: center;">
                         <h1>STOPP<span>.STORE</span></h1>
-                        <span class="brand-version-pill">v0.5-Beta</span>
+                        <span class="brand-version-pill">v0.6-Beta</span>
                     </div>
                     <p>Developer Hub &amp; Applications</p>
                 </div>
@@ -227,14 +230,14 @@
             </article>
 
             <!-- App 1: Vera Watt -->
-            <article class="app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="5" data-target-version-name="0.5-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.5-Beta.apk" data-apk-size="67" data-category="android pc energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
+            <article class="app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="6" data-target-version-name="0.6-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.6-Beta.apk" data-apk-size="67" data-category="android pc energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
                 <div>
                     <div class="card-header">
                         <div class="app-icon icon-verawatt" title="Vera Watt" style="border: none; background: transparent; padding: 0;">
                             <img src="assets/img/verawatt_ativo2_4x.png" alt="Vera Watt" class="verawatt-theme-icon" id="verawatt-card-icon" style="width: 100%; height: 100%; border-radius: 18px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);">
                         </div>
                         <div class="app-header-badges">
-                            <span class="badge-version badge-green">v0.5-Beta</span>
+                            <span class="badge-version badge-green">v0.6-Beta</span>
                             <span class="badge-status" id="badge-status-com.vera_watt" style="display: none;"></span>
                         </div>
                     </div>
@@ -272,7 +275,7 @@
                 </div>
 
                 <div class="card-actions" id="actions-com.vera_watt">
-                    <button class="btn-download" onclick="triggerAppDownload('Vera Watt', 'assets/apks/VeraWatt-v0.5-Beta.apk', 67)">
+                    <button class="btn-download" onclick="triggerAppDownload('Vera Watt', 'assets/apks/VeraWatt-v0.6-Beta.apk', 67)">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Instalar APK
                     </button>
@@ -657,6 +660,10 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
                     Verificar Atualizações da Loja
                 </button>
+                <button class="btn-secondary" style="width: 100%; margin-bottom: 8px;" onclick="openChangelogModal()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Ver Notas de Versão (Changelog)
+                </button>
                 <button id="btn-store-update-action" class="btn-download btn-update-action" style="display: none; width: 100%;">
                     Atualizar Stopp Store Agora
                 </button>
@@ -885,6 +892,77 @@
         </div>
     </div>
 
+    <!-- Stopp Store Official Changelog Modal (Web & App) -->
+    <div class="modal-backdrop" id="changelog-modal">
+        <div class="modal-card modal-changelog-card">
+            <div class="modal-header-app">
+                <div class="modal-header-left">
+                    <div class="changelog-badge-icon">
+                        <img src="assets/img/icon.svg" alt="Stopp Store" class="changelog-logo-img">
+                    </div>
+                    <div>
+                        <div class="changelog-title-row">
+                            <h3>Notas de Atualização</h3>
+                            <span class="changelog-version-tag" id="web-changelog-version-tag">v0.6-Beta</span>
+                        </div>
+                        <p class="modal-sub">Histórico oficial de novidades da Stopp Store</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeChangelogModal()" aria-label="Fechar">✕</button>
+            </div>
+
+            <div class="changelog-body-wrapper">
+                <div class="changelog-highlight-banner">
+                    <div class="changelog-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="changelog-highlight-text">
+                        <strong>Stopp Store v0.6-Beta</strong>
+                        <span>Nova tela de Changelog moderna e fluida, restauro do emblema da loja e otimização total.</span>
+                    </div>
+                </div>
+
+                <div class="changelog-section-label">O QUE HÁ DE NOVO:</div>
+                <div class="changelog-items-list" id="web-changelog-items-list">
+                    <div class="changelog-item-card">
+                        <span class="changelog-item-dot"></span>
+                        <div class="changelog-item-text">Redesign completo e moderno da tela de Changelog com cartoes glassmorficos, emblema oficial e botoes de acao de alto contraste.</div>
+                    </div>
+                    <div class="changelog-item-card">
+                        <span class="changelog-item-dot"></span>
+                        <div class="changelog-item-text">Restauro da identidade visual e emblema oficial da Stopp Store na Splash Screen de entrada.</div>
+                    </div>
+                    <div class="changelog-item-card">
+                        <span class="changelog-item-dot"></span>
+                        <div class="changelog-item-text">Preservacao exclusiva do logotipo e tipografia Vera Watt 4x na sua pagina de aplicacao e catalogo.</div>
+                    </div>
+                    <div class="changelog-item-card">
+                        <span class="changelog-item-dot"></span>
+                        <div class="changelog-item-text">Suporte a visualizacao manual do Changelog oficial atraves das Definicoes da Loja.</div>
+                    </div>
+                    <div class="changelog-item-card">
+                        <span class="changelog-item-dot"></span>
+                        <div class="changelog-item-text">Aprimoramento do motor de diagnostico IA Stopp Sentinel com telemetria em tempo real e deteccao de anomalias.</div>
+                    </div>
+                    <div class="changelog-item-card">
+                        <span class="changelog-item-dot"></span>
+                        <div class="changelog-item-text">Otimizacoes de desempenho, transicoes fluidas e correcao de sobreposicoes na barra inferior de navegacao.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-app-actions" style="margin-top: 18px;">
+                <button class="btn-secondary" style="flex: 1;" onclick="closeChangelogModal()">
+                    Fechar
+                </button>
+                <button class="btn-download" id="web-changelog-action-btn" style="flex: 1.3;" onclick="handleChangelogDownload()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Atualizar Loja
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Ergonomic Bottom Navigation Dock (App Nativa & Mobile) -->
     <nav class="bottom-nav-dock" id="bottom-nav-dock" aria-label="Navegação da Loja">
         <button class="dock-item active" id="dock-btn-catalog" onclick="dockNavigate('catalog')" title="Catálogo de Aplicações">
@@ -931,7 +1009,7 @@
         </button>
     </nav>
 
-    <script src="assets/js/app.js?v=14"></script>
-    <script src="assets/js/download.js?v=14"></script>
+    <script src="assets/js/app.js?v=15"></script>
+    <script src="assets/js/download.js?v=15"></script>
 </body>
 </html>

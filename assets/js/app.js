@@ -60,8 +60,8 @@ if (typeof MutationObserver !== 'undefined') {
     }
 }
 
-const CURRENT_STORE_VERSION_CODE = 5;
-const CURRENT_STORE_VERSION_NAME = "0.5-Beta";
+const CURRENT_STORE_VERSION_CODE = 6;
+const CURRENT_STORE_VERSION_NAME = "0.6-Beta";
 
 function resolveStoreUrl(url) {
     try {
@@ -339,16 +339,18 @@ const STORE_APPS_REGISTRY = [
         isStore: true,
         targetCode: CURRENT_STORE_VERSION_CODE,
         targetName: CURRENT_STORE_VERSION_NAME,
-        apkUrl: 'assets/apks/StoppStore-v0.5-Beta.apk',
+        apkUrl: 'assets/apks/StoppStore-v0.6-Beta.apk',
         size: 1,
         iconType: 'letter',
         iconLetter: 'S',
         iconBg: 'linear-gradient(135deg, #10b981, #0ea5e9)',
         changelog: [
-            "Nova animacao cinematografica de entrada (Splash Screen) com o logotipo oficial 4x e tipografia Vera Watt.",
-            "Suporte a icones adaptativos conforme o tema do utilizador (Ativo 1 em tema claro, Ativo 2 em tema escuro).",
-            "Integracao de todas as imagens oficiais 4x de alta resolucao no ecossistema e na app nativa.",
-            "Motor de diagnostico IA Stopp Sentinel com auditoria de layout mobile, camadas z-index e erros JS."
+            "Redesign completo e moderno da tela de Changelog com cartoes glassmorficos, emblema oficial e botoes de acao de alto contraste.",
+            "Restauro da identidade visual e emblema oficial da Stopp Store na Splash Screen de entrada.",
+            "Preservacao exclusiva do logotipo e tipografia Vera Watt 4x na sua pagina de aplicacao e catalogo.",
+            "Suporte a visualizacao manual do Changelog oficial atraves das Definicoes da Loja.",
+            "Aprimoramento do motor de diagnostico IA Stopp Sentinel com telemetria em tempo real e deteccao de anomalias.",
+            "Otimizacoes de desempenho, transicoes fluidas e correcao de sobreposicoes na barra inferior de navegacao."
         ]
     },
     {
@@ -356,9 +358,9 @@ const STORE_APPS_REGISTRY = [
         name: 'Vera Watt',
         platform: 'Android & Web',
         isStore: false,
-        targetCode: 5,
-        targetName: '0.5-Beta',
-        apkUrl: 'assets/apks/VeraWatt-v0.5-Beta.apk',
+        targetCode: 6,
+        targetName: '0.6-Beta',
+        apkUrl: 'assets/apks/VeraWatt-v0.6-Beta.apk',
         size: 67,
         iconType: 'image',
         iconSrc: 'assets/img/verawatt_ativo2_4x.png',
@@ -1890,6 +1892,39 @@ const StoppAudio = {
     }
 };
 
+function openChangelogModal() {
+    StoppAudio.play('dialog');
+    const modal = document.getElementById('changelog-modal');
+    if (!modal) return;
+
+    if (StoppBridge.isNative() && window.StoppStoreNative && typeof window.StoppStoreNative.openNativeChangelog === 'function') {
+        const storeApp = STORE_APPS_REGISTRY.find(a => a.isStore);
+        const changelogText = storeApp && storeApp.changelog ? storeApp.changelog.join('\n') : '';
+        window.StoppStoreNative.openNativeChangelog(CURRENT_STORE_VERSION_NAME, '', changelogText);
+    }
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeChangelogModal() {
+    StoppAudio.play('tap');
+    const modal = document.getElementById('changelog-modal');
+    if (modal) modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function handleChangelogDownload() {
+    closeChangelogModal();
+    const storeApp = STORE_APPS_REGISTRY.find(a => a.isStore);
+    const url = storeApp ? storeApp.apkUrl : 'assets/apks/StoppStore-v0.6-Beta.apk';
+    triggerAppDownload('Stopp Store', url, 1);
+}
+
+window.openChangelogModal = openChangelogModal;
+window.closeChangelogModal = closeChangelogModal;
+window.handleChangelogDownload = handleChangelogDownload;
+
 function initSplashScreen() {
     const splash = document.getElementById('stopp-splash-screen');
     if (!splash) return;
@@ -1902,7 +1937,7 @@ function initSplashScreen() {
     setTimeout(() => {
         StoppAudio.play('splash');
         if (progress) progress.style.width = '55%';
-        if (statusText) statusText.textContent = 'A carregar componentes Vera Watt & Stopp...';
+        if (statusText) statusText.textContent = 'A inicializar Stopp Store v0.6-Beta...';
     }, 200);
 
     setTimeout(() => {
@@ -1935,7 +1970,7 @@ function replaySplashScreen() {
         const progress = document.getElementById('splash-loader-progress');
         const statusText = document.getElementById('splash-status-text');
         if (progress) progress.style.width = '15%';
-        if (statusText) statusText.textContent = 'A carregar Vera Watt & Stopp Ecosystem v0.5-Beta...';
+        if (statusText) statusText.textContent = 'A carregar Stopp Store v0.6-Beta...';
 
         StoppAudio.play('splash');
         setTimeout(() => {

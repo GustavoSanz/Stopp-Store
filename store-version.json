@@ -1,22 +1,22 @@
 {
-  "store_version_code": 5,
-  "store_version_name": "0.5-Beta",
-  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.5-Beta.apk",
-  "store_update_message": "Nova versão v0.5-Beta: Logos e tipografias 4x oficiais de alta definição, ícone adaptativo automático conforme o tema do utilizador (Claro/Escuro), nova animação cinematográfica de entrada e motor de diagnóstico IA com auditoria de layout.",
+  "store_version_code": 6,
+  "store_version_name": "0.6-Beta",
+  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.6-Beta.apk",
+  "store_update_message": "Nova versão v0.6-Beta: Redesign moderno e glassmórfico da tela de Changelog, restauro do emblema e identidade oficial da Stopp Store na Splash Screen, e otimizações de performance.",
   "store_changelog": [
-    "Nova animacao cinematografica de entrada (Splash Screen) com o logotipo oficial 4x e tipografia Vera Watt.",
-    "Suporte a icones adaptativos conforme o tema do utilizador (Ativo 1 em tema claro, Ativo 2 em tema escuro).",
-    "Integracao de todas as imagens oficiais 4x de alta resolucao no ecossistema e na app nativa.",
-    "Atualizacao da aplicacao Vera Watt para a versao v0.5-Beta com novos descritores e changelog.",
-    "Motor de diagnostico IA Stopp Sentinel com auditoria de layout mobile, camadas z-index e erros JS.",
-    "Correcao de transbordo no cabecalho e prevencao de sobreposicao da barra inferior aos modais."
+    "Redesign completo e moderno da tela de Changelog com cartoes glassmorficos, emblema oficial e botoes de acao de alto contraste.",
+    "Restauro da identidade visual e emblema oficial da Stopp Store na Splash Screen de entrada.",
+    "Preservacao exclusiva do logotipo e tipografia Vera Watt 4x na sua pagina de aplicacao e catalogo.",
+    "Suporte a visualizacao manual do Changelog oficial atraves das Definicoes da Loja.",
+    "Aprimoramento do motor de diagnostico IA Stopp Sentinel com telemetria em tempo real e deteccao de anomalias.",
+    "Otimizacoes de desempenho, transicoes fluidas e correcao de sobreposicoes na barra inferior de navegacao."
   ],
   "apps": {
     "com.vera_watt": {
       "name": "Vera Watt",
-      "version_code": 5,
-      "version_name": "0.5-Beta",
-      "apk_url": "assets/apks/VeraWatt-v0.5-Beta.apk",
+      "version_code": 6,
+      "version_name": "0.6-Beta",
+      "apk_url": "assets/apks/VeraWatt-v0.6-Beta.apk",
       "package_name": "com.vera_watt",
       "size_mb": 67,
       "changelog": [
