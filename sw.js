@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stopp-store-v10';
+const CACHE_NAME = 'stopp-store-v11';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -49,6 +49,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Apenas processar pedidos GET
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   // Estrategia Network-First para documentos HTML (garante atualizacao imediata de layout)
   const isHtmlRequest = event.request.mode === 'navigate' ||
                         url.pathname.endsWith('.html') ||
@@ -62,7 +67,7 @@ self.addEventListener('fetch', (event) => {
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone).catch(() => {}));
           }
           return networkResponse;
         })
@@ -78,9 +83,11 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
+          // Clonagem sincrona imediata antes do corpo ser lido pelo navegador
+          const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, networkResponse.clone());
-          });
+            cache.put(event.request, responseToCache).catch(() => {});
+          }).catch(() => {});
         }
         return networkResponse;
       }).catch(() => cachedResponse);

@@ -12,9 +12,6 @@ window.addEventListener('error', function (event) {
             lineno: event.lineno || 0,
             time: Date.now()
         });
-        if (window.StoppAiSentinel && typeof window.StoppAiSentinel.runDiagnostics === 'function') {
-            window.StoppAiSentinel.runDiagnostics(false);
-        }
     }
 });
 window.addEventListener('unhandledrejection', function (event) {
@@ -26,9 +23,6 @@ window.addEventListener('unhandledrejection', function (event) {
         lineno: 0,
         time: Date.now()
     });
-    if (window.StoppAiSentinel && typeof window.StoppAiSentinel.runDiagnostics === 'function') {
-        window.StoppAiSentinel.runDiagnostics(false);
-    }
 });
 
 // Sincronizacao de Camadas e Modais para prevencao de sobreposicao do Dock
@@ -2389,7 +2383,7 @@ window.addEventListener('load', bootstrapStore);
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=10')
+        navigator.serviceWorker.register('./sw.js?v=11')
             .then(reg => {
                 reg.update();
             })
@@ -2398,7 +2392,7 @@ if ('serviceWorker' in navigator) {
         if ('caches' in window) {
             caches.keys().then(keys => {
                 keys.forEach(k => {
-                    if (k !== 'stopp-store-v10') {
+                    if (k !== 'stopp-store-v11') {
                         caches.delete(k);
                     }
                 });
