@@ -22,6 +22,25 @@
     </script>
 </head>
 <body>
+    <!-- Stopp Store Splash & App Entry Animation -->
+    <div id="stopp-splash-screen" class="stopp-splash-screen" onclick="dismissSplashScreen()" title="Toca para entrar imediatamente">
+        <div class="splash-backdrop-glow"></div>
+        <div class="splash-card">
+            <div class="splash-logo-container">
+                <div class="splash-ripple-ring"></div>
+                <div class="splash-ripple-ring ring-2"></div>
+                <div class="splash-logo-symbol">S</div>
+            </div>
+            <h1 class="splash-brand-title">STOPP<span>.STORE</span></h1>
+            <p class="splash-brand-sub">Developer Hub &amp; Applications</p>
+            <div class="splash-loader-bar">
+                <div class="splash-loader-progress" id="splash-loader-progress"></div>
+            </div>
+            <div class="splash-status-text" id="splash-status-text">A inicializar ecossistema v0.4-Beta...</div>
+            <div class="splash-skip-hint">Toca no ecrã para avançar</div>
+        </div>
+    </div>
+
     <div class="glow-bg">
         <div class="glow-orb glow-1"></div>
         <div class="glow-orb glow-2"></div>
@@ -29,36 +48,87 @@
 
     <div class="container">
         <!-- Header -->
-        <header>
+        <header class="app-main-header">
             <div class="brand">
                 <div class="brand-logo">S</div>
                 <div class="brand-text">
-                    <h1>STOPP<span>.STORE</span></h1>
-                    <p>Developer Hub & Applications</p>
+                    <div style="display: flex; align-items: center;">
+                        <h1>STOPP<span>.STORE</span></h1>
+                        <span class="brand-version-pill">v0.4-Beta</span>
+                    </div>
+                    <p>Developer Hub &amp; Applications</p>
                 </div>
             </div>
             <div class="header-links">
-                <button class="btn-manager-nav" onclick="openAppManagerModal()" title="Gestor de Aplicacoes e Atualizacoes">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                    Gestor de Apps
-                    <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
+                <!-- Google Play Protect Advisory Pill -->
+                <button class="btn-protect-pill" onclick="openPlayProtectModal()" title="Informações e Estado de Verificação do Google Play Protect">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Play Protect: Seguro</span>
                 </button>
-                <button class="btn-settings-nav" onclick="openSettingsModal()" title="Definições e Gestão da Loja">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    Definições
+
+                <!-- UI Sound Effects Toggle -->
+                <button class="btn-sound-toggle" id="btn-sound-toggle" onclick="toggleSoundFx()" title="Ativar ou desativar efeitos sonoros da interface">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sound-icon-svg"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                    <span class="sound-toggle-label" id="sound-toggle-label">Sons: ON</span>
                 </button>
-                <button class="btn-install-app" id="nav-pill-app-android" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
-                <button id="btn-pwa-install" class="btn-install-app" style="display: none;" title="Instalar Stopp Store no dispositivo">Instalar PWA</button>
-                <a href="#apps">Aplicações</a>
-                <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
+
+                <!-- IA Stopp Sentinel Telemetry -->
+                <div class="ai-status-container" id="ai-status-container" onclick="openAiDiagnosticModal()" title="Clica para ver o Diagnóstico Completo da IA">
+                    <div class="ai-status-pulse-badge">
+                        <span class="ai-status-dot"></span>
+                        <span class="ai-status-label" id="ai-status-main-label">IA Sentinel: <strong>A analisar...</strong></span>
+                    </div>
+                    <div class="ai-status-telemetry">
+                        <span class="ai-telemetry-ping" id="ai-telemetry-ping">-- ms</span>
+                    </div>
+                </div>
+
+                <!-- Desktop-only navigation shortcuts -->
+                <div class="desktop-only-nav">
+                    <button class="btn-manager-nav" onclick="openAppManagerModal()" title="Gestor de Aplicacoes e Atualizacoes">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        Gestor de Apps
+                        <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
+                    </button>
+                    <button class="btn-settings-nav" onclick="openSettingsModal()" title="Definições e Gestão da Loja">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        Definições
+                    </button>
+                    <button class="btn-install-app" id="nav-pill-app-android" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
+                    <button id="btn-pwa-install" class="btn-install-app" style="display: none;" title="Instalar Stopp Store no dispositivo">Instalar PWA</button>
+                    <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
+                </div>
             </div>
         </header>
 
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-badge">Portal Oficial de Distribuição</div>
-            <h2>Aplicações Nativas & <span>Projetos Stopp</span></h2>
-            <p>Catálogo centralizado de ferramentas, jogos e aplicações experimentais prontas para instalação direta em Android e desktop.</p>
+        <!-- Modern Animated Hero Showcase (Início Bonito e Dinâmico) -->
+        <section class="hero-showcase">
+            <div class="hero-showcase-glow"></div>
+            <div class="hero-showcase-content">
+                <div class="hero-top-badges">
+                    <span class="hero-badge-pill">Portal Oficial de Distribuição</span>
+                    <span class="hero-status-pill" onclick="openPlayProtectModal()" title="Clica para saber mais sobre a verificação do Google Play Protect">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Google Play Protect: 100% Seguro
+                    </span>
+                </div>
+                <h2 class="hero-headline">Aplicações Nativas &amp; <span>Projetos Stopp</span></h2>
+                <p class="hero-subtitle">Distribuição direta de utilitários, soluções energéticas e videojogos experimentais com instalação autónoma e gestão inteligente de versões.</p>
+                <div class="hero-highlights">
+                    <div class="highlight-chip" onclick="openPlayProtectModal()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span>Aviso Play Protect</span>
+                    </div>
+                    <div class="highlight-chip" onclick="openAiDiagnosticModal()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                        <span>IA Sentinel Ativa</span>
+                    </div>
+                    <div class="highlight-chip" onclick="scrollToShelf()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        <span>No Teu Dispositivo</span>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Promo Banner Android App (Apenas Browser Web) -->
@@ -71,39 +141,45 @@
             <div class="promo-arrow">Ver Vantagens →</div>
         </div>
 
-        <!-- IA Stopp Sentinel: Live Ecosystem & Site Health Status -->
-        <div class="ai-status-container" id="ai-status-container" onclick="openAiDiagnosticModal()" title="Clica para ver o Diagnóstico Completo da IA">
-            <div class="ai-status-pulse-badge">
-                <span class="ai-status-dot"></span>
-                <span class="ai-status-label" id="ai-status-main-label">IA Sentinel: <strong>A analisar integridade do ecossistema...</strong></span>
+        <!-- Relocated Horizontal Category Filter Rail (Posicionada Imediatamente Acima das Apps) -->
+        <div class="filter-rail-container" id="apps">
+            <div class="filter-rail-header">
+                <span class="filter-rail-title">Catálogo de Aplicações</span>
+                <span class="filter-rail-hint">Desliza para filtrar categorias</span>
             </div>
-            <div class="ai-status-telemetry">
-                <span class="ai-telemetry-ping" id="ai-telemetry-ping">-- ms</span>
-                <span class="ai-telemetry-pill">Diagnóstico IA →</span>
+            <div class="filter-tabs-rail" id="filter-tabs-rail">
+                <button class="tab-btn active" data-category="all">
+                    <span class="tab-dot"></span> Todas as Criações
+                </button>
+                <button class="tab-btn" data-category="android">
+                    <span class="tab-dot"></span> Android (APK)
+                </button>
+                <button class="tab-btn" data-category="pc">
+                    <span class="tab-dot"></span> PC &amp; Desktop
+                </button>
+                <button class="tab-btn" data-category="energia">
+                    <span class="tab-dot"></span> Energia &amp; IoT
+                </button>
+                <button class="tab-btn" data-category="gaming">
+                    <span class="tab-dot"></span> Gaming &amp; Companion
+                </button>
+                <button class="tab-btn" data-category="ferramentas">
+                    <span class="tab-dot"></span> Ferramentas
+                </button>
             </div>
-        </div>
-
-        <!-- Category Filters -->
-        <div class="filter-tabs" id="apps">
-            <button class="tab-btn active" data-category="all">Todas as Criações</button>
-            <button class="tab-btn" data-category="android">Android (APK)</button>
-            <button class="tab-btn" data-category="pc">PC & Desktop</button>
-            <button class="tab-btn" data-category="energia">Energia & IoT</button>
-            <button class="tab-btn" data-category="gaming">Gaming & Companion</button>
-            <button class="tab-btn" data-category="ferramentas">Ferramentas</button>
         </div>
 
         <!-- Apps Grid -->
         <main class="apps-grid">
             <!-- App 0: Stopp Store (Oficial) -->
-            <article class="app-card" id="app-card-com.stopp.store" data-package="com.stopp.store" data-target-version-code="3" data-target-version-name="0.3-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.3-Beta.apk" data-apk-size="1" data-category="android ferramentas" style="--card-accent: #0ea5e9; --btn-color-start: #0ea5e9; --btn-color-end: #10b981;">
+            <article class="app-card" id="app-card-com.stopp.store" data-package="com.stopp.store" data-target-version-code="4" data-target-version-name="0.4-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.4-Beta.apk" data-apk-size="1" data-category="android ferramentas" style="--card-accent: #0ea5e9; --btn-color-start: #0ea5e9; --btn-color-end: #10b981;">
                 <div>
                     <div class="card-header">
                         <div class="app-icon" style="background: linear-gradient(135deg, #10b981, #0ea5e9); color: #fff; font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 18px; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);">
                             S
                         </div>
                         <div class="app-header-badges">
-                            <span class="badge-version badge-blue">v0.3-Beta</span>
+                            <span class="badge-version badge-blue">v0.4-Beta</span>
                             <span class="badge-status badge-installed" id="badge-status-com.stopp.store" style="background: rgba(14, 165, 233, 0.15); border-color: rgba(14, 165, 233, 0.4); color: #38bdf8;">App Oficial</span>
                         </div>
                     </div>
@@ -131,13 +207,13 @@
                         </div>
                         <div class="spec-item">
                             <span>Tamanho</span>
-                            <strong>~927 KB</strong>
+                            <strong>~964 KB</strong>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-actions" id="actions-com.stopp.store">
-                    <button class="btn-download" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.3-Beta.apk', 1)">
+                    <button class="btn-download" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.4-Beta.apk', 1)">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Instalar APK
                     </button>
@@ -151,8 +227,8 @@
             <article class="app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="4" data-target-version-name="0.4-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.4-Beta.apk" data-apk-size="67" data-category="android pc energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
                 <div>
                     <div class="card-header">
-                        <div class="app-icon icon-verawatt" title="Vera Watt">
-                            <img src="assets/img/verawatt_icon.webp" alt="Vera Watt">
+                        <div class="app-icon icon-verawatt" title="Vera Watt" style="border: none; background: transparent; padding: 0;">
+                            <img src="assets/img/verawatt_logo.svg" alt="Vera Watt" style="width: 100%; height: 100%; border-radius: 18px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);">
                         </div>
                         <div class="app-header-badges">
                             <span class="badge-version badge-green">v0.4-Beta</span>
@@ -530,6 +606,38 @@
                 </div>
             </div>
 
+            <!-- Section 2.5: UI Sound Effects & App Entry Animation -->
+            <div class="settings-section">
+                <div class="toggle-switch-row" style="margin-bottom: 8px;">
+                    <div class="toggle-switch-label">
+                        <div class="settings-section-title">Efeitos Sonoros da Loja</div>
+                        <div class="settings-section-desc">Feedback áudio sintético para toque, navegação de abas e conclusões de instalação.</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-sound-toggle" onchange="toggleSoundFx()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="btn-secondary" style="flex: 1; font-size: 0.82rem; padding: 10px 12px;" onclick="StoppAudio.play('success')">
+                        Testar Áudio
+                    </button>
+                    <button class="btn-secondary" style="flex: 1; font-size: 0.82rem; padding: 10px 12px;" onclick="replaySplashScreen()">
+                        Repetir Ecrã de Entrada
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 2.6: Google Play Protect Info -->
+            <div class="settings-section">
+                <div class="settings-section-title">Segurança &amp; Google Play Protect</div>
+                <div class="settings-section-desc">Esclarecimentos detalhados sobre alertas da Play Store e verificação de ficheiros APK independentes.</div>
+                <button class="btn-secondary" style="width: 100%; margin-top: 8px;" onclick="closeSettingsModal(); openPlayProtectModal();">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" style="margin-right: 6px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Ver Guia Play Protect &amp; Permissões
+                </button>
+            </div>
+
             <!-- Section 3: Store Self-Update -->
             <div class="settings-section">
                 <div class="settings-section-title">Atualização da Stopp Store</div>
@@ -687,10 +795,121 @@
                     Fechar
                 </button>
             </div>
+    <!-- Google Play Protect & Security Advisory Modal -->
+    <div class="modal-backdrop" id="modal-play-protect">
+        <div class="modal-card modal-protect-card">
+            <div class="modal-header-app">
+                <div class="app-icon-badge" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div>
+                    <span class="exclusivity-pill" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399;">Verificação de Pacotes</span>
+                    <h3 style="margin-top: 4px;">Google Play Protect &amp; Segurança</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closePlayProtectModal()" aria-label="Fechar">✕</button>
+            </div>
+
+            <div class="protect-summary-box">
+                <div class="protect-status-banner">
+                    <div class="protect-status-icon">✓</div>
+                    <div>
+                        <strong>A Play Store vai avisar para verificar?</strong>
+                        <p>Sim, apenas na 1ª instalação de cada APK novo.</p>
+                    </div>
+                </div>
+                <p class="protect-explainer">
+                    Como a Stopp Store é uma plataforma independente e aberta concebida para programadores, distribui APKs diretos sem intermediação da Google Play Store. O Android ativa o seu mecanismo preventivo de segurança padrão para pacotes externos.
+                </p>
+            </div>
+
+            <div class="protect-steps">
+                <h4>O que fazer se surgir o aviso no telemóvel:</h4>
+                <div class="protect-step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-desc">
+                        <strong>Alerta: "Aplicação não reconhecida" ou "Origem desconhecida"</strong>
+                        <p>Este comportamento é padrão do Android para qualquer ficheiro APK instalado fora da Play Store.</p>
+                    </div>
+                </div>
+                <div class="protect-step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-desc">
+                        <strong>Toca em "Mais Detalhes" (ou na seta para baixo)</strong>
+                        <p>O Android exibirá as opções detalhadas da instalação do pacote.</p>
+                    </div>
+                </div>
+                <div class="protect-step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-desc">
+                        <strong>Toca em "Instalar assim mesmo" (ou "Permitir")</strong>
+                        <p>A aplicação é instalada de imediato. Nas atualizações futuras a Play Store já não volta a solicitar confirmação.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="protect-security-guarantee">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div>
+                    <strong>Compromisso de Segurança Stopp:</strong>
+                    <p>Todas as aplicações são 100% livres de malware, auditadas em tempo real pela IA Sentinel e com código-fonte aberto e transparente.</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 14px;">
+                <button class="btn-download" style="width: 100%;" onclick="closePlayProtectModal()">
+                    Entendido • Continuar
+                </button>
+            </div>
         </div>
     </div>
 
-    <script src="assets/js/app.js?v=11"></script>
-    <script src="assets/js/download.js?v=11"></script>
+    <!-- Floating Ergonomic Bottom Navigation Dock (App Nativa & Mobile) -->
+    <nav class="bottom-nav-dock" id="bottom-nav-dock" aria-label="Navegação da Loja">
+        <button class="dock-item active" id="dock-btn-catalog" onclick="dockNavigate('catalog')" title="Catálogo de Aplicações">
+            <div class="dock-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </div>
+            <span class="dock-label">Loja</span>
+        </button>
+
+        <button class="dock-item" id="dock-btn-categories" onclick="dockNavigate('categories')" title="Filtrar Categorias">
+            <div class="dock-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            </div>
+            <span class="dock-label">Categorias</span>
+        </button>
+
+        <button class="dock-item" id="dock-btn-device" onclick="dockNavigate('device')" title="Aplicações no Dispositivo">
+            <div class="dock-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <span class="dock-label">Instaladas</span>
+        </button>
+
+        <button class="dock-item" id="dock-btn-protect" onclick="dockNavigate('protect')" title="Google Play Protect &amp; Segurança">
+            <div class="dock-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="dock-label">Segurança</span>
+        </button>
+
+        <button class="dock-item" id="dock-btn-manager" onclick="dockNavigate('manager')" title="Gestor de Aplicações">
+            <div class="dock-icon" style="position: relative;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <span class="dock-badge" id="dock-updates-badge" style="display: none;">0</span>
+            </div>
+            <span class="dock-label">Gestor</span>
+        </button>
+
+        <button class="dock-item" id="dock-btn-settings" onclick="dockNavigate('settings')" title="Definições da Loja">
+            <div class="dock-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <span class="dock-label">Definições</span>
+        </button>
+    </nav>
+
+    <script src="assets/js/app.js?v=12"></script>
+    <script src="assets/js/download.js?v=12"></script>
 </body>
 </html>

@@ -1,15 +1,16 @@
 {
-  "store_version_code": 3,
-  "store_version_name": "0.3-Beta",
-  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.3-Beta.apk",
-  "store_update_message": "Nova versao v0.3-Beta disponivel com novo instalador do sistema, controlo estrito de plataformas e gestao de notificacoes.",
+  "store_version_code": 4,
+  "store_version_name": "0.4-Beta",
+  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.4-Beta.apk",
+  "store_update_message": "Nova versao v0.4-Beta disponivel com novo ecra de entrada animado, navegacao inferior ergonomica, efeitos sonoros e novo design VeraWatt.",
   "store_changelog": [
-    "Novo icone personalizado oficial Stopp Store para notificacoes na barra de estado.",
-    "Limpeza automatica de notificacoes acumuladas ao entrar na aplicacao.",
-    "Correcao completa da desinstalacao de aplicacoes com confirmacao nativa do sistema.",
-    "Restricao inteligente de plataformas: bloqueio de aplicacoes de PC no Android e de Android no PC.",
-    "Animacao comemorativa pos-instalacao com efeito de confetis e abertura direta.",
-    "Obrigatoriedade e exibicao de Changelog do programador em todas as atualizacoes."
+    "Novo ecra de apresentacao animado (Splash Screen) com transicao fluida para o catalogo.",
+    "Redesenho de layout mobile com barra de navegacao inferior (Dock) ergonomica.",
+    "Reposicionamento das abas de categorias para acesso rapido e desobstrucao visual.",
+    "Sistema de efeitos sonoros UI interativos (toque, navegacao, instalacao e celebracao).",
+    "Modulo de esclarecimento e estado do Google Play Protect para pacotes externos.",
+    "Integracao do novo logotipo e identidade visual oficial da aplicacao Vera Watt.",
+    "Painel de diagnostico IA Stopp Sentinel com telemetria e latencia de rede."
   ],
   "apps": {
     "com.vera_watt": {
@@ -20,6 +21,7 @@
       "package_name": "com.vera_watt",
       "size_mb": 67,
       "changelog": [
+        "Nova identidade visual oficial com logotipo geometrico V+W e gradiente esmeralda.",
         "Suporte aprimorado ao Nothing Glyph SDK com novos padroes de iluminacao.",
         "Otimizacao do calculo de telemetria solar em tempo real.",
         "Integracao direta com o novo instalador PackageInstaller da Stopp Store.",

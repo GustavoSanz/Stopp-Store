@@ -1,8 +1,8 @@
 // Stopp App Store - Client Application, Native Bridge & Notification Controller
 // Strictly Zero Emojis Compliance
 
-const CURRENT_STORE_VERSION_CODE = 3;
-const CURRENT_STORE_VERSION_NAME = "0.3-Beta";
+const CURRENT_STORE_VERSION_CODE = 4;
+const CURRENT_STORE_VERSION_NAME = "0.4-Beta";
 
 function resolveStoreUrl(url) {
     try {
@@ -1020,7 +1020,7 @@ function renderInstalledAppsShelf() {
             pkg: 'com.vera_watt',
             name: 'Vera Watt',
             version: 'v' + vName,
-            iconImg: 'assets/img/verawatt_icon.webp',
+            iconImg: 'assets/img/verawatt_logo.svg',
             iconLetter: null,
             gradient: 'linear-gradient(135deg, #10b981, #0ea5e9)',
             category: 'Energia & IoT (Android)'
@@ -1053,7 +1053,7 @@ function renderInstalledAppsShelf() {
                         pkg: item.packageName,
                         name: isVera ? 'Vera Watt' : item.packageName,
                         version: 'v' + (item.versionName || '1.0'),
-                        iconImg: isVera ? 'assets/img/verawatt_icon.webp' : null,
+                        iconImg: isVera ? 'assets/img/verawatt_logo.svg' : null,
                         iconLetter: item.packageName.charAt(0).toUpperCase(),
                         gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                         category: 'Aplicacao Instalada'
@@ -1407,6 +1407,12 @@ function renderSettingsOverview() {
         autoUpdateToggle.checked = StoppBridge.isAutoUpdateEnabled();
     }
 
+    // Sincronizar toggle de efeitos sonoros
+    const soundToggle = document.getElementById('setting-sound-toggle');
+    if (soundToggle && typeof StoppAudio !== 'undefined') {
+        soundToggle.checked = StoppAudio.enabled;
+    }
+
     // Indicador de ambiente (Nativo vs Web)
     const envPill = document.getElementById('settings-env-pill');
     if (envPill) {
@@ -1535,14 +1541,245 @@ function showStoreToast(message, type = 'info') {
     }, 4000);
 }
 
+// Web Audio API Sound Synthesizer (Zero external dependencies, 100% offline)
+const StoppAudio = {
+    ctx: null,
+    enabled: true,
+
+    init: function () {
+        const saved = localStorage.getItem('stopp_ui_sounds_enabled');
+        this.enabled = saved !== null ? saved === 'true' : true;
+        this.updateUiState();
+    },
+
+    getContext: function () {
+        if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+                this.ctx = new AudioCtx();
+            }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+        }
+        return this.ctx;
+    },
+
+    play: function (type) {
+        if (!this.enabled) return;
+        try {
+            const ctx = this.getContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+
+            if (type === 'tap') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(620, now);
+                osc.frequency.exponentialRampToValueAtTime(310, now + 0.04);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.04);
+            } else if (type === 'switch' || type === 'tab') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(320, now);
+                osc.frequency.exponentialRampToValueAtTime(540, now + 0.06);
+                gain.gain.setValueAtTime(0.06, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.06);
+            } else if (type === 'download' || type === 'install') {
+                [523.25, 659.25, 783.99].forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+                    gain.gain.setValueAtTime(0.07, now + idx * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.12);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + idx * 0.06);
+                    osc.stop(now + idx * 0.06 + 0.12);
+                });
+            } else if (type === 'success') {
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+                    gain.gain.setValueAtTime(0.09, now + idx * 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + idx * 0.05);
+                    osc.stop(now + idx * 0.05 + 0.2);
+                });
+            } else if (type === 'splash') {
+                [220, 329.63, 440, 659.25].forEach((freq) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.045, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.75);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.75);
+                });
+            }
+        } catch (e) {}
+    },
+
+    toggle: function () {
+        this.enabled = !this.enabled;
+        localStorage.setItem('stopp_ui_sounds_enabled', this.enabled ? 'true' : 'false');
+        this.updateUiState();
+        if (this.enabled) {
+            this.play('tap');
+            showStoreToast('Efeitos sonoros da loja ativados.', 'info');
+        } else {
+            showStoreToast('Efeitos sonoros da loja desativados.', 'info');
+        }
+        return this.enabled;
+    },
+
+    updateUiState: function () {
+        const toggleBtn = document.getElementById('btn-sound-toggle');
+        const label = document.getElementById('sound-toggle-label');
+        if (toggleBtn) {
+            if (this.enabled) {
+                toggleBtn.classList.remove('muted');
+            } else {
+                toggleBtn.classList.add('muted');
+            }
+        }
+        if (label) {
+            label.textContent = this.enabled ? 'Sons: ON' : 'Sons: OFF';
+        }
+        const settingsToggle = document.getElementById('setting-sound-toggle');
+        if (settingsToggle) {
+            settingsToggle.checked = this.enabled;
+        }
+    }
+};
+
+function initSplashScreen() {
+    const splash = document.getElementById('stopp-splash-screen');
+    if (!splash) return;
+
+    setTimeout(() => {
+        StoppAudio.play('splash');
+    }, 150);
+
+    setTimeout(() => {
+        dismissSplashScreen();
+    }, 1300);
+}
+
+function dismissSplashScreen() {
+    const splash = document.getElementById('stopp-splash-screen');
+    if (splash && !splash.classList.contains('splash-dismissed')) {
+        splash.classList.add('splash-dismissed');
+        StoppAudio.play('tap');
+        setTimeout(() => {
+            splash.style.display = 'none';
+        }, 500);
+    }
+}
+
+function replaySplashScreen() {
+    const splash = document.getElementById('stopp-splash-screen');
+    if (splash) {
+        splash.style.display = 'flex';
+        splash.classList.remove('splash-dismissed');
+        StoppAudio.play('splash');
+        setTimeout(() => {
+            dismissSplashScreen();
+        }, 1400);
+    }
+}
+
+function dockNavigate(tab) {
+    StoppAudio.play('tap');
+    const dockButtons = document.querySelectorAll('.dock-item');
+    dockButtons.forEach(btn => btn.classList.remove('active'));
+
+    const activeBtn = document.getElementById('dock-btn-' + tab);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    if (tab === 'catalog') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (tab === 'categories') {
+        const appsEl = document.getElementById('apps');
+        if (appsEl) appsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (tab === 'device') {
+        scrollToShelf();
+    } else if (tab === 'protect') {
+        openPlayProtectModal();
+    } else if (tab === 'manager') {
+        openAppManagerModal();
+    } else if (tab === 'settings') {
+        openSettingsModal();
+    }
+}
+
+function scrollToShelf() {
+    StoppAudio.play('tap');
+    const shelf = document.getElementById('installed-shelf-section');
+    if (shelf) {
+        shelf.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function openPlayProtectModal() {
+    StoppAudio.play('tap');
+    const modal = document.getElementById('modal-play-protect');
+    if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closePlayProtectModal() {
+    StoppAudio.play('tap');
+    const modal = document.getElementById('modal-play-protect');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        document.body.style.overflow = '';
+    }
+}
+
+function toggleSoundFx() {
+    StoppAudio.toggle();
+}
+
 // Stopp App Store Filter Logic
 document.addEventListener('DOMContentLoaded', () => {
+    StoppAudio.init();
+    initSplashScreen();
+
     const filterButtons = document.querySelectorAll('.tab-btn');
     const appCards = document.querySelectorAll('.app-card');
 
     if (filterButtons.length) {
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
+                StoppAudio.play('switch');
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
 
@@ -1670,6 +1907,11 @@ document.addEventListener('click', (e) => {
     if (aiModal && e.target === aiModal) {
         closeAiDiagnosticModal();
     }
+
+    const protectModal = document.getElementById('modal-play-protect');
+    if (protectModal && e.target === protectModal) {
+        closePlayProtectModal();
+    }
 });
 
 // Expor funcoes globais
@@ -1706,3 +1948,12 @@ window.closeAiDiagnosticModal = closeAiDiagnosticModal;
 window.handleRerunAiDiagnostics = handleRerunAiDiagnostics;
 window.renderInstalledAppsShelf = renderInstalledAppsShelf;
 window.StoppAiSentinel = StoppAiSentinel;
+window.StoppAudio = StoppAudio;
+window.dismissSplashScreen = dismissSplashScreen;
+window.replaySplashScreen = replaySplashScreen;
+window.dockNavigate = dockNavigate;
+window.scrollToShelf = scrollToShelf;
+window.openPlayProtectModal = openPlayProtectModal;
+window.closePlayProtectModal = closePlayProtectModal;
+window.toggleSoundFx = toggleSoundFx;
+

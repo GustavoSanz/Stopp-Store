@@ -60,6 +60,7 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
     if (progressBox) progressBox.style.display = 'block';
     if (successBox) successBox.style.display = 'none';
     if (modal) modal.classList.add('active');
+    if (typeof window.StoppAudio !== 'undefined') window.StoppAudio.play('download');
 
     // Em modo nativo Android, iniciar download real e escutar progresso direto
     if (isNative && window.StoppStoreNative && typeof window.StoppStoreNative.downloadAndInstall === 'function') {
@@ -82,6 +83,7 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
             if (progressBar) progressBar.style.width = '100%';
             if (progressText) progressText.textContent = '100%';
             if (statusText) statusText.textContent = 'Transferência concluída! A abrir instalador do Android...';
+            if (typeof window.StoppAudio !== 'undefined') window.StoppAudio.play('success');
             setTimeout(() => {
                 closeDownloadModal();
                 if (typeof onAppInstalledSuccess === 'function') {
@@ -146,6 +148,7 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
                 );
             }
 
+            if (typeof window.StoppAudio !== 'undefined') window.StoppAudio.play('success');
             setTimeout(() => {
                 closeDownloadModal();
                 if (typeof onAppInstalledSuccess === 'function') {
