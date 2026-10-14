@@ -1,6 +1,65 @@
 // Stopp App Store - Client Application, Native Bridge & Notification Controller
 // Strictly Zero Emojis Compliance
 
+// Global Runtime Error Tracker for AI Stopp Sentinel Auditing
+window.stoppRuntimeErrors = [];
+window.addEventListener('error', function (event) {
+    if (event && event.message) {
+        window.stoppRuntimeErrors.push({
+            type: 'error',
+            message: event.message,
+            source: event.filename || 'script',
+            lineno: event.lineno || 0,
+            time: Date.now()
+        });
+        if (window.StoppAiSentinel && typeof window.StoppAiSentinel.runDiagnostics === 'function') {
+            window.StoppAiSentinel.runDiagnostics(false);
+        }
+    }
+});
+window.addEventListener('unhandledrejection', function (event) {
+    const reason = event.reason ? (event.reason.message || String(event.reason)) : 'Promessa rejeitada';
+    window.stoppRuntimeErrors.push({
+        type: 'unhandledrejection',
+        message: reason,
+        source: 'Promise',
+        lineno: 0,
+        time: Date.now()
+    });
+    if (window.StoppAiSentinel && typeof window.StoppAiSentinel.runDiagnostics === 'function') {
+        window.StoppAiSentinel.runDiagnostics(false);
+    }
+});
+
+// Sincronizacao de Camadas e Modais para prevencao de sobreposicao do Dock
+function syncModalBodyState() {
+    const activeModals = document.querySelectorAll('.modal-backdrop.active, .modal-backdrop[style*="display: flex"], .modal-backdrop[style*="visibility: visible"]');
+    let hasOpen = false;
+    activeModals.forEach(m => {
+        if (m.style.display !== 'none' && m.style.visibility !== 'hidden' && (m.classList.contains('active') || m.style.display === 'flex')) {
+            hasOpen = true;
+        }
+    });
+    if (hasOpen) {
+        document.body.classList.add('modal-open');
+    } else {
+        document.body.classList.remove('modal-open');
+    }
+}
+
+if (typeof MutationObserver !== 'undefined') {
+    const modalObserver = new MutationObserver(() => {
+        syncModalBodyState();
+    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            modalObserver.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class', 'style'] });
+        });
+    } else {
+        modalObserver.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class', 'style'] });
+    }
+}
+
 const CURRENT_STORE_VERSION_CODE = 4;
 const CURRENT_STORE_VERSION_NAME = "0.4-Beta";
 
@@ -533,6 +592,7 @@ function openAppManagerModal() {
     modal.style.opacity = '1';
     modal.style.visibility = 'visible';
     document.body.style.overflow = 'hidden';
+    syncModalBodyState();
 }
 
 function closeAppManagerModal() {
@@ -544,6 +604,7 @@ function closeAppManagerModal() {
     modal.style.opacity = '0';
     modal.style.visibility = 'hidden';
     document.body.style.overflow = '';
+    syncModalBodyState();
 }
 
 // Platform Detection & Restrictions Helpers
@@ -1118,13 +1179,79 @@ const StoppAiSentinel = {
         pingMs: 0,
         apiOk: false,
         nativeBridgeOk: false,
+        layoutErrors: [],
+        layerErrors: [],
+        runtimeErrors: [],
         lastReport: '',
         lastCheckTime: 0
     },
 
     init: function () {
         this.runDiagnostics();
-        setInterval(() => this.runDiagnostics(false), 60000);
+        setInterval(() => this.runDiagnostics(false), 30000);
+        window.addEventListener('resize', () => this.runDiagnostics(false));
+    },
+
+    auditDomLayout: function () {
+        const issues = [];
+        const vw = window.innerWidth || document.documentElement.clientWidth;
+        const docScrollWidth = document.documentElement.scrollWidth;
+
+        // Verificar transbordo horizontal no documento raiz
+        if (docScrollWidth > vw + 2) {
+            issues.push(`Transbordo horizontal no documento (${docScrollWidth}px > ${vw}px)`);
+        }
+
+        // Inspecionar elementos criticos do layout
+        const testSelectors = [
+            'header',
+            '.brand',
+            '.header-links',
+            '.ai-status-container',
+            '.hero-showcase',
+            '.promo-banner',
+            '.installed-shelf-section',
+            '.apps-grid',
+            'footer'
+        ];
+
+        testSelectors.forEach(sel => {
+            const els = document.querySelectorAll(sel);
+            els.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.right > vw + 3) {
+                    issues.push(`Elemento ${sel} ultrapassa a largura do ecrã (${Math.round(rect.right)}px > ${vw}px)`);
+                }
+            });
+        });
+
+        return issues;
+    },
+
+    auditLayers: function () {
+        const issues = [];
+        const dock = document.getElementById('bottom-nav-dock');
+        const activeModals = document.querySelectorAll('.modal-backdrop.active, .modal-backdrop[style*="display: flex"]');
+
+        let isAnyModalVisible = false;
+        activeModals.forEach(m => {
+            if (m.style.display !== 'none' && m.style.visibility !== 'hidden') {
+                isAnyModalVisible = true;
+            }
+        });
+
+        if (isAnyModalVisible && dock) {
+            const dockStyle = window.getComputedStyle(dock);
+            if (dockStyle.display !== 'none' && dockStyle.visibility !== 'hidden' && dockStyle.opacity !== '0') {
+                issues.push('Colisão de camadas: Barra de navegação flutuante visível por cima de modal ativo');
+            }
+        }
+
+        return issues;
+    },
+
+    auditRuntimeErrors: function () {
+        return window.stoppRuntimeErrors || [];
     },
 
     runDiagnostics: async function (showFeedback = false) {
@@ -1134,62 +1261,87 @@ const StoppAiSentinel = {
         const pingEl = document.getElementById('ai-telemetry-ping');
 
         if (mainLabel && showFeedback) {
-            mainLabel.innerHTML = 'IA Sentinel: <strong>A realizar diagnostico ao ecossistema...</strong>';
+            mainLabel.innerHTML = 'IA Sentinel: <strong>A realizar auditoria completa...</strong>';
         }
 
+        // 1. Auditoria de Layout e Transbordos
+        this.state.layoutErrors = this.auditDomLayout();
+
+        // 2. Auditoria de Camadas e Modais
+        this.state.layerErrors = this.auditLayers();
+
+        // 3. Auditoria de Execucao e Erros JS
+        this.state.runtimeErrors = this.auditRuntimeErrors();
+
+        // 4. Auditoria de Servidor e APIs
         try {
             const res = await fetch('store-version.json?t=' + Date.now(), { cache: 'no-store' });
-            const ping = Date.now() - startTime;
-            this.state.pingMs = ping;
-
+            this.state.pingMs = Date.now() - startTime;
             if (res.ok) {
                 const data = await res.json();
                 this.state.apiOk = (data && data.store_version_code >= 3);
             } else {
                 this.state.apiOk = false;
             }
-
-            this.state.nativeBridgeOk = StoppBridge.isNative();
-
-            let diagSummary = '';
-            if (this.state.apiOk) {
-                this.state.status = 'HEALTHY';
-                diagSummary = `Sistemas 100% Operacionais • Latencia ${this.state.pingMs}ms • 0 Erros`;
-                this.state.lastReport = 'A IA Stopp Sentinel auditou a integridade dos ficheiros estaticos, APIs de versao e ligacoes nativas. O ecossistema opera sem quaisquer bugs ou anomalias.';
-            } else {
-                this.state.status = 'WARNING';
-                diagSummary = `Alerta de Conetividade • Servidor HTTP ${res.status}`;
-                this.state.lastReport = 'A IA detetou anomalia temporaria no acesso aos descritores de versao. Recomenda-se verificar a ligacao de rede.';
-            }
-
-            if (mainLabel) {
-                mainLabel.innerHTML = `IA Sentinel: <strong>${diagSummary}</strong>`;
-            }
-            if (dot) {
-                dot.className = 'ai-status-dot ' + (this.state.status === 'HEALTHY' ? '' : (this.state.status === 'WARNING' ? 'warning' : 'error'));
-            }
-            if (pingEl) {
-                pingEl.textContent = this.state.pingMs + ' ms';
-            }
-
-            this.updateModalUi();
-
-            if (showFeedback) {
-                showStoreToast('Diagnostico da IA concluido: ' + diagSummary, 'success');
-            }
-
         } catch (err) {
-            this.state.status = 'WARNING';
+            this.state.apiOk = false;
             this.state.pingMs = Date.now() - startTime;
-            if (mainLabel) {
-                mainLabel.innerHTML = 'IA Sentinel: <strong>Modo Offline / Sem Rede (' + this.state.pingMs + 'ms)</strong>';
+        }
+
+        // 5. Auditoria de Ponte Nativa
+        this.state.nativeBridgeOk = StoppBridge.isNative();
+
+        // Calculo de Anomalias Globais
+        const anomaliesCount = (this.state.apiOk ? 0 : 1) +
+                               this.state.layoutErrors.length +
+                               this.state.layerErrors.length +
+                               this.state.runtimeErrors.length;
+
+        const isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 768;
+
+        if (anomaliesCount === 0) {
+            this.state.status = 'HEALTHY';
+            this.state.lastReport = 'A IA Stopp Sentinel auditou a integridade do layout mobile, a sincronização de camadas (z-index), os controladores JavaScript e os servidores da loja. O ecossistema opera a 100% sem transbordos visuais nem anomalias.';
+        } else {
+            this.state.status = (this.state.layoutErrors.length > 0 || this.state.layerErrors.length > 0 || this.state.runtimeErrors.length > 0) ? 'ERROR' : 'WARNING';
+            
+            let issuesText = [];
+            if (!this.state.apiOk) issuesText.push('Conetividade de rede reduzida.');
+            if (this.state.layoutErrors.length > 0) issuesText.push(`Detetados ${this.state.layoutErrors.length} transbordos de layout fora do ecrã.`);
+            if (this.state.layerErrors.length > 0) issuesText.push('Detetada sobreposição da barra de navegação.');
+            if (this.state.runtimeErrors.length > 0) issuesText.push(`Detetados ${this.state.runtimeErrors.length} erros em scripts.`);
+
+            this.state.lastReport = 'A IA Stopp Sentinel detetou anomalias ativas: ' + issuesText.join(' ');
+        }
+
+        // Atualizacao no Cabecalho
+        if (mainLabel) {
+            if (this.state.status === 'HEALTHY') {
+                mainLabel.innerHTML = isMobile
+                    ? 'IA: <strong>Operacional</strong>'
+                    : 'IA Sentinel: <strong>Sistemas 100% Operacionais</strong>';
+            } else {
+                mainLabel.innerHTML = isMobile
+                    ? `IA: <strong>${anomaliesCount} Alerta(s)</strong>`
+                    : `IA Sentinel: <strong>${anomaliesCount} Anomalia(s) Detetada(s)</strong>`;
             }
-            if (dot) dot.className = 'ai-status-dot warning';
-            if (pingEl) pingEl.textContent = 'Offline';
-            this.state.lastReport = 'A IA Sentinel identificou modo sem rede ou bloqueio de ligacao aos servidores da Stopp Store. O catalogo em cache e operacoes locais mantem-se ativas.';
-            this.updateModalUi();
-            if (showFeedback) {
-                showStoreToast('Diagnostico da IA: Modo offline ou sem ligacao.', 'warning');
+        }
+
+        if (dot) {
+            dot.className = 'ai-status-dot ' + (this.state.status === 'HEALTHY' ? '' : (this.state.status === 'WARNING' ? 'warning' : 'error'));
+        }
+
+        if (pingEl) {
+            pingEl.textContent = this.state.apiOk ? (this.state.pingMs + ' ms') : 'Offline';
+        }
+
+        this.updateModalUi();
+
+        if (showFeedback) {
+            if (this.state.status === 'HEALTHY') {
+                showStoreToast('Diagnóstico da IA: 0 Erros. Layout e ecossistema 100% íntegros.', 'success');
+            } else {
+                showStoreToast(`Diagnóstico da IA: ${anomaliesCount} anomalia(s) detetada(s). Consulta os detalhes.`, 'warning');
             }
         }
     },
@@ -1198,10 +1350,13 @@ const StoppAiSentinel = {
         const netStatus = document.getElementById('diag-net-status');
         const netPing = document.getElementById('diag-net-ping');
         const bridgeStatus = document.getElementById('diag-bridge-status');
+        const layoutStatus = document.getElementById('diag-layout-status');
+        const layersStatus = document.getElementById('diag-layers-status');
+        const jsStatus = document.getElementById('diag-js-status');
         const reportText = document.getElementById('diag-report-text');
 
         if (netStatus) {
-            netStatus.textContent = this.state.apiOk ? 'Operacional' : 'Lentidao / Offline';
+            netStatus.textContent = this.state.apiOk ? 'Operacional' : 'Lentidão / Offline';
             netStatus.className = 'ai-diag-badge ' + (this.state.apiOk ? 'ok' : 'notice');
         }
         if (netPing) {
@@ -1210,6 +1365,34 @@ const StoppAiSentinel = {
         if (bridgeStatus) {
             bridgeStatus.textContent = this.state.nativeBridgeOk ? 'Ponte Nativa Ativa (120Hz)' : 'Modo Navegador Web';
             bridgeStatus.className = 'ai-diag-badge ' + (this.state.nativeBridgeOk ? 'ok' : 'notice');
+        }
+        if (layoutStatus) {
+            if (this.state.layoutErrors && this.state.layoutErrors.length > 0) {
+                layoutStatus.textContent = `${this.state.layoutErrors.length} Transbordo(s)`;
+                layoutStatus.className = 'ai-diag-badge notice';
+            } else {
+                layoutStatus.textContent = '0 Transbordos • Otimizado';
+                layoutStatus.className = 'ai-diag-badge ok';
+            }
+        }
+        if (layersStatus) {
+            if (this.state.layerErrors && this.state.layerErrors.length > 0) {
+                layersStatus.textContent = 'Alerta de Sobreposição';
+                layersStatus.className = 'ai-diag-badge notice';
+            } else {
+                layersStatus.textContent = 'Isolamento Seguro';
+                layersStatus.className = 'ai-diag-badge ok';
+            }
+        }
+        if (jsStatus) {
+            const errs = (this.state.runtimeErrors && this.state.runtimeErrors.length) || 0;
+            if (errs > 0) {
+                jsStatus.textContent = `${errs} Erro(s) Detetado(s)`;
+                jsStatus.className = 'ai-diag-badge notice';
+            } else {
+                jsStatus.textContent = '0 Erros • 100% Íntegro';
+                jsStatus.className = 'ai-diag-badge ok';
+            }
         }
         if (reportText) {
             reportText.textContent = this.state.lastReport;
@@ -1220,7 +1403,8 @@ const StoppAiSentinel = {
 function openAiDiagnosticModal() {
     const modal = document.getElementById('ai-diagnostic-modal');
     if (!modal) return;
-    StoppAiSentinel.updateModalUi();
+    document.body.classList.add('modal-open');
+    StoppAiSentinel.runDiagnostics(false);
     modal.classList.add('active');
     modal.style.display = 'flex';
     modal.style.opacity = '1';
@@ -1236,6 +1420,7 @@ function closeAiDiagnosticModal() {
     modal.style.opacity = '0';
     modal.style.visibility = 'hidden';
     document.body.style.overflow = '';
+    syncModalBodyState();
 }
 
 function handleRerunAiDiagnostics() {
@@ -1385,6 +1570,7 @@ function openSettingsModal() {
     modal.style.opacity = '1';
     modal.style.visibility = 'visible';
     document.body.style.overflow = 'hidden';
+    syncModalBodyState();
 
     renderSettingsOverview();
 }
@@ -1398,6 +1584,7 @@ function closeSettingsModal() {
     modal.style.opacity = '0';
     modal.style.visibility = 'hidden';
     document.body.style.overflow = '';
+    syncModalBodyState();
 }
 
 function renderSettingsOverview() {
@@ -1749,6 +1936,7 @@ function openPlayProtectModal() {
         modal.style.opacity = '1';
         modal.style.visibility = 'visible';
         document.body.style.overflow = 'hidden';
+        syncModalBodyState();
     }
 }
 
@@ -1761,6 +1949,7 @@ function closePlayProtectModal() {
         modal.style.opacity = '0';
         modal.style.visibility = 'hidden';
         document.body.style.overflow = '';
+        syncModalBodyState();
     }
 }
 
@@ -1845,7 +2034,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=7')
+        navigator.serviceWorker.register('./sw.js?v=8')
             .then(reg => {
                 reg.update();
             })
@@ -1854,7 +2043,7 @@ if ('serviceWorker' in navigator) {
         if ('caches' in window) {
             caches.keys().then(keys => {
                 keys.forEach(k => {
-                    if (k !== 'stopp-store-v7') {
+                    if (k !== 'stopp-store-v8') {
                         caches.delete(k);
                     }
                 });
@@ -1875,6 +2064,7 @@ function openAppModal() {
         modal.style.opacity = '1';
         modal.style.visibility = 'visible';
         document.body.style.overflow = 'hidden';
+        syncModalBodyState();
     }
 }
 
@@ -1886,6 +2076,7 @@ function closeAppModal() {
         modal.style.opacity = '0';
         modal.style.visibility = 'hidden';
         document.body.style.overflow = '';
+        syncModalBodyState();
     }
 }
 

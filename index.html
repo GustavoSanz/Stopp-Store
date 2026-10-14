@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stopp App Store | Software & Experimental Projects</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=11">
+    <link rel="stylesheet" href="assets/css/style.css?v=13">
     <link rel="icon" type="image/svg+xml" href="assets/img/icon.svg">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
     <link rel="manifest" href="manifest.webmanifest">
@@ -776,10 +776,26 @@
 
             <div class="ai-diag-card">
                 <div class="ai-diag-info">
+                    <h5>Layout & Viewport Mobile</h5>
+                    <p>Deteção de transbordos de ecrã e integridade visual</p>
+                </div>
+                <span class="ai-diag-badge ok" id="diag-layout-status">0 Transbordos • Otimizado</span>
+            </div>
+
+            <div class="ai-diag-card">
+                <div class="ai-diag-info">
+                    <h5>Isolamento de Camadas (Z-Index)</h5>
+                    <p>Prevenção de colisões com a barra de navegação</p>
+                </div>
+                <span class="ai-diag-badge ok" id="diag-layers-status">Isolamento Seguro</span>
+            </div>
+
+            <div class="ai-diag-card">
+                <div class="ai-diag-info">
                     <h5>Integridade de Código & Sintaxe</h5>
                     <p>Compilação e execução dos controladores JavaScript</p>
                 </div>
-                <span class="ai-diag-badge ok">0 Erros • 100% Íntegro</span>
+                <span class="ai-diag-badge ok" id="diag-js-status">0 Erros • 100% Íntegro</span>
             </div>
 
             <div class="ai-report-box">
@@ -795,6 +811,9 @@
                     Fechar
                 </button>
             </div>
+        </div>
+    </div>
+
     <!-- Google Play Protect & Security Advisory Modal -->
     <div class="modal-backdrop" id="modal-play-protect">
         <div class="modal-card modal-protect-card">
@@ -909,7 +928,7 @@
         </button>
     </nav>
 
-    <script src="assets/js/app.js?v=12"></script>
-    <script src="assets/js/download.js?v=12"></script>
+    <script src="assets/js/app.js?v=13"></script>
+    <script src="assets/js/download.js?v=13"></script>
 </body>
 </html>

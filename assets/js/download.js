@@ -59,7 +59,10 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
     
     if (progressBox) progressBox.style.display = 'block';
     if (successBox) successBox.style.display = 'none';
-    if (modal) modal.classList.add('active');
+    if (modal) {
+        modal.classList.add('active');
+        if (typeof syncModalBodyState === 'function') syncModalBodyState();
+    }
     if (typeof window.StoppAudio !== 'undefined') window.StoppAudio.play('download');
 
     // Em modo nativo Android, iniciar download real e escutar progresso direto
@@ -165,6 +168,7 @@ function closeDownloadModal() {
         modal.classList.remove('active');
     }
     document.body.style.overflow = '';
+    if (typeof syncModalBodyState === 'function') syncModalBodyState();
 }
 
 // Fechar modal de download ao clicar fora do conteudo
