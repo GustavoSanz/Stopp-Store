@@ -12,6 +12,8 @@ const STATIC_ASSETS = [
   './assets/img/icon-512.png',
   './assets/img/verawatt_logo.svg',
   './assets/img/verawatt_title.svg',
+  './assets/img/verawatt_icon_4x.png',
+  './assets/img/verawatt_typography_4x.png',
   './manifest.webmanifest'
 ];
 

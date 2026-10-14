@@ -1020,7 +1020,7 @@ function renderInstalledAppsShelf() {
             pkg: 'com.vera_watt',
             name: 'Vera Watt',
             version: 'v' + vName,
-            iconImg: 'assets/img/verawatt_logo.svg',
+            iconImg: 'assets/img/verawatt_icon_4x.png',
             iconLetter: null,
             gradient: 'linear-gradient(135deg, #10b981, #0ea5e9)',
             category: 'Energia & IoT (Android)'
@@ -1053,7 +1053,7 @@ function renderInstalledAppsShelf() {
                         pkg: item.packageName,
                         name: isVera ? 'Vera Watt' : item.packageName,
                         version: 'v' + (item.versionName || '1.0'),
-                        iconImg: isVera ? 'assets/img/verawatt_logo.svg' : null,
+                        iconImg: isVera ? 'assets/img/verawatt_icon_4x.png' : null,
                         iconLetter: item.packageName.charAt(0).toUpperCase(),
                         gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                         category: 'Aplicacao Instalada'
