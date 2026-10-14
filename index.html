@@ -12,6 +12,14 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        #stopp-splash-screen.splash-dismissed {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+    </style>
     <script>
         (function() {
             if ((typeof window.StoppStoreNative !== 'undefined') || 
@@ -59,20 +67,19 @@
                 var s = document.getElementById('stopp-splash-screen');
                 if (s) {
                     s.classList.add('splash-dismissed');
-                    s.style.pointerEvents = 'none';
-                    s.style.opacity = '0';
-                    if (window.__splashDismissed) {
-                        s.style.display = 'none';
-                    } else {
-                        window.__splashDismissed = true;
-                        setTimeout(function() { if (s) s.style.display = 'none'; }, 250);
-                    }
+                    s.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;';
+                    window.__splashDismissed = true;
+                    setTimeout(function() {
+                        if (s && s.parentNode) {
+                            try { s.parentNode.removeChild(s); } catch (err) {}
+                        }
+                    }, 200);
                 }
             };
-            // Temporizador de Seguranca Absoluto (maximo 1.8 segundos)
+            // Temporizador de Seguranca Absoluto (maximo 1.1 segundos)
             setTimeout(function() {
                 window.dismissSplashScreen();
-            }, 1800);
+            }, 1100);
         })();
     </script>
 

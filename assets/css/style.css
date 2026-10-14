@@ -2598,10 +2598,11 @@ body.is-native-app #app-features-modal {
 }
 
 .stopp-splash-screen.splash-dismissed {
-    opacity: 0;
-    pointer-events: none;
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
     transform: scale(1.08);
-    visibility: hidden;
+    visibility: hidden !important;
 }
 
 .splash-backdrop-glow {

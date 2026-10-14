@@ -72,7 +72,11 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          return caches.match(event.request).then((cached) => cached || caches.match('./index.html'));
+          return caches.match(event.request, { ignoreSearch: true })
+            .then((cached) => cached || caches.match('./index.html', { ignoreSearch: true }))
+            .then((matched) => matched || new Response('<!DOCTYPE html><html><head><meta http-equiv="refresh" content="2"></head><body>A carregar Stopp Store...</body></html>', {
+              headers: { 'Content-Type': 'text/html; charset=utf-8' }
+            }));
         })
     );
     return;
@@ -80,17 +84,25 @@ self.addEventListener('fetch', (event) => {
 
   // Estrategia Stale-While-Revalidate para recursos estaticos (CSS, JS, Imagens)
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
-          // Clonagem sincrona imediata antes do corpo ser lido pelo navegador
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache).catch(() => {});
           }).catch(() => {});
         }
         return networkResponse;
-      }).catch(() => cachedResponse);
+      }).catch(() => {
+        if (cachedResponse) return cachedResponse;
+        if (url.pathname.endsWith('.js')) {
+          return new Response('/* Stopp Store offline fallback */', { headers: { 'Content-Type': 'application/javascript' } });
+        }
+        if (url.pathname.endsWith('.css')) {
+          return new Response('/* Stopp Store offline fallback */', { headers: { 'Content-Type': 'text/css' } });
+        }
+        return new Response('', { status: 408, statusText: 'Request Timed Out' });
+      });
 
       return cachedResponse || fetchPromise;
     })

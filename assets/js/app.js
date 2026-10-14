@@ -2175,16 +2175,16 @@ function initSplashScreen() {
         try { StoppAudio.play('splash'); } catch (e) {}
         if (progress) progress.style.width = '60%';
         if (statusText) statusText.textContent = 'A inicializar Stopp Store v0.6-Beta...';
-    }, 150);
+    }, 120);
 
     setTimeout(() => {
         if (progress) progress.style.width = '100%';
         if (statusText) statusText.textContent = 'Sistemas 100% operacionais!';
-    }, 750);
+    }, 450);
 
     setTimeout(() => {
         dismissSplashScreen();
-    }, 1300);
+    }, 800);
 }
 
 function dismissSplashScreen(e) {
@@ -2192,17 +2192,14 @@ function dismissSplashScreen(e) {
     const splash = document.getElementById('stopp-splash-screen');
     if (splash) {
         splash.classList.add('splash-dismissed');
-        splash.style.pointerEvents = 'none';
-        splash.style.opacity = '0';
+        splash.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;';
+        window.__splashDismissed = true;
         try { StoppAudio.play('tap'); } catch (err) {}
-        if (window.__splashDismissed) {
-            splash.style.display = 'none';
-        } else {
-            window.__splashDismissed = true;
-            setTimeout(() => {
-                if (splash) splash.style.display = 'none';
-            }, 250);
-        }
+        setTimeout(() => {
+            if (splash && splash.parentNode) {
+                try { splash.parentNode.removeChild(splash); } catch (err) {}
+            }
+        }, 200);
     } else {
         window.__splashDismissed = true;
     }
@@ -2211,7 +2208,7 @@ function dismissSplashScreen(e) {
 function replaySplashScreen() {
     const splash = document.getElementById('stopp-splash-screen');
     if (splash) {
-        splash.style.display = 'flex';
+        splash.style.cssText = 'display: flex !important; opacity: 1 !important; visibility: visible !important; pointer-events: auto !important;';
         splash.classList.remove('splash-dismissed');
         window.__splashDismissed = false;
         try { updateVeraWattThemeIcons(); } catch (e) {}
@@ -2224,10 +2221,10 @@ function replaySplashScreen() {
         setTimeout(() => {
             if (progress) progress.style.width = '100%';
             if (statusText) statusText.textContent = 'Sistemas 100% prontos!';
-        }, 700);
+        }, 450);
         setTimeout(() => {
             dismissSplashScreen();
-        }, 1300);
+        }, 850);
     }
 }
 
