@@ -196,6 +196,32 @@
         </div>
     </div>
 
+    <!-- Platform Restriction Modal -->
+    <div class="modal-backdrop" id="platform-restriction-modal">
+        <div class="modal-card modal-app-features">
+            <div class="modal-header-app">
+                <div class="app-icon-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                </div>
+                <div>
+                    <span class="exclusivity-pill" id="platform-restriction-pill" style="border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.15); color: #fbbf24;">Plataforma Incompatível</span>
+                    <h3 id="platform-restriction-title" style="margin-top: 4px;">Incompatível com o Dispositivo</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closePlatformRestrictionModal()" aria-label="Fechar">✕</button>
+            </div>
+            <p class="modal-lead" id="platform-restriction-message" style="margin-top: 14px; font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
+                Esta aplicação foi concebida exclusivamente para computadores PC Windows e não pode ser executada no sistema Android.
+            </p>
+            <div class="availability-notice" id="platform-restriction-tip">
+                <strong>Recomendação:</strong> Acede à Stopp Store a partir de um computador PC para transferires e jogares a demonstração de Sons of Echoes.
+            </div>
+            <button class="btn-secondary" style="width: 100%;" onclick="closePlatformRestrictionModal()">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
     <script src="assets/js/download.js"></script>
 </body>
 </html>

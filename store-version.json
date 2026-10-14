@@ -2,7 +2,15 @@
   "store_version_code": 2,
   "store_version_name": "0.2-Beta",
   "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.2-Beta.apk",
-  "store_update_message": "Nova versao v0.2-Beta disponivel com instalador automatico e supressao de promocoes nativas.",
+  "store_update_message": "Nova versao v0.2-Beta disponivel com novo instalador do sistema, controlo estrito de plataformas e gestao de notificacoes.",
+  "store_changelog": [
+    "Novo icone personalizado oficial Stopp Store para notificacoes na barra de estado.",
+    "Limpeza automatica de notificacoes acumuladas ao entrar na aplicacao.",
+    "Correcao completa da desinstalacao de aplicacoes com confirmacao nativa do sistema.",
+    "Restricao inteligente de plataformas: bloqueio de aplicacoes de PC no Android e de Android no PC.",
+    "Animacao comemorativa pos-instalacao com efeito de confetis e abertura direta.",
+    "Obrigatoriedade e exibicao de Changelog do programador em todas as atualizacoes."
+  ],
   "apps": {
     "com.vera_watt": {
       "name": "Vera Watt",
@@ -10,7 +18,13 @@
       "version_name": "0.4-Beta",
       "apk_url": "assets/apks/VeraWatt-v0.4-Beta.apk",
       "package_name": "com.vera_watt",
-      "size_mb": 67
+      "size_mb": 67,
+      "changelog": [
+        "Suporte aprimorado ao Nothing Glyph SDK com novos padroes de iluminacao.",
+        "Otimizacao do calculo de telemetria solar em tempo real.",
+        "Integracao direta com o novo instalador PackageInstaller da Stopp Store.",
+        "Melhorias de desempenho e correcao de bugs na interface Jetpack Compose."
+      ]
     }
   }
 }

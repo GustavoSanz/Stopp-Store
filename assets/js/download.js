@@ -1,5 +1,29 @@
-// Stopp App Store - Interactive Download Manager with Progress & Celebration Animation
+// Stopp App Store - Interactive Download Manager with Progress, Platform Guard & Celebration Animation
 function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
+    const isNative = typeof StoppBridge !== 'undefined' && StoppBridge.isNative();
+    const isAndroid = isNative || (typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent));
+    const isPC = !isAndroid;
+
+    // 1. Guard de Plataforma: Bloquear APKs Android no PC
+    if (isPC && apkUrl && apkUrl.endsWith('.apk')) {
+        if (typeof showPlatformRestrictionModal === 'function') {
+            showPlatformRestrictionModal(appName, 'android');
+        } else if (typeof showStoreToast === 'function') {
+            showStoreToast('Esta aplicacao (APK) e exclusiva para telemoveis Android e esta bloqueada no PC.', 'warning');
+        }
+        return;
+    }
+
+    // 2. Guard de Plataforma: Bloquear Jogos de PC no Android
+    if (isAndroid && (appName.includes('Sons of Echoes') || (apkUrl && apkUrl.endsWith('.exe')))) {
+        if (typeof showPlatformRestrictionModal === 'function') {
+            showPlatformRestrictionModal(appName, 'pc');
+        } else if (typeof showStoreToast === 'function') {
+            showStoreToast('Esta aplicacao foi desenvolvida exclusivamente para computadores Windows / PC.', 'warning');
+        }
+        return;
+    }
+
     const modal = document.getElementById('download-modal');
     const progressBar = document.getElementById('dl-progress-bar');
     const progressText = document.getElementById('dl-progress-text');
@@ -20,18 +44,22 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
         return;
     }
 
-    const isNative = typeof StoppBridge !== 'undefined' && StoppBridge.isNative();
+    const appPkg = (appName.includes('Vera') || (apkUrl && apkUrl.includes('VeraWatt')))
+        ? 'com.vera_watt'
+        : 'com.stopp.store';
 
-    modalTitle.textContent = `A transferir ${appName}`;
-    progressBar.style.width = '0%';
-    progressText.textContent = '0%';
-    statusText.textContent = isNative
-        ? 'A iniciar transferência segura...'
-        : 'A estabelecer ligação segura...';
+    if (modalTitle) modalTitle.textContent = `A transferir ${appName}`;
+    if (progressBar) progressBar.style.width = '0%';
+    if (progressText) progressText.textContent = '0%';
+    if (statusText) {
+        statusText.textContent = isNative
+            ? 'A iniciar transferência segura...'
+            : 'A estabelecer ligação segura...';
+    }
     
-    progressBox.style.display = 'block';
-    successBox.style.display = 'none';
-    modal.classList.add('active');
+    if (progressBox) progressBox.style.display = 'block';
+    if (successBox) successBox.style.display = 'none';
+    if (modal) modal.classList.add('active');
 
     // Em modo nativo Android, iniciar download real e escutar progresso direto
     if (isNative && window.StoppStoreNative && typeof window.StoppStoreNative.downloadAndInstall === 'function') {
@@ -55,11 +83,11 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
             if (progressText) progressText.textContent = '100%';
             if (statusText) statusText.textContent = 'Transferência concluída! A abrir instalador do Android...';
             setTimeout(() => {
-                if (progressBox) progressBox.style.display = 'none';
-                if (successBox) successBox.style.display = 'block';
-                createConfetti();
-                setTimeout(() => closeDownloadModal(), 2000);
-            }, 400);
+                closeDownloadModal();
+                if (typeof onAppInstalledSuccess === 'function') {
+                    onAppInstalledSuccess(appName, appPkg);
+                }
+            }, 600);
         };
 
         window.StoppStoreNative.downloadAndInstall(fullUrl, fileName);
@@ -72,19 +100,24 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
         const inc = Math.floor(Math.random() * 8) + 3;
         current = Math.min(current + inc, 100);
         
-        progressBar.style.width = `${current}%`;
-        progressText.textContent = `${current}%`;
+        if (progressBar) progressBar.style.width = `${current}%`;
+        if (progressText) progressText.textContent = `${current}%`;
 
         const downloadedMb = ((current / 100) * fileSizeMb).toFixed(1);
-        if (current < 30) {
-            statusText.textContent = `A transferir ficheiro (${downloadedMb} MB de ${fileSizeMb} MB)...`;
-        } else if (current < 85) {
-            statusText.textContent = `A descarregar pacote APK (${downloadedMb} MB)...`;
-        } else if (current < 100) {
-            statusText.textContent = `A verificar integridade do pacote...`;
-        } else {
+        if (statusText) {
+            if (current < 30) {
+                statusText.textContent = `A transferir ficheiro (${downloadedMb} MB de ${fileSizeMb} MB)...`;
+            } else if (current < 85) {
+                statusText.textContent = `A descarregar pacote APK (${downloadedMb} MB)...`;
+            } else if (current < 100) {
+                statusText.textContent = `A verificar integridade do pacote...`;
+            } else {
+                statusText.textContent = 'Concluído com sucesso!';
+            }
+        }
+
+        if (current >= 100) {
             clearInterval(interval);
-            statusText.textContent = 'Concluído com sucesso!';
 
             const tempLink = document.createElement('a');
             tempLink.href = apkUrl;
@@ -108,16 +141,17 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
                     : 'https://gustavosanz.github.io/Stopp-Store/';
                 StoppNotifications.send(
                     'Transferencia Concluida: ' + appName,
-                    'O pacote APK foi descarregado com sucesso.',
+                    'O pacote foi descarregado com sucesso.',
                     targetUrl
                 );
             }
 
             setTimeout(() => {
-                progressBox.style.display = 'none';
-                successBox.style.display = 'block';
-                createConfetti();
-            }, 400);
+                closeDownloadModal();
+                if (typeof onAppInstalledSuccess === 'function') {
+                    onAppInstalledSuccess(appName, appPkg);
+                }
+            }, 500);
         }
     }, 120);
 }
@@ -141,6 +175,7 @@ document.addEventListener('click', (e) => {
 // Confetti Particle Burst Animation
 function createConfetti() {
     const container = document.getElementById('confetti-container');
+    if (!container) return;
     container.innerHTML = '';
     const colors = ['#10b981', '#0ea5e9', '#38bdf8', '#34d399', '#ffffff', '#fbbf24'];
 

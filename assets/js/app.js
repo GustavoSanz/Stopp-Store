@@ -236,7 +236,15 @@ const STORE_APPS_REGISTRY = [
         size: 1,
         iconType: 'letter',
         iconLetter: 'S',
-        iconBg: 'linear-gradient(135deg, #10b981, #0ea5e9)'
+        iconBg: 'linear-gradient(135deg, #10b981, #0ea5e9)',
+        changelog: [
+            "Novo icone personalizado oficial Stopp Store para notificacoes na barra de estado.",
+            "Limpeza automatica de notificacoes acumuladas ao entrar na aplicacao.",
+            "Correcao completa da desinstalacao de aplicacoes com confirmacao nativa do sistema.",
+            "Restricao inteligente de plataformas: bloqueio de aplicacoes de PC no Android e de Android no PC.",
+            "Animacao comemorativa pos-instalacao com efeito de confetis e abertura direta.",
+            "Obrigatoriedade e exibicao de Changelog do programador em todas as atualizacoes."
+        ]
     },
     {
         pkg: 'com.vera_watt',
@@ -248,7 +256,13 @@ const STORE_APPS_REGISTRY = [
         apkUrl: 'assets/apks/VeraWatt-v0.4-Beta.apk',
         size: 67,
         iconType: 'image',
-        iconSrc: 'assets/img/verawatt_icon.webp'
+        iconSrc: 'assets/img/verawatt_icon.webp',
+        changelog: [
+            "Suporte aprimorado ao Nothing Glyph SDK com novos padroes de iluminacao.",
+            "Otimizacao do calculo de telemetria solar em tempo real.",
+            "Integracao direta com o novo instalador PackageInstaller da Stopp Store.",
+            "Melhorias de desempenho e correcao de bugs na interface Jetpack Compose."
+        ]
     }
 ];
 
@@ -349,20 +363,49 @@ function renderAppManager() {
                     ? `<img src="${app.iconSrc}" alt="${app.name}" class="manager-app-icon">`
                     : `<div class="manager-app-icon" style="background: ${app.iconBg};">${app.iconLetter}</div>`;
 
+                let changelogHtml = '';
+                if (app.changelog && app.changelog.length) {
+                    changelogHtml = `
+                        <div class="manager-changelog-box">
+                            <div class="manager-changelog-header">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                Changelog Obrigatorio (v${app.targetName}):
+                            </div>
+                            <ul class="manager-changelog-list">
+                                ${app.changelog.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    changelogHtml = `
+                        <div class="manager-changelog-box">
+                            <div class="manager-changelog-header" style="color: #f87171;">
+                                Changelog Obrigatorio:
+                            </div>
+                            <ul class="manager-changelog-list">
+                                <li class="no-changelog-warning">Aviso: O programador nao forneceu notas de lancamento para esta versao.</li>
+                            </ul>
+                        </div>
+                    `;
+                }
+
                 return `
-                    <div class="manager-app-item">
-                        <div class="manager-app-left">
-                            ${iconHtml}
-                            <div class="manager-app-meta">
-                                <h4>${app.name} <span class="tag tag-platform tag-android">${app.platform}</span></h4>
-                                <p>Instalada: v${app.installedName} &bull; Nova: v${app.targetName} (${app.size} MB)</p>
+                    <div class="manager-app-item" style="flex-direction: column; align-items: stretch;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px;">
+                            <div class="manager-app-left">
+                                ${iconHtml}
+                                <div class="manager-app-meta">
+                                    <h4>${app.name} <span class="tag tag-platform tag-android">${app.platform}</span></h4>
+                                    <p>Instalada: v${app.installedName} &bull; Nova: v${app.targetName} (${app.size} MB)</p>
+                                </div>
+                            </div>
+                            <div class="manager-app-actions">
+                                <button class="btn-download btn-update-action" onclick="triggerAppDownload('${app.name}', '${app.apkUrl}', ${app.size})">
+                                    Atualizar
+                                </button>
                             </div>
                         </div>
-                        <div class="manager-app-actions">
-                            <button class="btn-download btn-update-action" onclick="triggerAppDownload('${app.name}', '${app.apkUrl}', ${app.size})">
-                                Atualizar
-                            </button>
-                        </div>
+                        ${changelogHtml}
                     </div>
                 `;
             }).join('');
@@ -487,67 +530,244 @@ function closeAppManagerModal() {
     document.body.style.overflow = '';
 }
 
-// UI App Status Controller
+// Platform Detection & Restrictions Helpers
+function isAndroidPlatform() {
+    return StoppBridge.isNative() || /Android/i.test(navigator.userAgent);
+}
+
+function isPCPlatform() {
+    return !isAndroidPlatform();
+}
+
+function showPlatformRestrictionModal(appName, requiredPlatform) {
+    const modal = document.getElementById('platform-restriction-modal');
+    const title = document.getElementById('platform-restriction-title');
+    const msg = document.getElementById('platform-restriction-message');
+    const tip = document.getElementById('platform-restriction-tip');
+    const pill = document.getElementById('platform-restriction-pill');
+
+    if (requiredPlatform === 'pc') {
+        if (pill) pill.textContent = 'Exclusivo PC / Windows';
+        if (title) title.textContent = appName + ' requer PC Windows';
+        if (msg) msg.textContent = appName + ' foi concebido em GameMaker exclusivamente para computadores Windows / PC. O ecossistema Android nao e compativel com a execucao desta aplicacao nativa.';
+        if (tip) tip.innerHTML = '<strong>Como aceder:</strong> Visita a Stopp Store atraves do navegador do teu computador PC para jogares esta aplicacao.';
+    } else if (requiredPlatform === 'android') {
+        if (pill) pill.textContent = 'Exclusivo Android (APK)';
+        if (title) title.textContent = appName + ' requer Android';
+        if (msg) msg.textContent = 'O instalador APK de ' + appName + ' foi desenvolvido para telemoveis e tablets com sistema operativo Android. O teu computador PC nao pode executar ficheiros APK diretamente.';
+        if (tip) tip.innerHTML = '<strong>Como instalar:</strong> Abre esta loja diretamente no navegador do teu telemovel Android para instalares com 1 toque com o instalador do sistema.';
+    }
+
+    if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closePlatformRestrictionModal() {
+    const modal = document.getElementById('platform-restriction-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        document.body.style.overflow = '';
+    }
+}
+
+// Post-Installation Celebration & Animation Handlers
+let lastInstalledPkg = 'com.vera_watt';
+
+function onAppInstalledSuccess(appName = 'Vera Watt', pkg = 'com.vera_watt') {
+    lastInstalledPkg = pkg || 'com.vera_watt';
+    const modal = document.getElementById('install-celebration-modal');
+    const titleEl = document.getElementById('celebration-app-title');
+    const descEl = document.getElementById('celebration-app-desc');
+    const btnOpen = document.getElementById('celebration-btn-open');
+
+    if (titleEl) titleEl.textContent = appName + ' Instalada com Sucesso!';
+    if (descEl) descEl.textContent = 'A aplicacao ' + appName + ' foi instalada com sucesso no teu dispositivo Android e esta pronta a ser executada.';
+    if (btnOpen) {
+        btnOpen.style.display = (pkg && StoppBridge.isNative()) ? 'inline-flex' : 'none';
+    }
+
+    if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+    }
+
+    createCelebrationConfetti();
+
+    if (navigator.vibrate) {
+        try { navigator.vibrate([40, 60, 40]); } catch (ignored) {}
+    }
+
+    refreshAllAppStatus();
+}
+
+function handleCelebrationOpen() {
+    closeCelebrationModal();
+    if (lastInstalledPkg) {
+        StoppBridge.openApp(lastInstalledPkg);
+    }
+}
+
+function closeCelebrationModal() {
+    const modal = document.getElementById('install-celebration-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        document.body.style.overflow = '';
+    }
+}
+
+function createCelebrationConfetti() {
+    const container = document.getElementById('celebration-confetti-container') || document.getElementById('confetti-container');
+    if (!container) return;
+    container.innerHTML = '';
+    const colors = ['#10b981', '#0ea5e9', '#38bdf8', '#34d399', '#ffffff', '#fbbf24', '#a78bfa'];
+
+    for (let i = 0; i < 55; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'confetti-particle';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = '40%';
+        particle.style.transform = `scale(${Math.random() * 0.8 + 0.4})`;
+
+        const xMove = (Math.random() - 0.5) * 400;
+        const yMove = (Math.random() - 0.7) * 350;
+        particle.style.setProperty('--x', `${xMove}px`);
+        particle.style.setProperty('--y', `${yMove}px`);
+
+        container.appendChild(particle);
+        setTimeout(() => particle.remove(), 2000);
+    }
+}
+
+// UI App Status Controller & Platform Restriction Engine
 function refreshAllAppStatus() {
     applyNativeAppClass();
+    const isAndroid = isAndroidPlatform();
+    const isPC = !isAndroid;
+
     const appContainers = document.querySelectorAll('[data-package]');
     if (appContainers.length) {
         appContainers.forEach(container => {
-        const pkg = container.getAttribute('data-package');
-        const targetCode = parseInt(container.getAttribute('data-target-version-code') || '0', 10);
-        const targetName = container.getAttribute('data-target-version-name') || '';
-        const appName = container.getAttribute('data-app-name') || 'Vera Watt';
-        const apkUrl = container.getAttribute('data-apk-url') || 'assets/apks/VeraWatt-v0.4-Beta.apk';
-        const apkSize = parseInt(container.getAttribute('data-apk-size') || '67', 10);
-        const isDetailPage = container.classList.contains('app-detail-card');
+            const pkg = container.getAttribute('data-package');
+            const targetCode = parseInt(container.getAttribute('data-target-version-code') || '0', 10);
+            const targetName = container.getAttribute('data-target-version-name') || '';
+            const appName = container.getAttribute('data-app-name') || 'Vera Watt';
+            const apkUrl = container.getAttribute('data-apk-url') || 'assets/apks/VeraWatt-v0.4-Beta.apk';
+            const apkSize = parseInt(container.getAttribute('data-apk-size') || '67', 10);
+            const isDetailPage = container.classList.contains('app-detail-card');
 
-        const isInstalled = StoppBridge.isAppInstalled(pkg);
-        const installedCode = StoppBridge.getAppVersionCode(pkg);
+            const isInstalled = StoppBridge.isAppInstalled(pkg);
+            const installedCode = StoppBridge.getAppVersionCode(pkg);
 
-        // Header badge pill
-        const statusBadge = document.getElementById('badge-status-' + pkg);
+            // Header badge pill
+            const statusBadge = document.getElementById('badge-status-' + pkg);
 
-        // Actions container
-        const actionsContainer = isDetailPage
-            ? document.getElementById('detail-actions-' + pkg)
-            : document.getElementById('actions-' + pkg);
+            // Actions container
+            const actionsContainer = isDetailPage
+                ? document.getElementById('detail-actions-' + pkg)
+                : document.getElementById('actions-' + pkg);
 
-        if (pkg === 'com.stopp.store') {
-            if (isInstalled) {
-                const needsUpdate = installedCode >= 0 && installedCode < targetCode;
-                if (statusBadge) {
-                    statusBadge.style.display = 'inline-flex';
-                    if (needsUpdate) {
-                        statusBadge.className = 'badge-status badge-update';
-                        statusBadge.textContent = 'Atualizacao Disponivel';
-                    } else {
-                        statusBadge.className = 'badge-status badge-installed';
-                        statusBadge.textContent = '✓ Em Execucao';
+            if (pkg === 'com.stopp.store') {
+                if (isPC) {
+                    // No computador PC, bloquear a instalacao do APK Android
+                    if (statusBadge) {
+                        statusBadge.style.display = 'inline-flex';
+                        statusBadge.className = 'badge-platform-restricted';
+                        statusBadge.textContent = 'Exclusivo Android (APK)';
                     }
-                }
-                if (actionsContainer) {
-                    if (needsUpdate) {
+                    if (actionsContainer) {
                         actionsContainer.innerHTML = `
-                            <button class="btn-download btn-update-action" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
-                                Atualizar (${targetName})
+                            <button class="btn-platform-restricted" onclick="showPlatformRestrictionModal('Stopp Store', 'android')">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                                Exclusivo Android (APK)
                             </button>
-                            <a href="stoppstore.html" class="btn-secondary">Detalhes</a>
+                            <a href="stoppstore.html" class="btn-secondary" title="Ver Detalhes da Aplicacao">
+                                Detalhes
+                            </a>
                         `;
-                    } else {
+                    }
+                    return;
+                }
+
+                if (isInstalled) {
+                    const needsUpdate = installedCode >= 0 && installedCode < targetCode;
+                    if (statusBadge) {
+                        statusBadge.style.display = 'inline-flex';
+                        if (needsUpdate) {
+                            statusBadge.className = 'badge-status badge-update';
+                            statusBadge.textContent = 'Atualizacao Disponivel';
+                        } else {
+                            statusBadge.className = 'badge-status badge-installed';
+                            statusBadge.textContent = '✓ Em Execucao';
+                        }
+                    }
+                    if (actionsContainer) {
+                        if (needsUpdate) {
+                            actionsContainer.innerHTML = `
+                                <button class="btn-download btn-update-action" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                    Atualizar (${targetName})
+                                </button>
+                                <a href="stoppstore.html" class="btn-secondary">Detalhes</a>
+                            `;
+                        } else {
+                            if (isDetailPage) {
+                                actionsContainer.innerHTML = `
+                                    <span class="tag" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600; padding: 12px 20px; border-radius: 12px; font-size: 0.95rem;">
+                                        ✓ Em Execucao (Esta Aplicacao)
+                                    </span>
+                                    <button class="btn-secondary btn-large" onclick="openSettingsModal()">
+                                        Definicoes da Loja
+                                    </button>
+                                `;
+                            } else {
+                                actionsContainer.innerHTML = `
+                                    <span class="tag" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600; padding: 10px 16px; border-radius: 12px; font-size: 0.88rem;">
+                                        ✓ Em Execucao
+                                    </span>
+                                    <a href="stoppstore.html" class="btn-secondary" title="Ver Detalhes da Aplicacao">
+                                        Detalhes
+                                    </a>
+                                `;
+                            }
+                        }
+                    }
+                } else {
+                    if (statusBadge) {
+                        statusBadge.style.display = 'inline-flex';
+                        statusBadge.className = 'badge-status badge-installed';
+                        statusBadge.textContent = 'App Oficial';
+                    }
+                    if (actionsContainer) {
                         if (isDetailPage) {
                             actionsContainer.innerHTML = `
-                                <span class="tag" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600; padding: 12px 20px; border-radius: 12px; font-size: 0.95rem;">
-                                    ✓ Em Execucao (Esta Aplicacao)
-                                </span>
-                                <button class="btn-secondary btn-large" onclick="openSettingsModal()">
-                                    Definicoes da Loja
+                                <button class="btn-download btn-large" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Instalar APK Nativo (${targetName})
+                                </button>
+                                <button class="btn-secondary btn-large" onclick="openAppModal()">
+                                    Ver Vantagens
                                 </button>
                             `;
                         } else {
                             actionsContainer.innerHTML = `
-                                <span class="tag" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600; padding: 10px 16px; border-radius: 12px; font-size: 0.88rem;">
-                                    ✓ Em Execucao
-                                </span>
+                                <button class="btn-download" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Instalar APK
+                                </button>
                                 <a href="stoppstore.html" class="btn-secondary" title="Ver Detalhes da Aplicacao">
                                     Detalhes
                                 </a>
@@ -555,131 +775,60 @@ function refreshAllAppStatus() {
                         }
                     }
                 }
-            } else {
+                return;
+            }
+
+            // Aplicacoes gerais (ex: Vera Watt)
+            if (isPC) {
+                // No computador PC: bloquear o APK Android e destacar a Area de Cliente Web
                 if (statusBadge) {
                     statusBadge.style.display = 'inline-flex';
                     statusBadge.className = 'badge-status badge-installed';
-                    statusBadge.textContent = 'App Oficial';
+                    statusBadge.textContent = 'Versao PC Web';
                 }
                 if (actionsContainer) {
                     if (isDetailPage) {
                         actionsContainer.innerHTML = `
-                            <button class="btn-download btn-large" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Instalar APK Nativo (${targetName})
-                            </button>
-                            <button class="btn-secondary btn-large" onclick="openAppModal()">
-                                Ver Vantagens
+                            <a href="https://gustavosanz.taila8ef3d.ts.net/2%C2%BA_Ano/VeraWatt/" target="_blank" rel="noopener" class="btn-download btn-large" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                Abrir Area de Cliente Web (PC)
+                            </a>
+                            <button class="btn-platform-restricted btn-large" onclick="showPlatformRestrictionModal('Vera Watt APK', 'android')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                                APK Bloqueado no PC
                             </button>
                         `;
                     } else {
                         actionsContainer.innerHTML = `
-                            <button class="btn-download" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Instalar APK
-                            </button>
-                            <a href="stoppstore.html" class="btn-secondary" title="Ver Detalhes da Aplicacao">
-                                Detalhes
+                            <a href="https://gustavosanz.taila8ef3d.ts.net/2%C2%BA_Ano/VeraWatt/" target="_blank" rel="noopener" class="btn-download" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                Area Web (PC)
                             </a>
-                        `;
-                    }
-                }
-            }
-            return;
-        }
-
-        if (!isInstalled) {
-            // Estado: Nao Instalada
-            if (statusBadge) {
-                statusBadge.style.display = 'none';
-            }
-
-            if (actionsContainer) {
-                if (isDetailPage) {
-                    actionsContainer.innerHTML = `
-                        <button class="btn-download btn-large" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Instalar APK (${targetName})
-                        </button>
-                        <a href="https://gustavosanz.taila8ef3d.ts.net/2%C2%BA_Ano/VeraWatt/" target="_blank" rel="noopener" class="btn-secondary btn-large">
-                            Area de Cliente Web
-                        </a>
-                    `;
-                } else {
-                    actionsContainer.innerHTML = `
-                        <button class="btn-download" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Instalar APK
-                        </button>
-                        <a href="verawatt.html" class="btn-secondary" title="Ver Detalhes e Screenshots">
-                            Detalhes
-                        </a>
-                    `;
-                }
-            }
-        } else {
-            // Estado: Instalada no dispositivo
-            const needsUpdate = installedCode >= 0 && installedCode < targetCode;
-
-            if (statusBadge) {
-                statusBadge.style.display = 'inline-flex';
-                if (needsUpdate) {
-                    statusBadge.className = 'badge-status badge-update';
-                    statusBadge.textContent = 'Atualizacao Disponivel';
-                } else {
-                    statusBadge.className = 'badge-status badge-installed';
-                    statusBadge.textContent = '✓ Instalada';
-                }
-            }
-
-            if (actionsContainer) {
-                if (needsUpdate) {
-                    // Tem atualizacao disponivel
-                    if (isDetailPage) {
-                        actionsContainer.innerHTML = `
-                            <button class="btn-download btn-large btn-update-action" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Atualizar (${targetName})
-                            </button>
-                            <button class="btn-open-app btn-large" onclick="openInstalledApp('${pkg}')">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                Abrir
-                            </button>
-                            <button class="btn-uninstall-app btn-large" onclick="uninstallInstalledApp('${pkg}', '${appName}')">
-                                Desinstalar
-                            </button>
-                            <a href="https://gustavosanz.taila8ef3d.ts.net/2%C2%BA_Ano/VeraWatt/" target="_blank" rel="noopener" class="btn-secondary btn-large">
-                                Area Web
-                            </a>
-                        `;
-                    } else {
-                        actionsContainer.innerHTML = `
-                            <button class="btn-download btn-update-action" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Atualizar
-                            </button>
-                            <button class="btn-open-app" onclick="openInstalledApp('${pkg}')">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                Abrir
-                            </button>
-                            <button class="btn-uninstall-app" onclick="uninstallInstalledApp('${pkg}', '${appName}')">
-                                Desinstalar
+                            <button class="btn-platform-restricted" onclick="showPlatformRestrictionModal('Vera Watt APK', 'android')">
+                                APK Bloqueado
                             </button>
                             <a href="verawatt.html" class="btn-secondary" title="Ver Detalhes">
                                 Detalhes
                             </a>
                         `;
                     }
-                } else {
-                    // Instalada e atualizada
+                }
+                return;
+            }
+
+            // Em ambiente Android (nativo ou navegador mobile)
+            if (!isInstalled) {
+                // Estado: Nao Instalada
+                if (statusBadge) {
+                    statusBadge.style.display = 'none';
+                }
+
+                if (actionsContainer) {
                     if (isDetailPage) {
                         actionsContainer.innerHTML = `
-                            <button class="btn-open-app btn-large" onclick="openInstalledApp('${pkg}')">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                Abrir Aplicacao
-                            </button>
-                            <button class="btn-uninstall-app btn-large" onclick="uninstallInstalledApp('${pkg}', '${appName}')">
-                                Desinstalar
+                            <button class="btn-download btn-large" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Instalar APK (${targetName})
                             </button>
                             <a href="https://gustavosanz.taila8ef3d.ts.net/2%C2%BA_Ano/VeraWatt/" target="_blank" rel="noopener" class="btn-secondary btn-large">
                                 Area de Cliente Web
@@ -687,24 +836,156 @@ function refreshAllAppStatus() {
                         `;
                     } else {
                         actionsContainer.innerHTML = `
-                            <button class="btn-open-app" onclick="openInstalledApp('${pkg}')">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                Abrir
+                            <button class="btn-download" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Instalar APK
                             </button>
-                            <button class="btn-uninstall-app" onclick="uninstallInstalledApp('${pkg}', '${appName}')">
-                                Desinstalar
-                            </button>
-                            <a href="verawatt.html" class="btn-secondary" title="Ver Detalhes">
+                            <a href="verawatt.html" class="btn-secondary" title="Ver Detalhes e Screenshots">
                                 Detalhes
                             </a>
                         `;
                     }
                 }
+            } else {
+                // Estado: Instalada no dispositivo
+                const needsUpdate = installedCode >= 0 && installedCode < targetCode;
+
+                if (statusBadge) {
+                    statusBadge.style.display = 'inline-flex';
+                    if (needsUpdate) {
+                        statusBadge.className = 'badge-status badge-update';
+                        statusBadge.textContent = 'Atualizacao Disponivel';
+                    } else {
+                        statusBadge.className = 'badge-status badge-installed';
+                        statusBadge.textContent = '✓ Instalada';
+                    }
+                }
+
+                if (actionsContainer) {
+                    if (needsUpdate) {
+                        // Tem atualizacao disponivel
+                        if (isDetailPage) {
+                            actionsContainer.innerHTML = `
+                                <button class="btn-download btn-large btn-update-action" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Atualizar (${targetName})
+                                </button>
+                                <button class="btn-open-app btn-large" onclick="openInstalledApp('${pkg}')">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                    Abrir
+                                </button>
+                                <button class="btn-uninstall-app btn-large" onclick="uninstallInstalledApp('${pkg}', '${appName}')">
+                                    Desinstalar
+                                </button>
+                                <a href="https://gustavosanz.taila8ef3d.ts.net/2%C2%BA_Ano/VeraWatt/" target="_blank" rel="noopener" class="btn-secondary btn-large">
+                                    Area Web
+                                </a>
+                            `;
+                        } else {
+                            actionsContainer.innerHTML = `
+                                <button class="btn-download btn-update-action" onclick="triggerAppDownload('${appName}', '${apkUrl}', ${apkSize})">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Atualizar
+                                </button>
+                                <button class="btn-open-app" onclick="openInstalledApp('${pkg}')">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                    Abrir
+                                </button>
+                                <button class="btn-uninstall-app" onclick="uninstallInstalledApp('${pkg}', '${appName}')">
+                                    Desinstalar
+                                </button>
+                                <a href="verawatt.html" class="btn-secondary" title="Ver Detalhes">
+                                    Detalhes
+                                </a>
+                            `;
+                        }
+                    } else {
+                        // Instalada e atualizada
+                        if (isDetailPage) {
+                            actionsContainer.innerHTML = `
+                                <button class="btn-open-app btn-large" onclick="openInstalledApp('${pkg}')">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                    Abrir Aplicacao
+                                </button>
+                                <button class="btn-uninstall-app btn-large" onclick="uninstallInstalledApp('${pkg}', '${appName}')">
+                                    Desinstalar
+                                </button>
+                                <a href="https://gustavosanz.taila8ef3d.ts.net/2%C2%BA_Ano/VeraWatt/" target="_blank" rel="noopener" class="btn-secondary btn-large">
+                                    Area de Cliente Web
+                                </a>
+                            `;
+                        } else {
+                            actionsContainer.innerHTML = `
+                                <button class="btn-open-app" onclick="openInstalledApp('${pkg}')">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                    Abrir
+                                </button>
+                                <button class="btn-uninstall-app" onclick="uninstallInstalledApp('${pkg}', '${appName}')">
+                                    Desinstalar
+                                </button>
+                                <a href="verawatt.html" class="btn-secondary" title="Ver Detalhes">
+                                    Detalhes
+                                </a>
+                            `;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 4. Gestao de Restricao para Apps de PC (ex: Sons of Echoes)
+    const sonsActions = document.getElementById('actions-sons-of-echoes');
+    const sonsBadge = document.getElementById('badge-status-sons-of-echoes');
+    const isSonsDetailPage = window.location.pathname.includes('sons-of-echoes');
+
+    if (isAndroid) {
+        if (sonsBadge) {
+            sonsBadge.textContent = 'Exclusivo PC';
+            sonsBadge.className = 'badge-platform-restricted';
+            sonsBadge.style.display = 'inline-flex';
+        }
+        if (sonsActions) {
+            sonsActions.innerHTML = `
+                <button class="btn-platform-restricted" onclick="showPlatformRestrictionModal('Sons of Echoes', 'pc')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                    Apenas para PC
+                </button>
+                <a href="sons-of-echoes.html" class="btn-secondary" title="Ver Detalhes e Screenshots">
+                    Detalhes
+                </a>
+            `;
+        }
+        if (isSonsDetailPage) {
+            const detailActions = document.querySelector('.detail-actions');
+            if (detailActions) {
+                detailActions.innerHTML = `
+                    <button class="btn-platform-restricted btn-large" onclick="showPlatformRestrictionModal('Sons of Echoes', 'pc')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                        Incompativel com Android (Apenas PC Windows)
+                    </button>
+                `;
             }
         }
-    });
+    } else {
+        if (sonsBadge) {
+            sonsBadge.style.display = 'none';
+        }
+        if (sonsActions && !sonsActions.innerHTML.includes('Jogar / Demo')) {
+            sonsActions.innerHTML = `
+                <button class="btn-download" onclick="triggerAppDownload('Sons of Echoes (Alpha)', null, 120)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Jogar / Demo
+                </button>
+                <a href="sons-of-echoes.html" class="btn-secondary" title="Ver Detalhes e Screenshots">
+                    Detalhes
+                </a>
+            `;
+        }
     }
+
     renderAppManager();
+}
 }
 
 function openInstalledApp(packageName) {
@@ -733,14 +1014,26 @@ async function checkStoreUpdatesOnly(isManual = false) {
         // Verificacao apenas da Stopp Store
         const currentStoreCode = StoppBridge.getStoreVersionCode();
         if (data.store_version_code > currentStoreCode) {
+            let changelogHtml = '';
+            if (data.store_changelog && Array.isArray(data.store_changelog) && data.store_changelog.length) {
+                changelogHtml = `
+                    <div class="store-changelog-box" style="margin-top: 10px; margin-bottom: 12px;">
+                        <strong>Changelog Obrigatorio da Loja (v${data.store_version_name}):</strong>
+                        <ul>
+                            ${data.store_changelog.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
             if (statusText) {
                 statusText.className = 'store-status-text status-update';
-                statusText.textContent = 'Nova versao da Stopp Store disponivel: v' + data.store_version_name;
+                statusText.innerHTML = `Nova versao da Stopp Store disponivel: <strong>v${data.store_version_name}</strong>${changelogHtml}`;
             }
             if (updateActionBtn) {
                 updateActionBtn.style.display = 'block';
                 updateActionBtn.onclick = () => {
-                    triggerAppDownload('Stopp Store', data.store_apk_url, 15);
+                    triggerAppDownload('Stopp Store', data.store_apk_url, 1);
                 };
             }
             
@@ -797,6 +1090,7 @@ async function checkAllAppUpdates(notifyUser = true) {
                     if (appMeta.version_name) reg.targetName = appMeta.version_name;
                     if (appMeta.apk_url) reg.apkUrl = appMeta.apk_url;
                     if (appMeta.size_mb) reg.size = appMeta.size_mb;
+                    if (appMeta.changelog) reg.changelog = appMeta.changelog;
                 }
 
                 if (StoppBridge.isAppInstalled(pkg)) {
@@ -1106,6 +1400,16 @@ document.addEventListener('click', (e) => {
     if (managerModal && e.target === managerModal) {
         closeAppManagerModal();
     }
+
+    const celebrationModal = document.getElementById('install-celebration-modal');
+    if (celebrationModal && e.target === celebrationModal) {
+        closeCelebrationModal();
+    }
+
+    const restrictionModal = document.getElementById('platform-restriction-modal');
+    if (restrictionModal && e.target === restrictionModal) {
+        closePlatformRestrictionModal();
+    }
 });
 
 // Expor funcoes globais
@@ -1129,3 +1433,11 @@ window.refreshAllAppStatus = refreshAllAppStatus;
 window.checkStoreUpdatesOnly = checkStoreUpdatesOnly;
 window.checkAllAppUpdates = checkAllAppUpdates;
 window.StoppNotifications = StoppNotifications;
+window.isAndroidPlatform = isAndroidPlatform;
+window.isPCPlatform = isPCPlatform;
+window.showPlatformRestrictionModal = showPlatformRestrictionModal;
+window.closePlatformRestrictionModal = closePlatformRestrictionModal;
+window.onAppInstalledSuccess = onAppInstalledSuccess;
+window.handleCelebrationOpen = handleCelebrationOpen;
+window.closeCelebrationModal = closeCelebrationModal;
+window.createCelebrationConfetti = createCelebrationConfetti;

@@ -1822,3 +1822,205 @@ body.is-native-app #btn-pwa-install {
     font-size: 0.88rem;
 }
 
+/* ============================================================
+   PLATFORM RESTRICTIONS, POST-INSTALL CELEBRATION & CHANGELOG
+   ============================================================ */
+
+/* Platform Restriction Buttons & Badges */
+.btn-platform-restricted {
+    padding: 13px 20px;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 14px;
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.btn-platform-restricted:hover {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: rgba(245, 158, 11, 0.6);
+    color: #fde68a;
+    transform: translateY(-1px);
+}
+
+.btn-platform-restricted svg {
+    flex-shrink: 0;
+}
+
+.badge-platform-restricted {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #fbbf24;
+}
+
+/* Post-Installation Celebration Modal */
+.modal-celebration {
+    max-width: 440px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2.2rem 2rem;
+}
+
+.celebration-badge-wrap {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 1.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.celebration-pulse-glow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.55) 0%, rgba(16, 185, 129, 0) 70%);
+    animation: celebrationPulse 2s infinite ease-out;
+}
+
+@keyframes celebrationPulse {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.35);
+        opacity: 0.25;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+.celebration-icon-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(14, 165, 233, 0.2));
+    border: 2px solid #10b981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    animation: celebrationBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes celebrationBounce {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-celebration h3 {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 0.6rem;
+}
+
+.modal-celebration-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+/* Mandatory Developer Changelog Boxes */
+.manager-changelog-box {
+    margin-top: 10px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 12px;
+    padding: 10px 14px;
+    text-align: left;
+}
+
+.manager-changelog-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #34d399;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.manager-changelog-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+.manager-changelog-list li {
+    margin-bottom: 3px;
+}
+
+.store-changelog-box {
+    margin-top: 12px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(14, 165, 233, 0.25);
+    border-radius: 12px;
+    padding: 12px 14px;
+    text-align: left;
+}
+
+.store-changelog-box strong {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.store-changelog-box ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+.store-changelog-box li {
+    margin-bottom: 4px;
+}
+
+.no-changelog-warning {
+    color: #f87171 !important;
+    font-style: italic;
+}
+
+
