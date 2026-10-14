@@ -2765,13 +2765,43 @@ body.is-native-app #app-features-modal {
     margin-bottom: 22px;
 }
 
+.splash-skip-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(14, 165, 233, 0.2));
+    border: 1.5px solid rgba(16, 185, 129, 0.55);
+    border-radius: 999px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-bottom: 12px;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.splash-skip-button:hover,
+.splash-skip-button:active {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.45), rgba(14, 165, 233, 0.35));
+    border-color: #34d399;
+    box-shadow: 0 6px 26px rgba(16, 185, 129, 0.55);
+}
+
 .splash-skip-hint {
     font-size: 0.72rem;
     color: #475569;
     letter-spacing: 1px;
     text-transform: uppercase;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
-    padding-top: 10px;
+    padding-top: 8px;
 }
 
 /* 2. Compact Modern Header & Quick Action Pills */

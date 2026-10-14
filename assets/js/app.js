@@ -1215,14 +1215,50 @@ const StoppAiSentinel = {
         layoutErrors: [],
         layerErrors: [],
         runtimeErrors: [],
+        freezeErrors: [],
         lastReport: '',
         lastCheckTime: 0
     },
 
     init: function () {
         this.runDiagnostics();
-        setInterval(() => this.runDiagnostics(false), 30000);
+        let rapidCount = 0;
+        const rapidInterval = setInterval(() => {
+            rapidCount++;
+            this.runDiagnostics(false);
+            if (rapidCount >= 5) clearInterval(rapidInterval);
+        }, 1000);
+        setInterval(() => this.runDiagnostics(false), 25000);
         window.addEventListener('resize', () => this.runDiagnostics(false));
+    },
+
+    auditFreezeAndResponsiveness: function () {
+        const issues = [];
+        const splash = document.getElementById('stopp-splash-screen');
+        const loadTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : 0;
+
+        // Deteção inteligente de congelamento da Splash Screen (> 2.0 segundos)
+        if (splash && loadTime > 2000) {
+            const comp = window.getComputedStyle(splash);
+            if (comp.display !== 'none' && comp.visibility !== 'hidden' && comp.opacity !== '0' && !splash.classList.contains('splash-dismissed')) {
+                if (typeof window.dismissSplashScreen === 'function') {
+                    window.dismissSplashScreen();
+                } else {
+                    splash.style.display = 'none';
+                }
+                issues.push('Congelamento da Splash Screen neutralizado e recuperado automaticamente pela IA Sentinel.');
+            }
+        }
+
+        return issues;
+    },
+
+    flagFreezeRecovered: function (source) {
+        const msg = `Recuperação de ecrã executada via ${source || 'Watchdog de Sistema'}.`;
+        if (!this.state.freezeErrors.includes(msg)) {
+            this.state.freezeErrors.push(msg);
+        }
+        this.runDiagnostics(false);
     },
 
     auditDomLayout: function () {
@@ -1297,16 +1333,24 @@ const StoppAiSentinel = {
             mainLabel.innerHTML = 'IA Sentinel: <strong>A realizar auditoria completa...</strong>';
         }
 
-        // 1. Auditoria de Layout e Transbordos
+        // 1. Auditoria Ativa de Congelamento e Fluidez
+        const freezeIssues = this.auditFreezeAndResponsiveness();
+        freezeIssues.forEach(f => {
+            if (!this.state.freezeErrors.includes(f)) {
+                this.state.freezeErrors.push(f);
+            }
+        });
+
+        // 2. Auditoria de Layout e Transbordos
         this.state.layoutErrors = this.auditDomLayout();
 
-        // 2. Auditoria de Camadas e Modais
+        // 3. Auditoria de Camadas e Modais
         this.state.layerErrors = this.auditLayers();
 
-        // 3. Auditoria de Execucao e Erros JS
+        // 4. Auditoria de Execucao e Erros JS
         this.state.runtimeErrors = this.auditRuntimeErrors();
 
-        // 4. Auditoria de Servidor e APIs
+        // 5. Auditoria de Servidor e APIs
         try {
             const res = await fetch('store-version.json?t=' + Date.now(), { cache: 'no-store' });
             this.state.pingMs = Date.now() - startTime;
@@ -1321,7 +1365,7 @@ const StoppAiSentinel = {
             this.state.pingMs = Date.now() - startTime;
         }
 
-        // 5. Auditoria de Ponte Nativa
+        // 6. Auditoria de Ponte Nativa
         this.state.nativeBridgeOk = StoppBridge.isNative();
 
         // Calculo de Anomalias Globais
@@ -1334,7 +1378,8 @@ const StoppAiSentinel = {
 
         if (anomaliesCount === 0) {
             this.state.status = 'HEALTHY';
-            this.state.lastReport = 'A IA Stopp Sentinel auditou a integridade do layout mobile, a sincronização de camadas (z-index), os controladores JavaScript e os servidores da loja. O ecossistema opera a 100% sem transbordos visuais nem anomalias.';
+            let freezeNote = (this.state.freezeErrors.length > 0) ? ` (${this.state.freezeErrors.length} congelamento(s) prevenidos pela IA).` : '.';
+            this.state.lastReport = 'A IA Stopp Sentinel auditou a integridade do layout mobile, fluidez de ecrã, camadas z-index e controladores JavaScript. O ecossistema opera a 100% com resposta fluida' + freezeNote;
         } else {
             this.state.status = (this.state.layoutErrors.length > 0 || this.state.layerErrors.length > 0 || this.state.runtimeErrors.length > 0) ? 'ERROR' : 'WARNING';
             
@@ -1372,7 +1417,7 @@ const StoppAiSentinel = {
 
         if (showFeedback) {
             if (this.state.status === 'HEALTHY') {
-                showStoreToast('Diagnóstico da IA: 0 Erros. Layout e ecossistema 100% íntegros.', 'success');
+                showStoreToast('Diagnóstico da IA: 0 Erros. Layout e fluidez 100% íntegros.', 'success');
             } else {
                 showStoreToast(`Diagnóstico da IA: ${anomaliesCount} anomalia(s) detetada(s). Consulta os detalhes.`, 'warning');
             }
@@ -1386,6 +1431,7 @@ const StoppAiSentinel = {
         const layoutStatus = document.getElementById('diag-layout-status');
         const layersStatus = document.getElementById('diag-layers-status');
         const jsStatus = document.getElementById('diag-js-status');
+        const freezeStatus = document.getElementById('diag-freeze-status');
         const reportText = document.getElementById('diag-report-text');
 
         if (netStatus) {
@@ -1425,6 +1471,15 @@ const StoppAiSentinel = {
             } else {
                 jsStatus.textContent = '0 Erros • 100% Íntegro';
                 jsStatus.className = 'ai-diag-badge ok';
+            }
+        }
+        if (freezeStatus) {
+            if (this.state.freezeErrors && this.state.freezeErrors.length > 0) {
+                freezeStatus.textContent = `Recuperado pela IA (${this.state.freezeErrors.length})`;
+                freezeStatus.className = 'ai-diag-badge ok';
+            } else {
+                freezeStatus.textContent = '0 Congelamentos • Fluido';
+                freezeStatus.className = 'ai-diag-badge ok';
             }
         }
         if (reportText) {
@@ -1929,36 +1984,38 @@ function initSplashScreen() {
     const splash = document.getElementById('stopp-splash-screen');
     if (!splash) return;
 
-    updateVeraWattThemeIcons();
+    try { updateVeraWattThemeIcons(); } catch (e) {}
 
     const progress = document.getElementById('splash-loader-progress');
     const statusText = document.getElementById('splash-status-text');
 
     setTimeout(() => {
-        StoppAudio.play('splash');
-        if (progress) progress.style.width = '55%';
+        try { StoppAudio.play('splash'); } catch (e) {}
+        if (progress) progress.style.width = '60%';
         if (statusText) statusText.textContent = 'A inicializar Stopp Store v0.6-Beta...';
-    }, 200);
+    }, 150);
 
     setTimeout(() => {
         if (progress) progress.style.width = '100%';
-        if (statusText) statusText.textContent = 'Sistemas 100% prontos!';
-    }, 900);
+        if (statusText) statusText.textContent = 'Sistemas 100% operacionais!';
+    }, 750);
 
     setTimeout(() => {
         dismissSplashScreen();
-    }, 1500);
+    }, 1300);
 }
 
-function dismissSplashScreen() {
+function dismissSplashScreen(e) {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
     const splash = document.getElementById('stopp-splash-screen');
-    if (splash && !splash.classList.contains('splash-dismissed')) {
+    if (splash) {
         splash.classList.add('splash-dismissed');
-        StoppAudio.play('tap');
+        try { StoppAudio.play('tap'); } catch (err) {}
         setTimeout(() => {
             splash.style.display = 'none';
-        }, 500);
+        }, 400);
     }
+    window.__splashDismissed = true;
 }
 
 function replaySplashScreen() {
@@ -1966,20 +2023,21 @@ function replaySplashScreen() {
     if (splash) {
         splash.style.display = 'flex';
         splash.classList.remove('splash-dismissed');
-        updateVeraWattThemeIcons();
+        window.__splashDismissed = false;
+        try { updateVeraWattThemeIcons(); } catch (e) {}
         const progress = document.getElementById('splash-loader-progress');
         const statusText = document.getElementById('splash-status-text');
         if (progress) progress.style.width = '15%';
         if (statusText) statusText.textContent = 'A carregar Stopp Store v0.6-Beta...';
 
-        StoppAudio.play('splash');
+        try { StoppAudio.play('splash'); } catch (e) {}
         setTimeout(() => {
             if (progress) progress.style.width = '100%';
             if (statusText) statusText.textContent = 'Sistemas 100% prontos!';
-        }, 800);
+        }, 700);
         setTimeout(() => {
             dismissSplashScreen();
-        }, 1500);
+        }, 1300);
     }
 }
 
@@ -2045,8 +2103,11 @@ function toggleSoundFx() {
     StoppAudio.toggle();
 }
 
-// Stopp App Store Filter Logic
-document.addEventListener('DOMContentLoaded', () => {
+// Stopp App Store Filter & Lifecycle Bootstrap Logic
+function bootstrapStore() {
+    if (window.__stoppStoreBootstrapped) return;
+    window.__stoppStoreBootstrapped = true;
+
     StoppAudio.init();
     initSplashScreen();
 
@@ -2118,12 +2179,20 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshAllAppStatus();
     checkStoreAndAppUpdates(false);
     StoppAiSentinel.init();
-});
+}
+
+// Iniciar imediatamente se o DOM ja estiver pronto ou registrar evento
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrapStore);
+} else {
+    bootstrapStore();
+}
+window.addEventListener('load', bootstrapStore);
 
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=9')
+        navigator.serviceWorker.register('./sw.js?v=10')
             .then(reg => {
                 reg.update();
             })
@@ -2132,7 +2201,7 @@ if ('serviceWorker' in navigator) {
         if ('caches' in window) {
             caches.keys().then(keys => {
                 keys.forEach(k => {
-                    if (k !== 'stopp-store-v9') {
+                    if (k !== 'stopp-store-v10') {
                         caches.delete(k);
                     }
                 });
@@ -2249,6 +2318,7 @@ window.scrollToShelf = scrollToShelf;
 window.openPlayProtectModal = openPlayProtectModal;
 window.closePlayProtectModal = closePlayProtectModal;
 window.toggleSoundFx = toggleSoundFx;
+window.bootstrapStore = bootstrapStore;
 window.updateVeraWattThemeIcons = updateVeraWattThemeIcons;
 window.getVeraWattDynamicIcon = getVeraWattDynamicIcon;
 

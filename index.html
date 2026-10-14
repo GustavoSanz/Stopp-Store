@@ -23,7 +23,7 @@
 </head>
 <body>
     <!-- Stopp Store Splash & App Entry Animation -->
-    <div id="stopp-splash-screen" class="stopp-splash-screen" onclick="dismissSplashScreen()" title="Toca para entrar imediatamente">
+    <div id="stopp-splash-screen" class="stopp-splash-screen" onclick="dismissSplashScreen(event)" ontouchstart="dismissSplashScreen(event)" title="Toca para entrar imediatamente">
         <div class="splash-backdrop-glow"></div>
         <div class="splash-card">
             <div class="splash-logo-container">
@@ -43,9 +43,32 @@
                 <div class="splash-loader-progress" id="splash-loader-progress"></div>
             </div>
             <div class="splash-status-text" id="splash-status-text">A inicializar Stopp Store v0.6-Beta...</div>
-            <div class="splash-skip-hint">Toca no ecrã para avançar</div>
+            <button type="button" class="splash-skip-button" id="splash-skip-button" onclick="dismissSplashScreen(event)" ontouchstart="dismissSplashScreen(event)" aria-label="Entrar na Loja">
+                <span>Entrar na Loja</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+            <div class="splash-skip-hint">Toca em qualquer lugar para avançar</div>
         </div>
     </div>
+    <script>
+        // Watchdog Imediato Anti-Congelamento da Splash Screen
+        (function() {
+            window.__splashDismissed = false;
+            window.dismissSplashScreen = function(e) {
+                if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+                var s = document.getElementById('stopp-splash-screen');
+                if (s && !window.__splashDismissed) {
+                    window.__splashDismissed = true;
+                    s.classList.add('splash-dismissed');
+                    setTimeout(function() { s.style.display = 'none'; }, 400);
+                }
+            };
+            // Temporizador de Seguranca Absoluto (maximo 2.2 segundos)
+            setTimeout(function() {
+                window.dismissSplashScreen();
+            }, 2200);
+        })();
+    </script>
 
     <div class="glow-bg">
         <div class="glow-orb glow-1"></div>
@@ -806,6 +829,14 @@
                     <p>Compilação e execução dos controladores JavaScript</p>
                 </div>
                 <span class="ai-diag-badge ok" id="diag-js-status">0 Erros • 100% Íntegro</span>
+            </div>
+
+            <div class="ai-diag-card">
+                <div class="ai-diag-info">
+                    <h5>Fluidez da UI &amp; Anti-Congelamento</h5>
+                    <p>Deteção ativa de bloqueios de ecrã e tempo de carregamento</p>
+                </div>
+                <span class="ai-diag-badge ok" id="diag-freeze-status">0 Congelamentos • Fluido</span>
             </div>
 
             <div class="ai-report-box">
