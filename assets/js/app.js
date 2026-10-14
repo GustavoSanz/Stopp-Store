@@ -613,13 +613,18 @@ function openAppManagerModal() {
     const modal = document.getElementById('app-manager-modal');
     if (!modal) return;
 
-    renderAppManager();
-    modal.classList.add('active');
+    // Mostrar o modal imediatamente para feedback visual
     modal.style.display = 'flex';
-    modal.style.opacity = '1';
-    modal.style.visibility = 'visible';
     document.body.style.overflow = 'hidden';
     syncModalBodyState();
+
+    // Adiar manipulacao pesada do DOM para apos o browser pintar a transicao
+    requestAnimationFrame(() => {
+        modal.classList.add('active');
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        renderAppManager();
+    });
 }
 
 function closeAppManagerModal() {
@@ -1215,15 +1220,12 @@ const StoppAiSentinel = {
     },
 
     init: function () {
-        this.runDiagnostics();
-        let rapidCount = 0;
-        const rapidInterval = setInterval(() => {
-            rapidCount++;
-            this.runDiagnostics(false);
-            if (rapidCount >= 5) clearInterval(rapidInterval);
-        }, 1000);
-        setInterval(() => this.runDiagnostics(false), 25000);
-        window.addEventListener('resize', () => this.runDiagnostics(false));
+        // Adiar o primeiro diagnostico para nao bloquear interacoes iniciais
+        setTimeout(() => {
+            this.runDiagnostics();
+        }, 3000);
+        // Verificacao periodica a cada 60 segundos (era 25s com 5 ciclos rapidos no arranque)
+        setInterval(() => this.runDiagnostics(false), 60000);
     },
 
     auditFreezeAndResponsiveness: function () {
@@ -1485,13 +1487,19 @@ const StoppAiSentinel = {
 function openAiDiagnosticModal() {
     const modal = document.getElementById('ai-diagnostic-modal');
     if (!modal) return;
-    document.body.classList.add('modal-open');
-    StoppAiSentinel.runDiagnostics(false);
-    modal.classList.add('active');
+
+    // Mostrar o modal imediatamente para feedback visual
     modal.style.display = 'flex';
-    modal.style.opacity = '1';
-    modal.style.visibility = 'visible';
+    document.body.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
+
+    // Adiar activacao e diagnostico para apos o browser pintar
+    requestAnimationFrame(() => {
+        modal.classList.add('active');
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        StoppAiSentinel.runDiagnostics(false);
+    });
 }
 
 function closeAiDiagnosticModal() {
@@ -1835,14 +1843,18 @@ function openSettingsModal() {
     const modal = document.getElementById('settings-modal');
     if (!modal) return;
 
-    modal.classList.add('active');
+    // Mostrar o modal imediatamente para feedback visual
     modal.style.display = 'flex';
-    modal.style.opacity = '1';
-    modal.style.visibility = 'visible';
     document.body.style.overflow = 'hidden';
     syncModalBodyState();
 
-    renderSettingsOverview();
+    // Adiar renderizacao pesada para apos o browser pintar a transicao
+    requestAnimationFrame(() => {
+        modal.classList.add('active');
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        renderSettingsOverview();
+    });
 }
 
 function closeSettingsModal() {
@@ -2264,12 +2276,17 @@ function openPlayProtectModal() {
     StoppAudio.play('tap');
     const modal = document.getElementById('modal-play-protect');
     if (modal) {
-        modal.classList.add('active');
+        // Mostrar o modal imediatamente para feedback visual
         modal.style.display = 'flex';
-        modal.style.opacity = '1';
-        modal.style.visibility = 'visible';
         document.body.style.overflow = 'hidden';
         syncModalBodyState();
+
+        // Adiar activacao para apos o browser pintar a transicao
+        requestAnimationFrame(() => {
+            modal.classList.add('active');
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+        });
     }
 }
 
@@ -2375,7 +2392,9 @@ if (document.readyState === 'loading') {
 } else {
     bootstrapStore();
 }
-window.addEventListener('load', bootstrapStore);
+// Nota: nao registar window.load como segundo gatilho - o guard __stoppStoreBootstrapped protege,
+// mas o duplo registo gerava uma race condition desnecessaria no arranque.
+
 
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
