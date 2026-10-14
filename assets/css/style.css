@@ -2632,25 +2632,25 @@ body.is-native-app #app-features-modal {
 
 .splash-logo-container {
     position: relative;
-    width: 96px;
-    height: 96px;
+    width: 110px;
+    height: 110px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .splash-ripple-ring {
     position: absolute;
     inset: -12px;
     border-radius: 34px;
-    border: 2px solid rgba(16, 185, 129, 0.4);
+    border: 2px solid rgba(16, 185, 129, 0.45);
     animation: ripplePulse 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
 .splash-ripple-ring.ring-2 {
     inset: -22px;
-    border-color: rgba(14, 165, 233, 0.3);
+    border-color: rgba(14, 165, 233, 0.35);
     animation-delay: 0.6s;
 }
 
@@ -2659,50 +2659,60 @@ body.is-native-app #app-features-modal {
     100% { transform: scale(1.3); opacity: 0; }
 }
 
-.splash-logo-symbol {
-    width: 84px;
-    height: 84px;
-    background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
-    border-radius: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.8rem;
-    font-weight: 900;
-    color: #ffffff;
-    box-shadow: 0 12px 35px rgba(16, 185, 129, 0.45);
-    animation: splashLogoEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.splash-verawatt-logo {
+    max-width: 96px;
+    max-height: 96px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 30px rgba(16, 185, 129, 0.6));
+    animation: splashLogoEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes splashLogoEntrance {
-    0% { transform: scale(0.4) rotate(-10deg); opacity: 0; }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    0% { transform: scale(0.4) rotate(-8deg); opacity: 0; filter: blur(4px); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 10px 30px rgba(16, 185, 129, 0.6)); }
 }
 
-.splash-brand-title {
-    font-size: 2rem;
-    font-weight: 900;
-    letter-spacing: 2px;
-    color: #ffffff;
-    margin: 0 0 6px 0;
-    background: linear-gradient(135deg, #ffffff 40%, #38bdf8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.splash-verawatt-typography {
+    max-width: 210px;
+    height: auto;
+    object-fit: contain;
+    margin: 8px 0 14px 0;
+    filter: drop-shadow(0 4px 18px rgba(14, 165, 233, 0.45));
+    animation: splashTypographyEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.splash-brand-title span {
-    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+@keyframes splashTypographyEntrance {
+    0% { transform: translateY(14px) scale(0.95); opacity: 0; filter: blur(5px); }
+    100% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 4px 18px rgba(14, 165, 233, 0.45)); }
 }
 
-.splash-brand-sub {
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 2.5px;
+.splash-ecosystem-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin: 0 0 24px 0;
+    margin-bottom: 20px;
+}
+
+.splash-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+}
+
+/* Icones Adaptativos ao Tema do Utilizador */
+.verawatt-theme-icon {
+    transition: opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease;
 }
 
 .splash-loader-bar {

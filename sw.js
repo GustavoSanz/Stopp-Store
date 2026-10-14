@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stopp-store-v8';
+const CACHE_NAME = 'stopp-store-v9';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -14,6 +14,10 @@ const STATIC_ASSETS = [
   './assets/img/verawatt_title.svg',
   './assets/img/verawatt_icon_4x.png',
   './assets/img/verawatt_typography_4x.png',
+  './assets/img/verawatt_ativo1_4x.png',
+  './assets/img/verawatt_ativo2_4x.png',
+  './assets/img/verawatt_logo_4x.png',
+  './assets/img/verawatt_tipo1_4x.png',
   './manifest.webmanifest'
 ];
 

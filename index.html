@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stopp App Store | Software & Experimental Projects</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=13">
+    <link rel="stylesheet" href="assets/css/style.css?v=14">
     <link rel="icon" type="image/svg+xml" href="assets/img/icon.svg">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
     <link rel="manifest" href="manifest.webmanifest">
@@ -29,14 +29,17 @@
             <div class="splash-logo-container">
                 <div class="splash-ripple-ring"></div>
                 <div class="splash-ripple-ring ring-2"></div>
-                <div class="splash-logo-symbol">S</div>
+                <img src="assets/img/verawatt_logo_4x.png" alt="Vera Watt Logo" class="splash-verawatt-logo" id="splash-verawatt-logo">
             </div>
-            <h1 class="splash-brand-title">STOPP<span>.STORE</span></h1>
-            <p class="splash-brand-sub">Developer Hub &amp; Applications</p>
+            <img src="assets/img/verawatt_tipo1_4x.png" alt="Vera Watt" class="splash-verawatt-typography" id="splash-verawatt-typography">
+            <div class="splash-ecosystem-pill">
+                <span class="splash-dot"></span>
+                <span>STOPP STORE &bull; v0.5-Beta</span>
+            </div>
             <div class="splash-loader-bar">
                 <div class="splash-loader-progress" id="splash-loader-progress"></div>
             </div>
-            <div class="splash-status-text" id="splash-status-text">A inicializar ecossistema v0.4-Beta...</div>
+            <div class="splash-status-text" id="splash-status-text">A carregar Vera Watt &amp; Stopp Ecosystem v0.5-Beta...</div>
             <div class="splash-skip-hint">Toca no ecrã para avançar</div>
         </div>
     </div>
@@ -54,7 +57,7 @@
                 <div class="brand-text">
                     <div style="display: flex; align-items: center;">
                         <h1>STOPP<span>.STORE</span></h1>
-                        <span class="brand-version-pill">v0.4-Beta</span>
+                        <span class="brand-version-pill">v0.5-Beta</span>
                     </div>
                     <p>Developer Hub &amp; Applications</p>
                 </div>
@@ -224,19 +227,19 @@
             </article>
 
             <!-- App 1: Vera Watt -->
-            <article class="app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="4" data-target-version-name="0.4-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.4-Beta.apk" data-apk-size="67" data-category="android pc energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
+            <article class="app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="5" data-target-version-name="0.5-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.5-Beta.apk" data-apk-size="67" data-category="android pc energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
                 <div>
                     <div class="card-header">
                         <div class="app-icon icon-verawatt" title="Vera Watt" style="border: none; background: transparent; padding: 0;">
-                            <img src="assets/img/verawatt_icon_4x.png" alt="Vera Watt" style="width: 100%; height: 100%; border-radius: 18px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);">
+                            <img src="assets/img/verawatt_ativo2_4x.png" alt="Vera Watt" class="verawatt-theme-icon" id="verawatt-card-icon" style="width: 100%; height: 100%; border-radius: 18px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);">
                         </div>
                         <div class="app-header-badges">
-                            <span class="badge-version badge-green">v0.4-Beta</span>
+                            <span class="badge-version badge-green">v0.5-Beta</span>
                             <span class="badge-status" id="badge-status-com.vera_watt" style="display: none;"></span>
                         </div>
                     </div>
 
-                    <img src="assets/img/verawatt_title.svg" alt="Vera Watt" class="game-title-banner verawatt-title-banner">
+                    <img src="assets/img/verawatt_tipo1_4x.png" alt="Vera Watt" class="game-title-banner verawatt-title-banner">
 
                     <h3 class="app-title" style="display: none;">Vera Watt</h3>
                     <div class="app-tags">
@@ -269,7 +272,7 @@
                 </div>
 
                 <div class="card-actions" id="actions-com.vera_watt">
-                    <button class="btn-download" onclick="triggerAppDownload('Vera Watt', 'assets/apks/VeraWatt-v0.4-Beta.apk', 67)">
+                    <button class="btn-download" onclick="triggerAppDownload('Vera Watt', 'assets/apks/VeraWatt-v0.5-Beta.apk', 67)">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Instalar APK
                     </button>
@@ -928,7 +931,7 @@
         </button>
     </nav>
 
-    <script src="assets/js/app.js?v=13"></script>
-    <script src="assets/js/download.js?v=13"></script>
+    <script src="assets/js/app.js?v=14"></script>
+    <script src="assets/js/download.js?v=14"></script>
 </body>
 </html>

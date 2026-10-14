@@ -60,8 +60,8 @@ if (typeof MutationObserver !== 'undefined') {
     }
 }
 
-const CURRENT_STORE_VERSION_CODE = 4;
-const CURRENT_STORE_VERSION_NAME = "0.4-Beta";
+const CURRENT_STORE_VERSION_CODE = 5;
+const CURRENT_STORE_VERSION_NAME = "0.5-Beta";
 
 function resolveStoreUrl(url) {
     try {
@@ -298,6 +298,38 @@ if (document.readyState === 'loading') {
     applyNativeAppClass();
 }
 
+// Gestao de Icones Adaptativos Vera Watt (Ativo 1 no tema claro, Ativo 2 no tema escuro)
+function getVeraWattDynamicIcon() {
+    const isLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    return isLight ? 'assets/img/verawatt_ativo1_4x.png' : 'assets/img/verawatt_ativo2_4x.png';
+}
+
+function updateVeraWattThemeIcons() {
+    const iconSrc = getVeraWattDynamicIcon();
+    const icons = document.querySelectorAll('.verawatt-theme-icon, #verawatt-card-icon, #verawatt-hero-icon, #verawatt-shelf-icon, .icon-verawatt img, .verawatt-dynamic-icon');
+    icons.forEach(img => {
+        if (img && img.tagName === 'IMG') {
+            img.src = iconSrc;
+        }
+    });
+}
+
+if (window.matchMedia) {
+    try {
+        const themeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+        const onThemeChange = () => {
+            updateVeraWattThemeIcons();
+            if (typeof renderInstalledShelf === 'function') renderInstalledShelf();
+            if (typeof renderAppManager === 'function') renderAppManager();
+        };
+        if (themeMedia.addEventListener) {
+            themeMedia.addEventListener('change', onThemeChange);
+        } else if (themeMedia.addListener) {
+            themeMedia.addListener(onThemeChange);
+        }
+    } catch (ignored) {}
+}
+
 // Registry de Aplicacoes Geridas pela Stopp Store
 const STORE_APPS_REGISTRY = [
     {
@@ -307,18 +339,16 @@ const STORE_APPS_REGISTRY = [
         isStore: true,
         targetCode: CURRENT_STORE_VERSION_CODE,
         targetName: CURRENT_STORE_VERSION_NAME,
-        apkUrl: 'assets/apks/StoppStore-v0.3-Beta.apk',
+        apkUrl: 'assets/apks/StoppStore-v0.5-Beta.apk',
         size: 1,
         iconType: 'letter',
         iconLetter: 'S',
         iconBg: 'linear-gradient(135deg, #10b981, #0ea5e9)',
         changelog: [
-            "Novo icone personalizado oficial Stopp Store para notificacoes na barra de estado.",
-            "Limpeza automatica de notificacoes acumuladas ao entrar na aplicacao.",
-            "Correcao completa da desinstalacao de aplicacoes com confirmacao nativa do sistema.",
-            "Restricao inteligente de plataformas: bloqueio de aplicacoes de PC no Android e de Android no PC.",
-            "Animacao comemorativa pos-instalacao com efeito de confetis e abertura direta.",
-            "Obrigatoriedade e exibicao de Changelog do programador em todas as atualizacoes."
+            "Nova animacao cinematografica de entrada (Splash Screen) com o logotipo oficial 4x e tipografia Vera Watt.",
+            "Suporte a icones adaptativos conforme o tema do utilizador (Ativo 1 em tema claro, Ativo 2 em tema escuro).",
+            "Integracao de todas as imagens oficiais 4x de alta resolucao no ecossistema e na app nativa.",
+            "Motor de diagnostico IA Stopp Sentinel com auditoria de layout mobile, camadas z-index e erros JS."
         ]
     },
     {
@@ -326,17 +356,18 @@ const STORE_APPS_REGISTRY = [
         name: 'Vera Watt',
         platform: 'Android & Web',
         isStore: false,
-        targetCode: 4,
-        targetName: '0.4-Beta',
-        apkUrl: 'assets/apks/VeraWatt-v0.4-Beta.apk',
+        targetCode: 5,
+        targetName: '0.5-Beta',
+        apkUrl: 'assets/apks/VeraWatt-v0.5-Beta.apk',
         size: 67,
         iconType: 'image',
-        iconSrc: 'assets/img/verawatt_icon.webp',
+        iconSrc: 'assets/img/verawatt_ativo2_4x.png',
         changelog: [
+            "Integracao das novas imagens oficiais em 4x de alta resolucao (emblema e tipografia Vera Watt).",
+            "Icone adaptativo dinamico que alterna entre Ativo 1 e Ativo 2 de acordo com o tema do utilizador (Claro/Escuro).",
+            "Nova animacao de arranque e carregamento com efeitos de carga eletrica e logotipo em destaque.",
             "Suporte aprimorado ao Nothing Glyph SDK com novos padroes de iluminacao.",
-            "Otimizacao do calculo de telemetria solar em tempo real.",
-            "Integracao direta com o novo instalador PackageInstaller da Stopp Store.",
-            "Melhorias de desempenho e correcao de bugs na interface Jetpack Compose."
+            "Otimizacoes de performance e compatibilidade de ecra."
         ]
     }
 ];
@@ -1081,7 +1112,7 @@ function renderInstalledAppsShelf() {
             pkg: 'com.vera_watt',
             name: 'Vera Watt',
             version: 'v' + vName,
-            iconImg: 'assets/img/verawatt_icon_4x.png',
+            iconImg: getVeraWattDynamicIcon(),
             iconLetter: null,
             gradient: 'linear-gradient(135deg, #10b981, #0ea5e9)',
             category: 'Energia & IoT (Android)'
@@ -1114,7 +1145,7 @@ function renderInstalledAppsShelf() {
                         pkg: item.packageName,
                         name: isVera ? 'Vera Watt' : item.packageName,
                         version: 'v' + (item.versionName || '1.0'),
-                        iconImg: isVera ? 'assets/img/verawatt_icon_4x.png' : null,
+                        iconImg: isVera ? getVeraWattDynamicIcon() : null,
                         iconLetter: item.packageName.charAt(0).toUpperCase(),
                         gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                         category: 'Aplicacao Instalada'
@@ -1863,13 +1894,25 @@ function initSplashScreen() {
     const splash = document.getElementById('stopp-splash-screen');
     if (!splash) return;
 
+    updateVeraWattThemeIcons();
+
+    const progress = document.getElementById('splash-loader-progress');
+    const statusText = document.getElementById('splash-status-text');
+
     setTimeout(() => {
         StoppAudio.play('splash');
-    }, 150);
+        if (progress) progress.style.width = '55%';
+        if (statusText) statusText.textContent = 'A carregar componentes Vera Watt & Stopp...';
+    }, 200);
+
+    setTimeout(() => {
+        if (progress) progress.style.width = '100%';
+        if (statusText) statusText.textContent = 'Sistemas 100% prontos!';
+    }, 900);
 
     setTimeout(() => {
         dismissSplashScreen();
-    }, 1300);
+    }, 1500);
 }
 
 function dismissSplashScreen() {
@@ -1888,10 +1931,20 @@ function replaySplashScreen() {
     if (splash) {
         splash.style.display = 'flex';
         splash.classList.remove('splash-dismissed');
+        updateVeraWattThemeIcons();
+        const progress = document.getElementById('splash-loader-progress');
+        const statusText = document.getElementById('splash-status-text');
+        if (progress) progress.style.width = '15%';
+        if (statusText) statusText.textContent = 'A carregar Vera Watt & Stopp Ecosystem v0.5-Beta...';
+
         StoppAudio.play('splash');
         setTimeout(() => {
+            if (progress) progress.style.width = '100%';
+            if (statusText) statusText.textContent = 'Sistemas 100% prontos!';
+        }, 800);
+        setTimeout(() => {
             dismissSplashScreen();
-        }, 1400);
+        }, 1500);
     }
 }
 
@@ -2026,6 +2079,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Iniciar Deteccao de Aplicacoes, Atualizacoes e Diagnostico da IA
+    updateVeraWattThemeIcons();
     refreshAllAppStatus();
     checkStoreAndAppUpdates(false);
     StoppAiSentinel.init();
@@ -2034,7 +2088,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=8')
+        navigator.serviceWorker.register('./sw.js?v=9')
             .then(reg => {
                 reg.update();
             })
@@ -2043,7 +2097,7 @@ if ('serviceWorker' in navigator) {
         if ('caches' in window) {
             caches.keys().then(keys => {
                 keys.forEach(k => {
-                    if (k !== 'stopp-store-v8') {
+                    if (k !== 'stopp-store-v9') {
                         caches.delete(k);
                     }
                 });
@@ -2160,4 +2214,6 @@ window.scrollToShelf = scrollToShelf;
 window.openPlayProtectModal = openPlayProtectModal;
 window.closePlayProtectModal = closePlayProtectModal;
 window.toggleSoundFx = toggleSoundFx;
+window.updateVeraWattThemeIcons = updateVeraWattThemeIcons;
+window.getVeraWattDynamicIcon = getVeraWattDynamicIcon;
 

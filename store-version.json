@@ -1,31 +1,30 @@
 {
-  "store_version_code": 4,
-  "store_version_name": "0.4-Beta",
-  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.4-Beta.apk",
-  "store_update_message": "Nova versao v0.4-Beta disponivel com novo ecra de entrada animado, navegacao inferior ergonomica, efeitos sonoros e novo design VeraWatt.",
+  "store_version_code": 5,
+  "store_version_name": "0.5-Beta",
+  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.5-Beta.apk",
+  "store_update_message": "Nova versão v0.5-Beta: Logos e tipografias 4x oficiais de alta definição, ícone adaptativo automático conforme o tema do utilizador (Claro/Escuro), nova animação cinematográfica de entrada e motor de diagnóstico IA com auditoria de layout.",
   "store_changelog": [
-    "Novo ecra de apresentacao animado (Splash Screen) com transicao fluida para o catalogo.",
-    "Redesenho de layout mobile com barra de navegacao inferior (Dock) ergonomica.",
-    "Reposicionamento das abas de categorias para acesso rapido e desobstrucao visual.",
-    "Sistema de efeitos sonoros UI interativos (toque, navegacao, instalacao e celebracao).",
-    "Modulo de esclarecimento e estado do Google Play Protect para pacotes externos.",
-    "Integracao do novo logotipo e identidade visual oficial da aplicacao Vera Watt.",
-    "Painel de diagnostico IA Stopp Sentinel com telemetria e latencia de rede."
+    "Nova animacao cinematografica de entrada (Splash Screen) com o logotipo oficial 4x e tipografia Vera Watt.",
+    "Suporte a icones adaptativos conforme o tema do utilizador (Ativo 1 em tema claro, Ativo 2 em tema escuro).",
+    "Integracao de todas as imagens oficiais 4x de alta resolucao no ecossistema e na app nativa.",
+    "Atualizacao da aplicacao Vera Watt para a versao v0.5-Beta com novos descritores e changelog.",
+    "Motor de diagnostico IA Stopp Sentinel com auditoria de layout mobile, camadas z-index e erros JS.",
+    "Correcao de transbordo no cabecalho e prevencao de sobreposicao da barra inferior aos modais."
   ],
   "apps": {
     "com.vera_watt": {
       "name": "Vera Watt",
-      "version_code": 4,
-      "version_name": "0.4-Beta",
-      "apk_url": "assets/apks/VeraWatt-v0.4-Beta.apk",
+      "version_code": 5,
+      "version_name": "0.5-Beta",
+      "apk_url": "assets/apks/VeraWatt-v0.5-Beta.apk",
       "package_name": "com.vera_watt",
       "size_mb": 67,
       "changelog": [
-        "Nova identidade visual oficial com logotipo geometrico V+W e gradiente esmeralda.",
+        "Integracao das novas imagens oficiais em 4x de alta resolucao (emblema e tipografia Vera Watt).",
+        "Icone adaptativo dinamico que alterna entre Ativo 1 e Ativo 2 de acordo com o tema do utilizador (Claro/Escuro).",
+        "Nova animacao de arranque e carregamento com efeitos de carga eletrica e logotipo em destaque.",
         "Suporte aprimorado ao Nothing Glyph SDK com novos padroes de iluminacao.",
-        "Otimizacao do calculo de telemetria solar em tempo real.",
-        "Integracao direta com o novo instalador PackageInstaller da Stopp Store.",
-        "Melhorias de desempenho e correcao de bugs na interface Jetpack Compose."
+        "Otimizacoes de performance e compatibilidade de ecra."
       ]
     }
   }
