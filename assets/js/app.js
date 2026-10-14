@@ -1196,6 +1196,38 @@ function renderInstalledAppsShelf() {
     }).join('');
 }
 
+// Carregamento resiliente dos metadados de versao da Loja (GitHub Pages com fallback local e suporte a file://)
+async function fetchStoreMetadata(timeoutMs = 4000) {
+    const urls = [
+        'https://gustavosanz.github.io/Stopp-Store/store-version.json?t=' + Date.now(),
+        'store-version.json?t=' + Date.now(),
+        'store-version.json'
+    ];
+
+    for (const url of urls) {
+        try {
+            const controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+            const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+            const res = await fetch(url, {
+                cache: 'no-store',
+                signal: controller ? controller.signal : undefined
+            });
+            if (timer) clearTimeout(timer);
+
+            // Em protocolo file:// de assets locais o status e 0; em HTTP standard e 200 ou res.ok
+            if (res.ok || res.status === 200 || res.status === 0) {
+                const data = await res.json();
+                if (data && typeof data.store_version_code !== 'undefined') {
+                    return data;
+                }
+            }
+        } catch (e) {
+            // Continuar para o proximo URL de contingencia
+        }
+    }
+    return null;
+}
+
 // IA Stopp Sentinel - Modulo de Diagnostico e Saude do Ecossistema
 const StoppAiSentinel = {
     state: {
@@ -1338,18 +1370,18 @@ const StoppAiSentinel = {
         this.state.runtimeErrors = this.auditRuntimeErrors();
 
         // 5. Auditoria de Servidor e APIs
+        const netStartTime = Date.now();
         try {
-            const res = await fetch('store-version.json?t=' + Date.now(), { cache: 'no-store' });
-            this.state.pingMs = Date.now() - startTime;
-            if (res.ok) {
-                const data = await res.json();
-                this.state.apiOk = (data && data.store_version_code >= 3);
+            const data = await fetchStoreMetadata(3500);
+            this.state.pingMs = Math.max(1, Date.now() - netStartTime);
+            if (data && typeof data.store_version_code !== 'undefined' && data.store_version_code >= 3) {
+                this.state.apiOk = true;
             } else {
                 this.state.apiOk = false;
             }
         } catch (err) {
             this.state.apiOk = false;
-            this.state.pingMs = Date.now() - startTime;
+            this.state.pingMs = Math.max(1, Date.now() - netStartTime);
         }
 
         // 6. Auditoria de Ponte Nativa
@@ -1713,9 +1745,8 @@ async function checkStoreUpdatesOnly(isManual = false) {
     }
 
     try {
-        const response = await fetch('store-version.json?t=' + Date.now(), { cache: 'no-store' });
-        if (!response.ok) throw new Error('Falha HTTP ao carregar versao');
-        const data = await response.json();
+        const data = await fetchStoreMetadata(4000);
+        if (!data) throw new Error('Falha HTTP ao carregar versao');
 
         // Sincronizar Aviso Oficial de Sistema/Instabilidade
         if (data.system_notice) {
@@ -1789,9 +1820,8 @@ async function checkStoreUpdatesOnly(isManual = false) {
 // Verificacao de Atualizacao de Aplicacoes Instaladas
 async function checkAllAppUpdates(notifyUser = true) {
     try {
-        const response = await fetch('store-version.json?t=' + Date.now(), { cache: 'no-store' });
-        if (!response.ok) return;
-        const data = await response.json();
+        const data = await fetchStoreMetadata(4000);
+        if (!data) return;
 
         if (data.apps) {
             for (const [pkg, appMeta] of Object.entries(data.apps)) {
