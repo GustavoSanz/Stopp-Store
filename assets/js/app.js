@@ -1,8 +1,8 @@
 // Stopp App Store - Client Application, Native Bridge & Notification Controller
 // Strictly Zero Emojis Compliance
 
-const CURRENT_STORE_VERSION_CODE = 2;
-const CURRENT_STORE_VERSION_NAME = "0.2-Beta";
+const CURRENT_STORE_VERSION_CODE = 3;
+const CURRENT_STORE_VERSION_NAME = "0.3-Beta";
 
 function resolveStoreUrl(url) {
     try {
@@ -232,7 +232,7 @@ const STORE_APPS_REGISTRY = [
         isStore: true,
         targetCode: CURRENT_STORE_VERSION_CODE,
         targetName: CURRENT_STORE_VERSION_NAME,
-        apkUrl: 'assets/apks/StoppStore-v0.2-Beta.apk',
+        apkUrl: 'assets/apks/StoppStore-v0.3-Beta.apk',
         size: 1,
         iconType: 'letter',
         iconLetter: 'S',

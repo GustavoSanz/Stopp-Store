@@ -1,8 +1,8 @@
 {
-  "store_version_code": 2,
-  "store_version_name": "0.2-Beta",
-  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.2-Beta.apk",
-  "store_update_message": "Nova versao v0.2-Beta disponivel com novo instalador do sistema, controlo estrito de plataformas e gestao de notificacoes.",
+  "store_version_code": 3,
+  "store_version_name": "0.3-Beta",
+  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.3-Beta.apk",
+  "store_update_message": "Nova versao v0.3-Beta disponivel com novo instalador do sistema, controlo estrito de plataformas e gestao de notificacoes.",
   "store_changelog": [
     "Novo icone personalizado oficial Stopp Store para notificacoes na barra de estado.",
     "Limpeza automatica de notificacoes acumuladas ao entrar na aplicacao.",
