@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stopp App Store | Software & Experimental Projects</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=16">
+    <link rel="stylesheet" href="assets/css/style.css?v=17">
     <link rel="icon" type="image/svg+xml" href="assets/img/icon.svg">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
     <link rel="manifest" href="manifest.webmanifest">
@@ -45,12 +45,12 @@
             <p class="splash-brand-sub">Developer Hub &amp; Applications</p>
             <div class="splash-ecosystem-pill">
                 <span class="splash-dot"></span>
-                <span>STOPP STORE &bull; v0.6-Beta</span>
+                <span>STOPP STORE &bull; v0.7-Beta</span>
             </div>
             <div class="splash-loader-bar">
                 <div class="splash-loader-progress" id="splash-loader-progress"></div>
             </div>
-            <div class="splash-status-text" id="splash-status-text">A inicializar Stopp Store v0.6-Beta...</div>
+            <div class="splash-status-text" id="splash-status-text">A inicializar Stopp Store v0.7-Beta...</div>
             <button type="button" class="splash-skip-button" id="splash-skip-button" onclick="dismissSplashScreen(event)" ontouchstart="dismissSplashScreen(event)" aria-label="Entrar na Loja">
                 <span>Entrar na Loja</span>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -115,18 +115,12 @@
                 <div class="brand-text">
                     <div style="display: flex; align-items: center;">
                         <h1>STOPP<span>.STORE</span></h1>
-                        <span class="brand-version-pill">v0.6-Beta</span>
+                        <span class="brand-version-pill">v0.7-Beta</span>
                     </div>
                     <p>Developer Hub &amp; Applications</p>
                 </div>
             </div>
             <div class="header-links">
-                <!-- Google Play Protect Advisory Pill -->
-                <button class="btn-protect-pill" onclick="openPlayProtectModal()" title="Informações e Estado de Verificação do Google Play Protect">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <span>Play Protect: Seguro</span>
-                </button>
-
                 <!-- UI Sound Effects Toggle -->
                 <button class="btn-sound-toggle" id="btn-sound-toggle" onclick="toggleSoundFx()" title="Ativar ou desativar efeitos sonoros da interface">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sound-icon-svg"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
@@ -144,21 +138,23 @@
                     </div>
                 </div>
 
-                <!-- Desktop-only navigation shortcuts -->
-                <div class="desktop-only-nav">
-                    <button class="btn-manager-nav" onclick="openAppManagerModal()" title="Gestor de Aplicacoes e Atualizacoes">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                        Gestor de Apps
-                        <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
-                    </button>
-                    <button class="btn-settings-nav" onclick="openSettingsModal()" title="Definições e Gestão da Loja">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                        Definições
-                    </button>
-                    <button class="btn-install-app" id="nav-pill-app-android" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
-                    <button id="btn-pwa-install" class="btn-install-app" style="display: none;" title="Instalar Stopp Store no dispositivo">Instalar PWA</button>
-                    <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
-                </div>
+                <!-- Gestor de Apps -->
+                <button class="btn-manager-nav" onclick="openAppManagerModal()" title="Gestor de Aplicações e Atualizações">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <span>Gestor</span>
+                    <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
+                </button>
+
+                <!-- Definições -->
+                <button class="btn-settings-nav" onclick="openSettingsModal()" title="Definições e Gestão da Loja">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>Definições</span>
+                </button>
+
+                <!-- Atalhos da Loja -->
+                <button class="btn-install-app" id="nav-pill-app-android" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
+                <button id="btn-pwa-install" class="btn-install-app" style="display: none;" title="Instalar Stopp Store no dispositivo">Instalar PWA</button>
+                <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
             </div>
         </header>
 
@@ -168,18 +164,10 @@
             <div class="hero-showcase-content">
                 <div class="hero-top-badges">
                     <span class="hero-badge-pill">Portal Oficial de Distribuição</span>
-                    <span class="hero-status-pill" onclick="openPlayProtectModal()" title="Clica para saber mais sobre a verificação do Google Play Protect">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        Google Play Protect: 100% Seguro
-                    </span>
                 </div>
                 <h2 class="hero-headline">Aplicações Nativas &amp; <span>Projetos Stopp</span></h2>
                 <p class="hero-subtitle">Distribuição direta de utilitários, soluções energéticas e videojogos experimentais com instalação autónoma e gestão inteligente de versões.</p>
                 <div class="hero-highlights">
-                    <div class="highlight-chip" onclick="openPlayProtectModal()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <span>Aviso Play Protect</span>
-                    </div>
                     <div class="highlight-chip" onclick="openAiDiagnosticModal()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                         <span>IA Sentinel Ativa</span>
@@ -188,6 +176,10 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                         <span>No Teu Dispositivo</span>
                     </div>
+                    <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener" class="highlight-chip" style="text-decoration: none; color: inherit;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                        <span>Código Aberto</span>
+                    </a>
                 </div>
             </div>
         </section>
@@ -233,14 +225,14 @@
         <!-- Apps Grid -->
         <main class="apps-grid">
             <!-- App 0: Stopp Store (Oficial) -->
-            <article class="app-card" id="app-card-com.stopp.store" data-package="com.stopp.store" data-target-version-code="6" data-target-version-name="0.6-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.6-Beta.apk" data-apk-size="4" data-category="android ferramentas" style="--card-accent: #0ea5e9; --btn-color-start: #0ea5e9; --btn-color-end: #10b981;">
+            <article class="app-card" id="app-card-com.stopp.store" data-package="com.stopp.store" data-target-version-code="7" data-target-version-name="0.7-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.7-Beta.apk" data-apk-size="4" data-category="android ferramentas" style="--card-accent: #0ea5e9; --btn-color-start: #0ea5e9; --btn-color-end: #10b981;">
                 <div>
                     <div class="card-header">
                         <div class="app-icon" style="background: linear-gradient(135deg, #10b981, #0ea5e9); color: #fff; font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 18px; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);">
                             S
                         </div>
                         <div class="app-header-badges">
-                            <span class="badge-version badge-blue">v0.6-Beta</span>
+                            <span class="badge-version badge-blue">v0.7-Beta</span>
                             <span class="badge-status badge-installed" id="badge-status-com.stopp.store" style="background: rgba(14, 165, 233, 0.15); border-color: rgba(14, 165, 233, 0.4); color: #38bdf8;">App Oficial</span>
                         </div>
                     </div>
@@ -733,7 +725,7 @@
                 
                 <div class="store-version-box">
                     <span>Versão da Loja:</span>
-                    <strong id="settings-store-version">v0.3-Beta (Build 3)</strong>
+                    <strong id="settings-store-version">v0.7-Beta (Build 7)</strong>
                 </div>
 
                 <p id="store-update-status-text" class="store-status-text">A verificar estado da loja...</p>
@@ -975,8 +967,8 @@
             </div>
 
             <div style="margin-top: 14px;">
-                <button class="btn-download" style="width: 100%;" onclick="closePlayProtectModal()">
-                    Entendido • Continuar
+                <button class="btn-download" style="width: 100%;" onclick="confirmPlayProtectAndInstall()">
+                    Entendido • Continuar Instalação
                 </button>
             </div>
         </div>
@@ -993,7 +985,7 @@
                     <div>
                         <div class="changelog-title-row">
                             <h3>Notas de Atualização</h3>
-                            <span class="changelog-version-tag" id="web-changelog-version-tag">v0.6-Beta</span>
+                            <span class="changelog-version-tag" id="web-changelog-version-tag">v0.7-Beta</span>
                         </div>
                         <p class="modal-sub">Histórico oficial de novidades da Stopp Store</p>
                     </div>
@@ -1007,8 +999,8 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                     </div>
                     <div class="changelog-highlight-text">
-                        <strong>Stopp Store v0.6-Beta</strong>
-                        <span>Nova tela de Changelog moderna e fluida, restauro do emblema da loja e otimização total.</span>
+                        <strong>Stopp Store v0.7-Beta</strong>
+                        <span>Reorganização ergonómica da interface, remoção da barra flutuante intrusiva e fluxo contextual do Google Play Protect.</span>
                     </div>
                 </div>
 
@@ -1016,27 +1008,27 @@
                 <div class="changelog-items-list" id="web-changelog-items-list">
                     <div class="changelog-item-card">
                         <span class="changelog-item-dot"></span>
-                        <div class="changelog-item-text">Redesign completo e moderno da tela de Changelog com cartoes glassmorficos, emblema oficial e botoes de acao de alto contraste.</div>
+                        <div class="changelog-item-text">Reorganização completa da loja: eliminação da barra inferior flutuante que tapava categorias e cartões de aplicações.</div>
                     </div>
                     <div class="changelog-item-card">
                         <span class="changelog-item-dot"></span>
-                        <div class="changelog-item-text">Restauro da identidade visual e emblema oficial da Stopp Store na Splash Screen de entrada.</div>
+                        <div class="changelog-item-text">Navegação direta unificada no cabeçalho: acesso imediato ao Gestor de Apps e Definições em ecrãs móveis e desktop.</div>
                     </div>
                     <div class="changelog-item-card">
                         <span class="changelog-item-dot"></span>
-                        <div class="changelog-item-text">Preservacao exclusiva do logotipo e tipografia Vera Watt 4x na sua pagina de aplicacao e catalogo.</div>
+                        <div class="changelog-item-text">Google Play Protect inteligente: o guia de verificação surge agora de forma contextual apenas antes da primeira instalação de aplicações no telemóvel.</div>
                     </div>
                     <div class="changelog-item-card">
                         <span class="changelog-item-dot"></span>
-                        <div class="changelog-item-text">Suporte a visualizacao manual do Changelog oficial atraves das Definicoes da Loja.</div>
+                        <div class="changelog-item-text">Segurança acessível nas Definições: consulta do guia e esclarecimento de permissões disponível a qualquer momento nas Definições.</div>
                     </div>
                     <div class="changelog-item-card">
                         <span class="changelog-item-dot"></span>
-                        <div class="changelog-item-text">Aprimoramento do motor de diagnostico IA Stopp Sentinel com telemetria em tempo real e deteccao de anomalias.</div>
+                        <div class="changelog-item-text">Telemetria IA Sentinel aprimorada: auditoria de latência, integridade de pacotes e estabilidade em tempo real.</div>
                     </div>
                     <div class="changelog-item-card">
                         <span class="changelog-item-dot"></span>
-                        <div class="changelog-item-text">Otimizacoes de desempenho, transicoes fluidas e correcao de sobreposicoes na barra inferior de navegacao.</div>
+                        <div class="changelog-item-text">Estabilidade e correções: eliminação definitiva de congelamentos na splash screen e otimização geral de carregamento.</div>
                     </div>
                 </div>
             </div>
@@ -1053,53 +1045,7 @@
         </div>
     </div>
 
-    <!-- Floating Ergonomic Bottom Navigation Dock (App Nativa & Mobile) -->
-    <nav class="bottom-nav-dock" id="bottom-nav-dock" aria-label="Navegação da Loja">
-        <button class="dock-item active" id="dock-btn-catalog" onclick="dockNavigate('catalog')" title="Catálogo de Aplicações">
-            <div class="dock-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            </div>
-            <span class="dock-label">Loja</span>
-        </button>
-
-        <button class="dock-item" id="dock-btn-categories" onclick="dockNavigate('categories')" title="Filtrar Categorias">
-            <div class="dock-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-            </div>
-            <span class="dock-label">Categorias</span>
-        </button>
-
-        <button class="dock-item" id="dock-btn-device" onclick="dockNavigate('device')" title="Aplicações no Dispositivo">
-            <div class="dock-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-            <span class="dock-label">Instaladas</span>
-        </button>
-
-        <button class="dock-item" id="dock-btn-protect" onclick="dockNavigate('protect')" title="Google Play Protect &amp; Segurança">
-            <div class="dock-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <span class="dock-label">Segurança</span>
-        </button>
-
-        <button class="dock-item" id="dock-btn-manager" onclick="dockNavigate('manager')" title="Gestor de Aplicações">
-            <div class="dock-icon" style="position: relative;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                <span class="dock-badge" id="dock-updates-badge" style="display: none;">0</span>
-            </div>
-            <span class="dock-label">Gestor</span>
-        </button>
-
-        <button class="dock-item" id="dock-btn-settings" onclick="dockNavigate('settings')" title="Definições da Loja">
-            <div class="dock-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            </div>
-            <span class="dock-label">Definições</span>
-        </button>
-    </nav>
-
-    <script src="assets/js/app.js?v=16"></script>
-    <script src="assets/js/download.js?v=16"></script>
+    <script src="assets/js/app.js?v=17"></script>
+    <script src="assets/js/download.js?v=17"></script>
 </body>
 </html>

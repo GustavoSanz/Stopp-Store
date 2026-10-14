@@ -46,8 +46,8 @@ function syncModalBodyState() {
 // O estado dos modais e controlado diretamente pelas funcoes open/close correspondentes.
 
 
-const CURRENT_STORE_VERSION_CODE = 6;
-const CURRENT_STORE_VERSION_NAME = "0.6-Beta";
+const CURRENT_STORE_VERSION_CODE = 7;
+const CURRENT_STORE_VERSION_NAME = "0.7-Beta";
 
 function resolveStoreUrl(url) {
     try {
@@ -1542,6 +1542,13 @@ const StoppSystemNotice = {
 
     syncNotice: function (remoteNotice) {
         if (!remoteNotice) return;
+        if (!remoteNotice.active) {
+            this.state.active = false;
+            try { localStorage.removeItem('stopp_admin_notice'); } catch (e) {}
+            this.render();
+            return;
+        }
+
         const localNotice = localStorage.getItem('stopp_admin_notice');
         if (localNotice) {
             try {
@@ -1553,16 +1560,12 @@ const StoppSystemNotice = {
             } catch (e) {}
         }
 
-        if (remoteNotice.active) {
-            this.state.active = true;
-            this.state.level = remoteNotice.level || 'warning';
-            this.state.title = remoteNotice.title || 'Aviso do Sistema';
-            this.state.message = remoteNotice.message || '';
-            this.state.timestamp = remoteNotice.timestamp || '';
-            this.state.dismissed = sessionStorage.getItem('stopp_notice_dismissed') === 'true';
-        } else {
-            this.state.active = false;
-        }
+        this.state.active = true;
+        this.state.level = remoteNotice.level || 'warning';
+        this.state.title = remoteNotice.title || 'Aviso do Sistema';
+        this.state.message = remoteNotice.message || '';
+        this.state.timestamp = remoteNotice.timestamp || '';
+        this.state.dismissed = sessionStorage.getItem('stopp_notice_dismissed') === 'true';
         this.render();
     },
 
@@ -2283,6 +2286,7 @@ function openPlayProtectModal() {
 
 function closePlayProtectModal() {
     StoppAudio.play('tap');
+    window.__pendingAppInstall = null;
     const modal = document.getElementById('modal-play-protect');
     if (modal) {
         modal.classList.remove('active');
@@ -2291,6 +2295,27 @@ function closePlayProtectModal() {
         modal.style.visibility = 'hidden';
         document.body.style.overflow = '';
         syncModalBodyState();
+    }
+}
+
+function confirmPlayProtectAndInstall() {
+    StoppAudio.play('tap');
+    try { localStorage.setItem('stopp_play_protect_acknowledged', 'true'); } catch (e) {}
+    const modal = document.getElementById('modal-play-protect');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        document.body.style.overflow = '';
+        syncModalBodyState();
+    }
+    if (window.__pendingAppInstall) {
+        const pending = window.__pendingAppInstall;
+        window.__pendingAppInstall = null;
+        if (typeof triggerAppDownload === 'function') {
+            triggerAppDownload(pending.appName, pending.apkUrl, pending.fileSizeMb);
+        }
     }
 }
 
@@ -2515,6 +2540,7 @@ window.dockNavigate = dockNavigate;
 window.scrollToShelf = scrollToShelf;
 window.openPlayProtectModal = openPlayProtectModal;
 window.closePlayProtectModal = closePlayProtectModal;
+window.confirmPlayProtectAndInstall = confirmPlayProtectAndInstall;
 window.toggleSoundFx = toggleSoundFx;
 window.bootstrapStore = bootstrapStore;
 window.StoppSystemNotice = StoppSystemNotice;

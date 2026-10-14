@@ -1323,12 +1323,12 @@ footer a:hover {
 
 /* Header Settings Navigation Button */
 .btn-settings-nav {
-    padding: 9px 16px;
+    padding: 8px 14px;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid var(--glass-border);
-    border-radius: 999px;
+    border-radius: 12px;
     color: #e2e8f0;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     display: inline-flex;
@@ -1669,13 +1669,13 @@ body.is-native-app #btn-pwa-install {
 .btn-manager-nav {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     background: rgba(14, 165, 233, 0.12);
     border: 1px solid rgba(14, 165, 233, 0.35);
     color: #38bdf8;
-    padding: 10px 18px;
-    border-radius: 14px;
-    font-size: 0.9rem;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -2572,15 +2572,9 @@ body.is-native-app #app-features-modal {
    Strictly Zero Emojis Compliance
    ========================================================================== */
 
-/* Base container safe area for bottom dock on mobile / native */
-@media (max-width: 768px) {
-    body {
-        padding-bottom: 84px !important;
-    }
-}
-
-.is-native-app body {
-    padding-bottom: 88px !important;
+/* Safe container area */
+body {
+    padding-bottom: 24px;
 }
 
 /* 1. App Entry & Splash Screen Animation */
@@ -2865,11 +2859,9 @@ body.is-native-app #app-features-modal {
 }
 
 @media (max-width: 768px) {
-    .desktop-only-nav {
-        display: none !important;
-    }
     .header-links {
         gap: 6px;
+        justify-content: center;
     }
 }
 
@@ -3084,105 +3076,7 @@ body.is-native-app #app-features-modal {
     box-shadow: 0 0 8px #34d399;
 }
 
-/* 5. Floating Bottom Navigation Dock (Ergonomic for Mobile & Native) */
-.bottom-nav-dock {
-    position: fixed;
-    bottom: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 900;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    width: calc(100% - 28px);
-    max-width: 480px;
-    background: rgba(15, 23, 42, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 22px;
-    padding: 6px 8px;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    transition: transform 0.25s ease, opacity 0.25s ease, visibility 0.25s;
-}
 
-/* Ocultar barra de navegacao flutuante quando qualquer modal estiver ativo */
-body.modal-open .bottom-nav-dock,
-body:has(.modal-backdrop.active) .bottom-nav-dock,
-body:has(.modal-backdrop[style*="display: flex"]) .bottom-nav-dock,
-.modal-backdrop.active ~ .bottom-nav-dock,
-.modal-backdrop[style*="display: flex"] ~ .bottom-nav-dock {
-    display: none !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transform: translate(-50%, 100px) !important;
-    visibility: hidden !important;
-}
-
-.dock-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    padding: 6px 4px;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.dock-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.dock-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    transition: color 0.2s ease;
-}
-
-.dock-item:hover, .dock-item:focus {
-    color: #e2e8f0;
-}
-
-.dock-item.active {
-    color: #34d399;
-}
-
-.dock-item.active .dock-icon {
-    background: rgba(16, 185, 129, 0.18);
-    color: #34d399;
-    transform: scale(1.08);
-}
-
-.dock-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #ef4444;
-    color: #ffffff;
-    font-size: 0.62rem;
-    font-weight: 800;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #0f172a;
-}
 
 /* 6. Play Protect & Security Advisory Modal */
 .modal-protect-card {

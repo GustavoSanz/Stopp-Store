@@ -24,6 +24,16 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
         return;
     }
 
+    // 3. Guia de Seguranca Google Play Protect: Exibido apenas antes da primeira instalacao de APK
+    const hasSeenPlayProtect = localStorage.getItem('stopp_play_protect_acknowledged') === 'true';
+    if (!hasSeenPlayProtect && isAndroid && apkUrl && apkUrl.endsWith('.apk')) {
+        window.__pendingAppInstall = { appName, apkUrl, fileSizeMb };
+        if (typeof openPlayProtectModal === 'function') {
+            openPlayProtectModal();
+            return;
+        }
+    }
+
     const modal = document.getElementById('download-modal');
     const progressBar = document.getElementById('dl-progress-bar');
     const progressText = document.getElementById('dl-progress-text');

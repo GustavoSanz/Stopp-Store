@@ -1,22 +1,22 @@
 {
-  "store_version_code": 6,
-  "store_version_name": "0.6-Beta",
-  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.6-Beta.apk",
-  "store_update_message": "Nova versão v0.6-Beta: Redesign moderno e glassmórfico da tela de Changelog, restauro do emblema e identidade oficial da Stopp Store na Splash Screen, e otimizações de performance.",
+  "store_version_code": 7,
+  "store_version_name": "0.7-Beta",
+  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.7-Beta.apk",
+  "store_update_message": "Nova versao v0.7-Beta: Reorganizacao completa da interface, navegacao de topo simplificada sem sobreposicoes, novo fluxo inteligente do Google Play Protect na primeira instalacao e maxima estabilidade.",
   "store_changelog": [
-    "Redesign completo e moderno da tela de Changelog com cartoes glassmorficos, emblema oficial e botoes de acao de alto contraste.",
-    "Restauro da identidade visual e emblema oficial da Stopp Store na Splash Screen de entrada.",
-    "Preservacao exclusiva do logotipo e tipografia Vera Watt 4x na sua pagina de aplicacao e catalogo.",
-    "Suporte a visualizacao manual do Changelog oficial atraves das Definicoes da Loja.",
-    "Aprimoramento do motor de diagnostico IA Stopp Sentinel com telemetria em tempo real e deteccao de anomalias.",
-    "Otimizacoes de desempenho, transicoes fluidas e correcao de sobreposicoes na barra inferior de navegacao."
+    "Reorganizacao integral do layout: eliminacao da barra flutuante inferior para desimpedir o catalogo e navegacao de topo unificada.",
+    "Acesso rapido ao Gestor de Aplicacoes e Definicoes diretamente no cabecalho em desktop e mobile.",
+    "Novo fluxo contextual do Google Play Protect: o guia de instalacao surge apenas antes da primeira instalacao de cada utilizador.",
+    "Acesso permanente ao guia de seguranca nas Definicoes da Loja sem poluir os menus principais.",
+    "Remocao de duplicacoes de botoes e filtros visuais de alto contraste para melhor ergonomia.",
+    "Blindagem de carregamento contra congelamentos e cache persistente Network-First no Service Worker."
   ],
   "system_notice": {
     "active": false,
     "level": "info",
     "title": "Stopp Store: Sistemas 100% Operacionais",
-    "message": "A versão v0.6-Beta está totalmente estável e otimizada.",
-    "timestamp": "14/10/2026 17:30",
+    "message": "A versao v0.7-Beta esta totalmente estavel e otimizada.",
+    "timestamp": "14/10/2026 22:30",
     "dismissible": true
   },
   "apps": {
