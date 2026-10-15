@@ -151,10 +151,10 @@
                     <span>Definições</span>
                 </button>
 
-                <!-- Admin Login / Account -->
-                <button class="btn-auth-nav" id="nav-auth-btn" onclick="StoppAuth.openLoginModal()" title="Iniciar Sessão de Administrador">
+                <!-- Admin & Client Auth / Account -->
+                <button class="btn-auth-nav" id="nav-auth-btn" onclick="StoppAuth.openLoginModal()" title="Conta e Autenticação">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    <span class="auth-text">Login Admin</span>
+                    <span class="auth-text">Entrar / Registar</span>
                 </button>
 
                 <!-- Atalhos da Loja -->
@@ -672,8 +672,8 @@
                 
                 <div id="emitter-lock-notice" style="display: none; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; margin-top: 10px;">
                     <div style="font-size: 0.88rem; color: #f87171; font-weight: 600; margin-bottom: 4px;">Funcionalidade Reservada a Administradores</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Inicia sessão com a conta oficial do Stopp Studio para poderes disparar notificações globais e afixar avisos a todos os utilizadores.</div>
-                    <button type="button" class="btn-primary" style="font-size: 0.82rem; padding: 8px 14px;" onclick="closeSettingsModal(); StoppAuth.openLoginModal();">Iniciar Sessão de Admin</button>
+                    <div id="emitter-lock-desc" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Inicia sessão com a conta oficial do Stopp Studio para poderes disparar notificações globais e afixar avisos a todos os utilizadores.</div>
+                    <button type="button" id="btn-emitter-login" class="btn-primary" style="font-size: 0.82rem; padding: 8px 14px;" onclick="closeSettingsModal(); StoppAuth.openLoginModal('login');">Iniciar Sessão de Admin</button>
                 </div>
 
                 <div class="notice-emitter-controls" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
@@ -1111,7 +1111,7 @@
         </div>
     </div>
 
-    <!-- Dedicated Admin & User Authentication Modal -->
+    <!-- Dedicated Authentication Modal: Login, Client Register & GitHub Auth -->
     <div class="modal-backdrop" id="login-modal" style="display: none;">
         <div class="modal-card modal-login-card">
             <div class="modal-header-app">
@@ -1119,39 +1119,161 @@
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
                 <div>
-                    <span class="auth-role-pill">Controlo de Acesso &amp; Privilégios</span>
-                    <h3 style="margin-top: 4px;">Iniciar Sessão</h3>
+                    <span class="auth-role-pill" id="auth-header-pill">Autenticação &amp; Contas</span>
+                    <h3 id="auth-modal-main-title" style="margin-top: 4px;">Aceder à Stopp Store</h3>
                 </div>
                 <button class="modal-close-btn" onclick="StoppAuth.closeLoginModal()" aria-label="Fechar">&times;</button>
             </div>
 
-            <p class="modal-lead">
-                Inicia sessão com a tua conta de Administrador do Stopp Studio para gerir avisos globais aos utilizadores e aceder a aplicações exclusivas.
-            </p>
+            <!-- GitHub Instant Connect Option -->
+            <div class="github-auth-cta-box" style="margin: 14px 0 12px 0;">
+                <button type="button" class="btn-github-auth" id="btn-github-auth-start" onclick="StoppAuth.toggleGithubView(true)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                    </svg>
+                    <span>Continuar com GitHub</span>
+                </button>
+                <div class="github-auth-hint">
+                    Deteção automática: o perfil <code>@GustavoSanz</code> recebe privilégios totais de Administrador. Outros utilizadores autenticam como Cliente.
+                </div>
+            </div>
 
-            <form onsubmit="StoppAuth.handleLoginSubmit(event)" class="login-form-body">
+            <!-- GitHub Inline Panel (when active) -->
+            <div id="github-verify-panel" class="github-verify-panel" style="display: none;">
+                <div class="github-panel-header">
+                    <strong>Validação de Conta GitHub</strong>
+                    <button type="button" class="btn-text-dismiss" onclick="StoppAuth.toggleGithubView(false)">Voltar</button>
+                </div>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin: 4px 0 10px 0;">
+                    Insere o teu utilizador GitHub para carregar perfil, avatar e verificar privilégios:
+                </p>
+                <div class="github-input-row" style="display: flex; gap: 6px; margin-bottom: 8px;">
+                    <div style="position: relative; flex: 1;">
+                        <input type="text" id="github-username-input" class="settings-input" placeholder="ex: GustavoSanz ou outro username" style="padding-left: 28px;" value="GustavoSanz">
+                        <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748b; font-weight: 700;">@</span>
+                    </div>
+                    <button type="button" class="btn-primary" id="btn-submit-github" style="padding: 10px 14px; font-size: 0.82rem;" onclick="StoppAuth.handleGithubVerify()">
+                        Verificar
+                    </button>
+                </div>
+                <div class="github-chips-row" style="display: flex; gap: 6px; align-items: center; margin-top: 6px;">
+                    <span style="font-size: 0.72rem; color: #64748b;">Atalho rápido:</span>
+                    <button type="button" class="github-chip admin" onclick="StoppAuth.selectGithubChip('GustavoSanz')">
+                        @GustavoSanz (Admin Oficial)
+                    </button>
+                </div>
+                <div id="github-verify-status" style="display: none; font-size: 0.8rem; margin-top: 8px;"></div>
+            </div>
+
+            <!-- Divider -->
+            <div class="auth-divider" id="auth-divider-line">
+                <span>ou através de credenciais locais</span>
+            </div>
+
+            <!-- Tab Switcher (Login / Registar) -->
+            <div class="auth-tabs-row" id="auth-tabs-row">
+                <button type="button" class="auth-tab-btn active" id="tab-auth-login" onclick="StoppAuth.switchTab('login')">
+                    Iniciar Sessão
+                </button>
+                <button type="button" class="auth-tab-btn" id="tab-auth-register" onclick="StoppAuth.switchTab('register')">
+                    Criar Conta de Cliente
+                </button>
+            </div>
+
+            <!-- Form 1: Iniciar Sessão -->
+            <form id="form-auth-login" onsubmit="StoppAuth.handleLoginSubmit(event)" class="login-form-body">
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="login-username-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Utilizador ou Administrador</label>
-                    <input type="text" id="login-username-input" class="settings-input" placeholder="ex: admin ou gustavo" autocomplete="username" required>
+                    <label for="login-username-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Utilizador, Email ou Administrador</label>
+                    <input type="text" id="login-username-input" class="settings-input" placeholder="ex: admin, gustavo ou cliente1" autocomplete="username" required>
                 </div>
-                <div class="form-group" style="margin-bottom: 16px;">
+                <div class="form-group" style="margin-bottom: 14px;">
                     <label for="login-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Palavra-passe ou PIN</label>
-                    <input type="password" id="login-password-input" class="settings-input" placeholder="Palavra-passe de admin ou PIN" autocomplete="current-password" required>
+                    <input type="password" id="login-password-input" class="settings-input" placeholder="Palavra-passe ou PIN" autocomplete="current-password" required>
                 </div>
 
-                <div class="login-quick-hint">
-                    <strong>Acesso Administrador:</strong> Utilizador <code>admin</code> com senha <code>stopp2026</code> (ou introduz o PIN rápido <code>2026</code>).
+                <div class="login-quick-hint" style="margin-bottom: 14px;">
+                    <strong>Dica de Acesso:</strong> Se és o administrador da loja, podes aceder com <code>admin</code> (senha <code>stopp2026</code> / PIN <code>2026</code>) ou diretamente via GitHub com <code>@GustavoSanz</code>.
                 </div>
 
-                <div class="login-actions" style="display: flex; gap: 8px; margin-top: 14px;">
+                <div class="login-actions" style="display: flex; gap: 8px;">
                     <button type="submit" class="btn-primary" style="flex: 1.5; padding: 12px 18px; font-size: 0.95rem;">
-                        Entrar como Administrador
+                        Entrar na Loja
                     </button>
                     <button type="button" class="btn-secondary" style="flex: 1;" onclick="StoppAuth.closeLoginModal()">
                         Cancelar
                     </button>
                 </div>
             </form>
+
+            <!-- Form 2: Registar Novo Cliente -->
+            <form id="form-auth-register" onsubmit="StoppAuth.handleRegisterSubmit(event)" class="login-form-body" style="display: none;">
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label for="register-name-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Nome Completo</label>
+                    <input type="text" id="register-name-input" class="settings-input" placeholder="ex: João Silva" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label for="register-username-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Nome de Utilizador</label>
+                    <input type="text" id="register-username-input" class="settings-input" placeholder="ex: joaosilva" autocomplete="username" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label for="register-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Palavra-passe</label>
+                    <input type="password" id="register-password-input" class="settings-input" placeholder="Mínimo 4 caracteres" autocomplete="new-password" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="register-confirm-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Confirmar Palavra-passe</label>
+                    <input type="password" id="register-confirm-password-input" class="settings-input" placeholder="Repete a tua palavra-passe" autocomplete="new-password" required>
+                </div>
+
+                <div class="login-actions" style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn-primary" style="flex: 1.5; padding: 12px 18px; font-size: 0.95rem;">
+                        Criar Conta de Cliente
+                    </button>
+                    <button type="button" class="btn-secondary" style="flex: 1;" onclick="StoppAuth.closeLoginModal()">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dedicated User Profile & Session Modal -->
+    <div class="modal-backdrop" id="user-profile-modal" style="display: none;">
+        <div class="modal-card modal-profile-card">
+            <div class="modal-header-app">
+                <div id="profile-modal-avatar-wrap"></div>
+                <div>
+                    <span id="profile-modal-role-pill" class="auth-role-pill admin">Administrador</span>
+                    <h3 id="profile-modal-name" style="margin-top: 4px;">Gustavo Sanz</h3>
+                    <div id="profile-modal-handle" class="profile-handle-sub">@GustavoSanz</div>
+                </div>
+                <button class="modal-close-btn" onclick="StoppAuth.closeProfileModal()" aria-label="Fechar">&times;</button>
+            </div>
+
+            <div class="profile-details-box">
+                <div class="profile-detail-row">
+                    <span class="detail-label">Tipo de Conta:</span>
+                    <span id="profile-detail-type" class="detail-value">Administrador do Stopp Studio</span>
+                </div>
+                <div class="profile-detail-row">
+                    <span class="detail-label">Autenticação:</span>
+                    <span id="profile-detail-provider" class="detail-value">GitHub API</span>
+                </div>
+                <div class="profile-detail-row">
+                    <span class="detail-label">Sessão Iniciada:</span>
+                    <span id="profile-detail-time" class="detail-value">Agora</span>
+                </div>
+            </div>
+
+            <div class="profile-privileges-box" id="profile-privileges-box"></div>
+
+            <div class="modal-app-actions" style="margin-top: 18px; display: flex; gap: 8px;">
+                <button type="button" class="btn-uninstall-app btn-large" style="flex: 1.2;" onclick="StoppAuth.logout()">
+                    Terminar Sessão
+                </button>
+                <button type="button" class="btn-secondary btn-large" style="flex: 1;" onclick="StoppAuth.closeProfileModal()">
+                    Fechar
+                </button>
+            </div>
         </div>
     </div>
 

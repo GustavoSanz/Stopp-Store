@@ -3595,6 +3595,12 @@ body {
     color: #34d399;
 }
 
+.btn-auth-nav.is-client {
+    background: rgba(14, 165, 233, 0.15);
+    border-color: rgba(14, 165, 233, 0.45);
+    color: #38bdf8;
+}
+
 .auth-dot {
     width: 8px;
     height: 8px;
@@ -3605,6 +3611,19 @@ body {
 .auth-dot.admin {
     background: #10b981;
     box-shadow: 0 0 8px #10b981;
+}
+
+.auth-dot.client {
+    background: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+}
+
+.auth-nav-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 /* Dedicated Error Modal & Troubleshooting Screen */
@@ -3735,10 +3754,221 @@ body {
     font-size: 0.82rem;
 }
 
+/* GitHub Instant Authentication */
+.btn-github-auth {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.btn-github-auth:hover {
+    background: #334155;
+    border-color: rgba(56, 189, 248, 0.5);
+    color: #38bdf8;
+    transform: translateY(-1px);
+}
+
+.github-auth-hint {
+    font-size: 0.76rem;
+    color: #94a3b8;
+    line-height: 1.45;
+    margin-top: 8px;
+    padding: 0 4px;
+}
+
+.github-verify-panel {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
+
+.github-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.88rem;
+    color: #38bdf8;
+}
+
+.btn-text-dismiss {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+}
+
+.btn-text-dismiss:hover {
+    color: #e2e8f0;
+}
+
+.github-chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.github-chip.admin {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+}
+
+.github-chip.admin:hover {
+    background: rgba(16, 185, 129, 0.28);
+    border-color: #34d399;
+}
+
+/* Authentication Divider & Tab Switcher */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 16px 0 14px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-divider span {
+    padding: 0 10px;
+    font-size: 0.73rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.auth-tabs-row {
+    display: flex;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+.auth-tab-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.auth-tab-btn:hover {
+    color: #e2e8f0;
+}
+
+.auth-tab-btn.active {
+    background: rgba(14, 165, 233, 0.2);
+    color: #38bdf8;
+    border-color: rgba(14, 165, 233, 0.45);
+}
+
+/* User Profile Modal */
+.modal-profile-card {
+    border-top: 4px solid #38bdf8 !important;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 15, 30, 0.99) 100%) !important;
+    max-width: 480px !important;
+}
+
+.profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-handle-sub {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-family: monospace;
+}
+
+.auth-role-pill.admin {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #34d399;
+}
+
+.auth-role-pill.client {
+    background: rgba(14, 165, 233, 0.2);
+    border-color: rgba(14, 165, 233, 0.5);
+    color: #38bdf8;
+}
+
+.profile-details-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 14px 0;
+}
+
+.profile-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.profile-detail-row:last-child {
+    border-bottom: none;
+}
+
+.profile-detail-row .detail-label {
+    color: #94a3b8;
+}
+
+.profile-detail-row .detail-value {
+    color: #f1f5f9;
+    font-weight: 600;
+}
+
+.profile-privileges-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 12px;
+}
+
 /* Fullscreen on mobile for new modals */
 @media (max-width: 768px) {
     .modal-error-card,
-    .modal-login-card {
+    .modal-login-card,
+    .modal-profile-card {
         width: 100vw !important;
         height: 100vh !important;
         max-width: 100vw !important;
@@ -3750,4 +3980,5 @@ body {
         padding: 20px 18px 40px 18px !important;
     }
 }
+
 

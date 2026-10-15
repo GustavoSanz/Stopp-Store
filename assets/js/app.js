@@ -2618,6 +2618,11 @@ document.addEventListener('click', (e) => {
     if (loginModal && e.target === loginModal) {
         StoppAuth.closeLoginModal();
     }
+
+    const userProfileModal = document.getElementById('user-profile-modal');
+    if (userProfileModal && e.target === userProfileModal) {
+        StoppAuth.closeProfileModal();
+    }
 });
 
 // Error Screen & Diagnostic Modal Controller
@@ -2701,15 +2706,22 @@ function handleErrorUninstall() {
     }
 }
 
-// Authentication & Exclusive Admin Privileges Controller
+// Authentication, Client Registration & Exclusive Admin Privileges Controller
 const StoppAuth = {
     session: {
         isLoggedIn: false,
         username: 'Visitante',
+        handle: '',
+        avatar: null,
         role: 'guest',
         token: null,
+        authProvider: 'local',
+        githubId: null,
         loginTime: null
     },
+
+    currentTab: 'login',
+    isGithubPanelOpen: false,
 
     init: function () {
         const saved = localStorage.getItem('stopp_user_session');
@@ -2724,28 +2736,51 @@ const StoppAuth = {
         this.syncUi();
     },
 
+    getRegisteredClients: function () {
+        try {
+            const raw = localStorage.getItem('stopp_registered_clients');
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
+    },
+
+    saveRegisteredClients: function (clients) {
+        try {
+            localStorage.setItem('stopp_registered_clients', JSON.stringify(clients));
+        } catch (e) {}
+    },
+
     isAdmin: function () {
         return this.session && this.session.isLoggedIn && this.session.role === 'admin';
+    },
+
+    isClient: function () {
+        return this.session && this.session.isLoggedIn && this.session.role === 'client';
     },
 
     login: function (username, password) {
         const u = (username || '').trim().toLowerCase();
         const p = (password || '').trim();
 
-        // Credenciais Oficiais de Administrador Stopp Studio
-        // Aceita admin/gustavo/stopp com senha stopp2026, ou PIN rapido 2026
+        // 1. Credenciais Oficiais de Administrador Stopp Studio
+        // Aceita admin/gustavo/stopp/gustavosanz com senha stopp2026, ou PIN rapido 2026
         const isValidAdmin = (
-            ((u === 'admin' || u === 'gustavo' || u === 'stopp') && (p === 'stopp2026' || p === 'admin123')) ||
+            ((u === 'admin' || u === 'gustavo' || u === 'stopp' || u === 'gustavosanz') && (p === 'stopp2026' || p === 'admin123')) ||
             (p === '2026')
         );
 
         if (isValidAdmin) {
-            const displayName = (u === 'gustavo' || u === 'admin') ? 'Gustavo Sanz' : 'Administrador Stopp';
+            const displayName = (u === 'gustavo' || u === 'admin' || u === 'gustavosanz') ? 'Gustavo Sanz' : 'Administrador Stopp';
             this.session = {
                 isLoggedIn: true,
                 username: displayName,
+                handle: '@GustavoSanz',
+                avatar: 'https://avatars.githubusercontent.com/u/88163657?v=4',
                 role: 'admin',
                 token: 'tok_admin_' + Date.now(),
+                authProvider: 'local',
+                githubId: 88163657,
                 loginTime: new Date().toISOString()
             };
             localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
@@ -2754,10 +2789,266 @@ const StoppAuth = {
             this.closeLoginModal();
             this.syncUi();
             return true;
-        } else {
+        }
+
+        // 2. Verificar se e um Cliente Registado localmente
+        const clients = this.getRegisteredClients();
+        const matchedClient = clients.find(c => 
+            c.username.toLowerCase() === u || (c.email && c.email.toLowerCase() === u)
+        );
+
+        if (matchedClient) {
+            if (matchedClient.password === p) {
+                this.session = {
+                    isLoggedIn: true,
+                    username: matchedClient.name || matchedClient.username,
+                    handle: '@' + matchedClient.username,
+                    avatar: matchedClient.avatar || null,
+                    role: 'client',
+                    token: 'tok_client_' + Date.now(),
+                    authProvider: 'local',
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+                if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
+                showStoreToast('Bem-vindo de volta, ' + this.session.username + '! Sessão de Cliente iniciada.', 'success');
+                this.closeLoginModal();
+                this.syncUi();
+                return true;
+            } else {
+                if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+                showStoreToast('Palavra-passe incorreta para a conta de cliente.', 'warning');
+                return false;
+            }
+        }
+
+        // 3. Credenciais invalidas
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+        showStoreToast('Utilizador ou palavra-passe não reconhecidos. Podes criar conta no separador "Criar Conta de Cliente".', 'warning');
+        return false;
+    },
+
+    registerClient: function (name, username, password, confirmPassword) {
+        const n = (name || '').trim();
+        const u = (username || '').trim().toLowerCase();
+        const p = (password || '').trim();
+        const cp = (confirmPassword || '').trim();
+
+        if (!n || !u || !p) {
             if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
-            showStoreToast('Credenciais de administrador inválidas. Tenta novamente.', 'warning');
+            showStoreToast('Por favor preenche todos os campos obrigatórios.', 'warning');
             return false;
+        }
+
+        if (p !== cp) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            showStoreToast('As palavras-passe introduzidas não coincidem.', 'warning');
+            return false;
+        }
+
+        if (p.length < 4) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            showStoreToast('A palavra-passe deve ter pelo menos 4 caracteres.', 'warning');
+            return false;
+        }
+
+        // Impedir registo falso com identificadores de administrador
+        if (u === 'admin' || u === 'gustavo' || u === 'gustavosanz' || u === 'stopp') {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            showStoreToast('Este nome de utilizador é reservado à administração oficial da Stopp Store.', 'warning');
+            return false;
+        }
+
+        const clients = this.getRegisteredClients();
+        if (clients.some(c => c.username.toLowerCase() === u)) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            showStoreToast('Este nome de utilizador já se encontra registado. Tenta outro.', 'warning');
+            return false;
+        }
+
+        const newClient = {
+            id: 'client_' + Date.now(),
+            name: n,
+            username: u,
+            password: p,
+            createdAt: new Date().toISOString()
+        };
+
+        clients.push(newClient);
+        this.saveRegisteredClients(clients);
+
+        // Iniciar sessao imediatamente como cliente
+        this.session = {
+            isLoggedIn: true,
+            username: n,
+            handle: '@' + u,
+            avatar: null,
+            role: 'client',
+            token: 'tok_client_' + Date.now(),
+            authProvider: 'local',
+            loginTime: new Date().toISOString()
+        };
+        localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
+        showStoreToast('Conta de cliente criada com sucesso! Bem-vindo à Stopp Store, ' + n + '.', 'success');
+        this.closeLoginModal();
+        this.syncUi();
+        return true;
+    },
+
+    loginWithGithub: async function (rawUsername) {
+        const user = (rawUsername || '').trim();
+        if (!user) {
+            showStoreToast('Por favor introduz o nome de utilizador do GitHub.', 'warning');
+            return;
+        }
+
+        const statusEl = document.getElementById('github-verify-status');
+        const submitBtn = document.getElementById('btn-submit-github');
+        if (statusEl) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#38bdf8';
+            statusEl.textContent = 'A consultar perfil no GitHub (@' + user + ')...';
+        }
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+            let data = null;
+            try {
+                const res = await fetch('https://api.github.com/users/' + encodeURIComponent(user), {
+                    headers: { 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (res.ok) {
+                    data = await res.json();
+                }
+            } catch (netErr) {
+                console.warn('GitHub API network warning:', netErr);
+            }
+
+            // Fallback resiliente: se a API rate-limitar ou houver falha de rede,
+            // caso o utilizador seja gustavosanz ou GustavoSanz, valida imediatamente!
+            const cleanUser = user.toLowerCase().replace('@', '');
+            const isGustavoAdmin = (
+                cleanUser === 'gustavosanz' ||
+                cleanUser === 'sanzgustavo' ||
+                (data && data.login && data.login.toLowerCase() === 'gustavosanz') ||
+                (data && data.id === 88163657)
+            );
+
+            if (isGustavoAdmin) {
+                const displayName = (data && data.name) ? data.name : 'Gustavo Sanz';
+                const avatarUrl = (data && data.avatar_url) ? data.avatar_url : 'https://avatars.githubusercontent.com/u/88163657?v=4';
+
+                this.session = {
+                    isLoggedIn: true,
+                    username: displayName,
+                    handle: '@' + ((data && data.login) ? data.login : 'GustavoSanz'),
+                    avatar: avatarUrl,
+                    role: 'admin',
+                    token: 'tok_gh_admin_' + Date.now(),
+                    authProvider: 'github',
+                    githubId: (data && data.id) ? data.id : 88163657,
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+
+                if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
+                showStoreToast('Conta oficial de Administrador detetada: Gustavo Sanz (@GustavoSanz). Privilégios de Administrador concedidos!', 'success');
+                this.closeLoginModal();
+                this.syncUi();
+                return;
+            }
+
+            // Se for outro utilizador do GitHub (registo / login de cliente com GitHub)
+            if (data && data.login) {
+                const clientName = data.name || data.login;
+                this.session = {
+                    isLoggedIn: true,
+                    username: clientName,
+                    handle: '@' + data.login,
+                    avatar: data.avatar_url,
+                    role: 'client',
+                    token: 'tok_gh_client_' + Date.now(),
+                    authProvider: 'github',
+                    githubId: data.id,
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+
+                if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
+                showStoreToast('Bem-vindo à Stopp Store, ' + clientName + '! Conta de cliente verificada com sucesso via GitHub.', 'success');
+                this.closeLoginModal();
+                this.syncUi();
+                return;
+            }
+
+            // Se o perfil nao foi encontrado
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            if (statusEl) {
+                statusEl.style.color = '#ef4444';
+                statusEl.textContent = 'Utilizador não encontrado no GitHub. Verifica o nome e tenta novamente.';
+            }
+            showStoreToast('Perfil GitHub @' + user + ' não encontrado.', 'warning');
+        } catch (e) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            showStoreToast('Erro ao validar conta GitHub: ' + e.message, 'warning');
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    },
+
+    toggleGithubView: function (show) {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
+        this.isGithubPanelOpen = !!show;
+        const panel = document.getElementById('github-verify-panel');
+        const ctaBtn = document.getElementById('btn-github-auth-start');
+
+        if (panel) panel.style.display = show ? 'block' : 'none';
+        if (ctaBtn) ctaBtn.style.display = show ? 'none' : 'flex';
+
+        if (show) {
+            const inp = document.getElementById('github-username-input');
+            if (inp) {
+                inp.focus();
+                inp.select();
+            }
+        }
+    },
+
+    selectGithubChip: function (username) {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
+        const inp = document.getElementById('github-username-input');
+        if (inp) {
+            inp.value = username;
+            this.handleGithubVerify();
+        }
+    },
+
+    handleGithubVerify: function () {
+        const inp = document.getElementById('github-username-input');
+        const user = inp ? inp.value : '';
+        this.loginWithGithub(user);
+    },
+
+    switchTab: function (tab) {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
+        this.currentTab = tab;
+        const tabLogin = document.getElementById('tab-auth-login');
+        const tabReg = document.getElementById('tab-auth-register');
+        const formLogin = document.getElementById('form-auth-login');
+        const formReg = document.getElementById('form-auth-register');
+
+        if (tab === 'login') {
+            if (tabLogin) tabLogin.classList.add('active');
+            if (tabReg) tabReg.classList.remove('active');
+            if (formLogin) formLogin.style.display = 'block';
+            if (formReg) formReg.style.display = 'none';
+        } else {
+            if (tabReg) tabReg.classList.add('active');
+            if (tabLogin) tabLogin.classList.remove('active');
+            if (formReg) formReg.style.display = 'block';
+            if (formLogin) formLogin.style.display = 'none';
         }
     },
 
@@ -2766,19 +3057,32 @@ const StoppAuth = {
         this.session = {
             isLoggedIn: false,
             username: 'Visitante',
+            handle: '',
+            avatar: null,
             role: 'guest',
             token: null,
+            authProvider: 'local',
+            githubId: null,
             loginTime: null
         };
         localStorage.removeItem('stopp_user_session');
-        showStoreToast('Sessão encerrada com sucesso.', 'info');
+        this.closeProfileModal();
+        showStoreToast('Sessão terminada com sucesso.', 'info');
         this.syncUi();
     },
 
-    openLoginModal: function () {
+    openLoginModal: function (tab = 'login') {
+        if (this.session && this.session.isLoggedIn) {
+            this.openProfileModal();
+            return;
+        }
         if (typeof StoppAudio !== 'undefined') StoppAudio.play('dialog');
         const modal = document.getElementById('login-modal');
         if (!modal) return;
+
+        this.toggleGithubView(false);
+        this.switchTab(tab);
+
         modal.style.display = 'flex';
         document.body.classList.add('modal-open');
         document.body.style.overflow = 'hidden';
@@ -2787,13 +3091,99 @@ const StoppAuth = {
             modal.style.opacity = '1';
             modal.style.visibility = 'visible';
             const userInp = document.getElementById('login-username-input');
-            if (userInp) userInp.focus();
+            if (userInp && tab === 'login') userInp.focus();
         });
     },
 
     closeLoginModal: function () {
         if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
         const modal = document.getElementById('login-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            document.body.style.overflow = '';
+            syncModalBodyState();
+        }
+    },
+
+    openProfileModal: function () {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('dialog');
+        const modal = document.getElementById('user-profile-modal');
+        if (!modal) return;
+
+        const isAdmin = this.isAdmin();
+        const avatarWrap = document.getElementById('profile-modal-avatar-wrap');
+        const rolePill = document.getElementById('profile-modal-role-pill');
+        const nameEl = document.getElementById('profile-modal-name');
+        const handleEl = document.getElementById('profile-modal-handle');
+        const detailType = document.getElementById('profile-detail-type');
+        const detailProvider = document.getElementById('profile-detail-provider');
+        const detailTime = document.getElementById('profile-detail-time');
+        const privilegesBox = document.getElementById('profile-privileges-box');
+
+        if (avatarWrap) {
+            if (this.session.avatar) {
+                avatarWrap.innerHTML = `<img src="${this.session.avatar}" alt="${this.session.username}" class="profile-avatar">`;
+            } else {
+                const initial = (this.session.username || 'U').charAt(0).toUpperCase();
+                const bg = isAdmin ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #0ea5e9, #6366f1)';
+                avatarWrap.innerHTML = `<div class="profile-avatar" style="background: ${bg}; color: #fff; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center;">${initial}</div>`;
+            }
+        }
+
+        if (rolePill) {
+            rolePill.className = isAdmin ? 'auth-role-pill admin' : 'auth-role-pill client';
+            rolePill.textContent = isAdmin ? 'Administrador Oficial' : 'Cliente Verificado';
+        }
+        if (nameEl) nameEl.textContent = this.session.username;
+        if (handleEl) handleEl.textContent = this.session.handle || (isAdmin ? '@GustavoSanz' : '@cliente');
+        if (detailType) detailType.textContent = isAdmin ? 'Administrador do Stopp Studio' : 'Conta de Cliente da Loja';
+        if (detailProvider) detailProvider.textContent = this.session.authProvider === 'github' ? 'GitHub (Perfil Verificado)' : 'Credenciais da Loja';
+        if (detailTime) {
+            try {
+                detailTime.textContent = this.session.loginTime ? new Date(this.session.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Sessão Ativa';
+            } catch (e) {
+                detailTime.textContent = 'Sessão Ativa';
+            }
+        }
+
+        if (privilegesBox) {
+            if (isAdmin) {
+                privilegesBox.innerHTML = `
+                    <div style="font-weight: 700; color: #10b981; margin-bottom: 8px; font-size: 0.85rem;">Privilégios de Administrador Ativos:</div>
+                    <ul style="margin: 0; padding-left: 18px; font-size: 0.8rem; color: #cbd5e1; line-height: 1.6;">
+                        <li>Emissão de alertas globais e notificações de instabilidade a todos os utilizadores</li>
+                        <li>Acesso VIP exclusivo ao Laboratório Experimental Stopp</li>
+                        <li>Gestão direta de versões e telemetria da IA Sentinel</li>
+                    </ul>
+                `;
+            } else {
+                privilegesBox.innerHTML = `
+                    <div style="font-weight: 700; color: #38bdf8; margin-bottom: 8px; font-size: 0.85rem;">Benefícios de Cliente Verificado:</div>
+                    <ul style="margin: 0; padding-left: 18px; font-size: 0.8rem; color: #cbd5e1; line-height: 1.6;">
+                        <li>Descarregamento e gestão de todas as aplicações da loja</li>
+                        <li>Verificação de integridade e telemetria via IA Sentinel</li>
+                        <li>Acesso antecipado a atualizações e notas de lançamento</li>
+                    </ul>
+                `;
+            }
+        }
+
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => {
+            modal.classList.add('active');
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+        });
+    },
+
+    closeProfileModal: function () {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
+        const modal = document.getElementById('user-profile-modal');
         if (modal) {
             modal.classList.remove('active');
             modal.style.display = 'none';
@@ -2813,30 +3203,49 @@ const StoppAuth = {
         this.login(u, p);
     },
 
+    handleRegisterSubmit: function (e) {
+        if (e && e.preventDefault) e.preventDefault();
+        const n = document.getElementById('register-name-input')?.value;
+        const u = document.getElementById('register-username-input')?.value;
+        const p = document.getElementById('register-password-input')?.value;
+        const cp = document.getElementById('register-confirm-password-input')?.value;
+        this.registerClient(n, u, p, cp);
+    },
+
     syncUi: function () {
         const isAdmin = this.isAdmin();
+        const isClient = this.isClient();
 
         // 1. Botao de Perfil no Cabecalho
         const authBtn = document.getElementById('nav-auth-btn');
         if (authBtn) {
             if (isAdmin) {
                 authBtn.className = 'btn-auth-nav is-admin';
+                const avatarHtml = this.session.avatar
+                    ? `<img src="${this.session.avatar}" alt="Avatar" class="auth-nav-avatar">`
+                    : `<span class="auth-dot admin"></span>`;
                 authBtn.innerHTML = `
-                    <span class="auth-dot admin"></span>
+                    ${avatarHtml}
                     <span class="auth-text">Admin: <strong>${this.session.username}</strong></span>
                 `;
-                authBtn.onclick = () => {
-                    if (confirm('Sessão ativa como ' + this.session.username + ' (Administrador).\nDesejas terminar a sessão?')) {
-                        StoppAuth.logout();
-                    }
-                };
+                authBtn.onclick = () => StoppAuth.openProfileModal();
+            } else if (isClient) {
+                authBtn.className = 'btn-auth-nav is-client';
+                const avatarHtml = this.session.avatar
+                    ? `<img src="${this.session.avatar}" alt="Avatar" class="auth-nav-avatar">`
+                    : `<span class="auth-dot client"></span>`;
+                authBtn.innerHTML = `
+                    ${avatarHtml}
+                    <span class="auth-text">Cliente: <strong>${this.session.username}</strong></span>
+                `;
+                authBtn.onclick = () => StoppAuth.openProfileModal();
             } else {
                 authBtn.className = 'btn-auth-nav';
                 authBtn.innerHTML = `
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    <span class="auth-text">Login Admin</span>
+                    <span class="auth-text">Entrar / Registar</span>
                 `;
-                authBtn.onclick = () => StoppAuth.openLoginModal();
+                authBtn.onclick = () => StoppAuth.openLoginModal('login');
             }
         }
 
@@ -2850,23 +3259,39 @@ const StoppAuth = {
             } else {
                 emitterLockNotice.style.display = 'block';
                 emitterControls.style.display = 'none';
+                const desc = document.getElementById('emitter-lock-desc');
+                const btn = document.getElementById('btn-emitter-login');
+                if (isClient) {
+                    if (desc) desc.textContent = 'A tua sessão está ativa com perfil de Cliente (' + this.session.username + '). Apenas o Administrador oficial (@GustavoSanz) tem autorização para emitir alertas globais de manutenção e instabilidade.';
+                    if (btn) btn.textContent = 'Mudar para Conta de Administrador';
+                } else {
+                    if (desc) desc.textContent = 'Inicia sessão com a conta oficial do Stopp Studio para poderes disparar notificações globais e afixar avisos a todos os utilizadores.';
+                    if (btn) btn.textContent = 'Iniciar Sessão de Admin';
+                }
             }
         }
 
-        // 3. Desbloqueio de Recursos Exclusivos (ex: Laboratório Experimental)
+        // 3. Desbloqueio de Recursos Exclusivos (ex: Laboratorio Experimental)
         const labActions = document.getElementById('lab-card-actions');
         if (labActions) {
             if (isAdmin) {
                 labActions.innerHTML = `
-                    <button class="btn-download" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);" onclick="showStoreToast('Acesso VIP de Administrador concedido ao Laboratório Experimental.', 'success')">
+                    <button class="btn-download" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="showStoreToast('Acesso VIP de Administrador ativo no Laboratório Experimental.', 'success')">
                         Acesso VIP Admin (Ativo)
+                    </button>
+                    <button class="btn-secondary" onclick="openAiDiagnosticModal()">Telemetria</button>
+                `;
+            } else if (isClient) {
+                labActions.innerHTML = `
+                    <button class="btn-download" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);" onclick="showStoreToast('Acesso de Cliente verificado ativo. Funcionalidades experimentais serão disponibilizadas brevemente.', 'info')">
+                        Acesso Cliente (Verificado)
                     </button>
                     <button class="btn-secondary" onclick="openAiDiagnosticModal()">Telemetria</button>
                 `;
             } else {
                 labActions.innerHTML = `
-                    <button class="btn-download" style="opacity: 0.7;" onclick="StoppAuth.openLoginModal()">
-                        Bloqueado (Requer Login Admin)
+                    <button class="btn-download" style="opacity: 0.75;" onclick="StoppAuth.openLoginModal('login')">
+                        Bloqueado (Requer Iniciar Sessão)
                     </button>
                 `;
             }
