@@ -2724,8 +2724,8 @@ const StoppAuth = {
     isGithubPanelOpen: false,
 
     oauthConfig: {
-        clientId: localStorage.getItem('stopp_gh_client_id') || '',
-        clientSecret: localStorage.getItem('stopp_gh_client_secret') || '',
+        clientId: localStorage.getItem('stopp_gh_client_id') || 'Ov23liOvhRxaemk05yKi',
+        clientSecret: localStorage.getItem('stopp_gh_client_secret') || '484975c7d337bc9caf101060d224389926284b0c',
         redirectUri: 'https://gustavosanz.github.io/Stopp-Store/'
     },
 
