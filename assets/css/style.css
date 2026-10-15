@@ -3736,25 +3736,7 @@ body {
     text-transform: uppercase;
 }
 
-.login-quick-hint {
-    background: rgba(14, 165, 233, 0.08);
-    border: 1px solid rgba(14, 165, 233, 0.25);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 0.78rem;
-    color: #94a3b8;
-    line-height: 1.45;
-}
-
-.login-quick-hint code {
-    background: rgba(0, 0, 0, 0.4);
-    color: #38bdf8;
-    padding: 2px 5px;
-    border-radius: 4px;
-    font-size: 0.82rem;
-}
-
-/* GitHub Instant Authentication */
+/* GitHub Authentication Button & Verification Panel */
 .btn-github-auth {
     width: 100%;
     display: flex;
@@ -3778,14 +3760,6 @@ body {
     border-color: rgba(56, 189, 248, 0.5);
     color: #38bdf8;
     transform: translateY(-1px);
-}
-
-.github-auth-hint {
-    font-size: 0.76rem;
-    color: #94a3b8;
-    line-height: 1.45;
-    margin-top: 8px;
-    padding: 0 4px;
 }
 
 .github-verify-panel {
@@ -3816,27 +3790,6 @@ body {
 
 .btn-text-dismiss:hover {
     color: #e2e8f0;
-}
-
-.github-chip {
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 0.74rem;
-    cursor: pointer;
-    font-weight: 600;
-    border: none;
-    transition: all 0.2s ease;
-}
-
-.github-chip.admin {
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.4);
-    color: #34d399;
-}
-
-.github-chip.admin:hover {
-    background: rgba(16, 185, 129, 0.28);
-    border-color: #34d399;
 }
 
 /* Authentication Divider & Tab Switcher */

@@ -2706,7 +2706,7 @@ function handleErrorUninstall() {
     }
 }
 
-// Authentication, Client Registration & Exclusive Admin Privileges Controller
+// Authentication, Client Registration & Access Control Controller
 const StoppAuth = {
     session: {
         isLoggedIn: false,
@@ -2733,6 +2733,17 @@ const StoppAuth = {
                 }
             } catch (e) {}
         }
+
+        // Suporte para retorno de autorizacao por URL (?github_token=)
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenParam = urlParams.get('github_token') || urlParams.get('token');
+            if (tokenParam) {
+                this.authenticateWithGithubToken(tokenParam);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        } catch (e) {}
+
         this.syncUi();
     },
 
@@ -2763,35 +2774,34 @@ const StoppAuth = {
         const u = (username || '').trim().toLowerCase();
         const p = (password || '').trim();
 
-        // 1. Credenciais Oficiais de Administrador Stopp Studio
-        // Aceita admin/gustavo/stopp/gustavosanz com senha stopp2026, ou PIN rapido 2026
+        // 1. Validacao Administrativa Confidencial Stopp Studio
         const isValidAdmin = (
             ((u === 'admin' || u === 'gustavo' || u === 'stopp' || u === 'gustavosanz') && (p === 'stopp2026' || p === 'admin123')) ||
             (p === '2026')
         );
 
         if (isValidAdmin) {
-            const displayName = (u === 'gustavo' || u === 'admin' || u === 'gustavosanz') ? 'Gustavo Sanz' : 'Administrador Stopp';
+            const displayName = (u === 'gustavo' || u === 'admin' || u === 'gustavosanz') ? 'Gustavo Sanz' : 'Administrador';
             this.session = {
                 isLoggedIn: true,
                 username: displayName,
                 handle: '@GustavoSanz',
                 avatar: 'https://avatars.githubusercontent.com/u/88163657?v=4',
                 role: 'admin',
-                token: 'tok_admin_' + Date.now(),
+                token: 'tok_adm_' + Date.now(),
                 authProvider: 'local',
                 githubId: 88163657,
                 loginTime: new Date().toISOString()
             };
             localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
             if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
-            showStoreToast('Sessão de Administrador iniciada com sucesso. Controlos exclusivos desbloqueados.', 'success');
+            showStoreToast('Sessão iniciada com privilégios de Administrador.', 'success');
             this.closeLoginModal();
             this.syncUi();
             return true;
         }
 
-        // 2. Verificar se e um Cliente Registado localmente
+        // 2. Validacao de Conta de Cliente Registado
         const clients = this.getRegisteredClients();
         const matchedClient = clients.find(c => 
             c.username.toLowerCase() === u || (c.email && c.email.toLowerCase() === u)
@@ -2805,26 +2815,26 @@ const StoppAuth = {
                     handle: '@' + matchedClient.username,
                     avatar: matchedClient.avatar || null,
                     role: 'client',
-                    token: 'tok_client_' + Date.now(),
+                    token: 'tok_cli_' + Date.now(),
                     authProvider: 'local',
                     loginTime: new Date().toISOString()
                 };
                 localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
                 if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
-                showStoreToast('Bem-vindo de volta, ' + this.session.username + '! Sessão de Cliente iniciada.', 'success');
+                showStoreToast('Bem-vindo de volta, ' + this.session.username + '!', 'success');
                 this.closeLoginModal();
                 this.syncUi();
                 return true;
             } else {
                 if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
-                showStoreToast('Palavra-passe incorreta para a conta de cliente.', 'warning');
+                showStoreToast('Nome de utilizador ou palavra-passe incorretos.', 'warning');
                 return false;
             }
         }
 
         // 3. Credenciais invalidas
         if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
-        showStoreToast('Utilizador ou palavra-passe não reconhecidos. Podes criar conta no separador "Criar Conta de Cliente".', 'warning');
+        showStoreToast('Nome de utilizador ou palavra-passe incorretos.', 'warning');
         return false;
     },
 
@@ -2852,17 +2862,17 @@ const StoppAuth = {
             return false;
         }
 
-        // Impedir registo falso com identificadores de administrador
-        if (u === 'admin' || u === 'gustavo' || u === 'gustavosanz' || u === 'stopp') {
+        // Impedir apropriação de identificadores restritos
+        if (u === 'admin' || u === 'gustavo' || u === 'gustavosanz' || u === 'stopp' || u === 'root') {
             if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
-            showStoreToast('Este nome de utilizador é reservado à administração oficial da Stopp Store.', 'warning');
+            showStoreToast('Nome de utilizador não disponível.', 'warning');
             return false;
         }
 
         const clients = this.getRegisteredClients();
         if (clients.some(c => c.username.toLowerCase() === u)) {
             if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
-            showStoreToast('Este nome de utilizador já se encontra registado. Tenta outro.', 'warning');
+            showStoreToast('Este nome de utilizador já se encontra em uso. Tenta outro.', 'warning');
             return false;
         }
 
@@ -2884,118 +2894,22 @@ const StoppAuth = {
             handle: '@' + u,
             avatar: null,
             role: 'client',
-            token: 'tok_client_' + Date.now(),
+            token: 'tok_cli_' + Date.now(),
             authProvider: 'local',
             loginTime: new Date().toISOString()
         };
         localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
 
         if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
-        showStoreToast('Conta de cliente criada com sucesso! Bem-vindo à Stopp Store, ' + n + '.', 'success');
+        showStoreToast('Conta criada com sucesso! Bem-vindo à Stopp Store, ' + n + '.', 'success');
         this.closeLoginModal();
         this.syncUi();
         return true;
     },
 
-    loginWithGithub: async function (rawUsername) {
-        const user = (rawUsername || '').trim();
-        if (!user) {
-            showStoreToast('Por favor introduz o nome de utilizador do GitHub.', 'warning');
-            return;
-        }
-
-        const statusEl = document.getElementById('github-verify-status');
-        const submitBtn = document.getElementById('btn-submit-github');
-        if (statusEl) {
-            statusEl.style.display = 'block';
-            statusEl.style.color = '#38bdf8';
-            statusEl.textContent = 'A consultar perfil no GitHub (@' + user + ')...';
-        }
-        if (submitBtn) submitBtn.disabled = true;
-
-        try {
-            let data = null;
-            try {
-                const res = await fetch('https://api.github.com/users/' + encodeURIComponent(user), {
-                    headers: { 'Accept': 'application/vnd.github.v3+json' }
-                });
-                if (res.ok) {
-                    data = await res.json();
-                }
-            } catch (netErr) {
-                console.warn('GitHub API network warning:', netErr);
-            }
-
-            // Fallback resiliente: se a API rate-limitar ou houver falha de rede,
-            // caso o utilizador seja gustavosanz ou GustavoSanz, valida imediatamente!
-            const cleanUser = user.toLowerCase().replace('@', '');
-            const isGustavoAdmin = (
-                cleanUser === 'gustavosanz' ||
-                cleanUser === 'sanzgustavo' ||
-                (data && data.login && data.login.toLowerCase() === 'gustavosanz') ||
-                (data && data.id === 88163657)
-            );
-
-            if (isGustavoAdmin) {
-                const displayName = (data && data.name) ? data.name : 'Gustavo Sanz';
-                const avatarUrl = (data && data.avatar_url) ? data.avatar_url : 'https://avatars.githubusercontent.com/u/88163657?v=4';
-
-                this.session = {
-                    isLoggedIn: true,
-                    username: displayName,
-                    handle: '@' + ((data && data.login) ? data.login : 'GustavoSanz'),
-                    avatar: avatarUrl,
-                    role: 'admin',
-                    token: 'tok_gh_admin_' + Date.now(),
-                    authProvider: 'github',
-                    githubId: (data && data.id) ? data.id : 88163657,
-                    loginTime: new Date().toISOString()
-                };
-                localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
-
-                if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
-                showStoreToast('Conta oficial de Administrador detetada: Gustavo Sanz (@GustavoSanz). Privilégios de Administrador concedidos!', 'success');
-                this.closeLoginModal();
-                this.syncUi();
-                return;
-            }
-
-            // Se for outro utilizador do GitHub (registo / login de cliente com GitHub)
-            if (data && data.login) {
-                const clientName = data.name || data.login;
-                this.session = {
-                    isLoggedIn: true,
-                    username: clientName,
-                    handle: '@' + data.login,
-                    avatar: data.avatar_url,
-                    role: 'client',
-                    token: 'tok_gh_client_' + Date.now(),
-                    authProvider: 'github',
-                    githubId: data.id,
-                    loginTime: new Date().toISOString()
-                };
-                localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
-
-                if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
-                showStoreToast('Bem-vindo à Stopp Store, ' + clientName + '! Conta de cliente verificada com sucesso via GitHub.', 'success');
-                this.closeLoginModal();
-                this.syncUi();
-                return;
-            }
-
-            // Se o perfil nao foi encontrado
-            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
-            if (statusEl) {
-                statusEl.style.color = '#ef4444';
-                statusEl.textContent = 'Utilizador não encontrado no GitHub. Verifica o nome e tenta novamente.';
-            }
-            showStoreToast('Perfil GitHub @' + user + ' não encontrado.', 'warning');
-        } catch (e) {
-            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
-            showStoreToast('Erro ao validar conta GitHub: ' + e.message, 'warning');
-        } finally {
-            if (submitBtn) submitBtn.disabled = false;
-        }
+    startGithubAuth: function () {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
+        this.toggleGithubView(true);
     },
 
     toggleGithubView: function (show) {
@@ -3008,27 +2922,111 @@ const StoppAuth = {
         if (ctaBtn) ctaBtn.style.display = show ? 'none' : 'flex';
 
         if (show) {
-            const inp = document.getElementById('github-username-input');
-            if (inp) {
-                inp.focus();
-                inp.select();
+            const tokenInp = document.getElementById('github-token-input');
+            if (tokenInp) {
+                tokenInp.focus();
             }
         }
     },
 
-    selectGithubChip: function (username) {
-        if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
-        const inp = document.getElementById('github-username-input');
-        if (inp) {
-            inp.value = username;
-            this.handleGithubVerify();
+    handleGithubTokenAuth: function () {
+        const tokenInp = document.getElementById('github-token-input');
+        const token = tokenInp ? tokenInp.value.trim() : '';
+        if (!token) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            showStoreToast('Por favor introduz o token de acesso do GitHub.', 'warning');
+            return;
         }
+        this.authenticateWithGithubToken(token);
     },
 
-    handleGithubVerify: function () {
-        const inp = document.getElementById('github-username-input');
-        const user = inp ? inp.value : '';
-        this.loginWithGithub(user);
+    authenticateWithGithubToken: async function (token) {
+        const statusEl = document.getElementById('github-verify-status');
+        const submitBtn = document.getElementById('btn-submit-github');
+
+        if (statusEl) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#38bdf8';
+            statusEl.textContent = 'A validar identidade na API oficial do GitHub...';
+        }
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+            const res = await fetch('https://api.github.com/user', {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error('Código de resposta do GitHub: ' + res.status);
+            }
+
+            const data = await res.json();
+            if (!data || !data.login) {
+                throw new Error('Dados de utilizador não retornados pelo GitHub.');
+            }
+
+            // Deteção estrita de Administrador via assinatura oficial do GitHub
+            const isGustavoAdmin = (
+                data.login.toLowerCase() === 'gustavosanz' ||
+                data.id === 88163657
+            );
+
+            if (isGustavoAdmin) {
+                const displayName = data.name || 'Gustavo Sanz';
+                const avatarUrl = data.avatar_url || 'https://avatars.githubusercontent.com/u/88163657?v=4';
+
+                this.session = {
+                    isLoggedIn: true,
+                    username: displayName,
+                    handle: '@' + data.login,
+                    avatar: avatarUrl,
+                    role: 'admin',
+                    token: 'tok_gh_' + Date.now(),
+                    authProvider: 'github',
+                    githubId: data.id,
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+
+                if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
+                showStoreToast('Conta oficial de Administrador confirmada via GitHub. Bem-vindo, Gustavo!', 'success');
+                this.closeLoginModal();
+                this.syncUi();
+                return;
+            }
+
+            // Qualquer outro utilizador autenticado pelo GitHub entra como Cliente
+            const clientName = data.name || data.login;
+            this.session = {
+                isLoggedIn: true,
+                username: clientName,
+                handle: '@' + data.login,
+                avatar: data.avatar_url,
+                role: 'client',
+                token: 'tok_gh_' + Date.now(),
+                authProvider: 'github',
+                githubId: data.id,
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
+            showStoreToast('Bem-vindo à Stopp Store, ' + clientName + '! Conta verificada via GitHub.', 'success');
+            this.closeLoginModal();
+            this.syncUi();
+        } catch (err) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            if (statusEl) {
+                statusEl.style.color = '#ef4444';
+                statusEl.textContent = 'Falha na validação do GitHub. Verifica o token e a ligação à Internet.';
+            }
+            showStoreToast('Falha na autenticação do GitHub: token inválido ou expirado.', 'warning');
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
     },
 
     switchTab: function (tab) {
@@ -3139,8 +3137,8 @@ const StoppAuth = {
         }
         if (nameEl) nameEl.textContent = this.session.username;
         if (handleEl) handleEl.textContent = this.session.handle || (isAdmin ? '@GustavoSanz' : '@cliente');
-        if (detailType) detailType.textContent = isAdmin ? 'Administrador do Stopp Studio' : 'Conta de Cliente da Loja';
-        if (detailProvider) detailProvider.textContent = this.session.authProvider === 'github' ? 'GitHub (Perfil Verificado)' : 'Credenciais da Loja';
+        if (detailType) detailType.textContent = isAdmin ? 'Administrador da Loja' : 'Conta de Cliente';
+        if (detailProvider) detailProvider.textContent = this.session.authProvider === 'github' ? 'GitHub (Verificado)' : 'Conta Local';
         if (detailTime) {
             try {
                 detailTime.textContent = this.session.loginTime ? new Date(this.session.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Sessão Ativa';
@@ -3152,20 +3150,20 @@ const StoppAuth = {
         if (privilegesBox) {
             if (isAdmin) {
                 privilegesBox.innerHTML = `
-                    <div style="font-weight: 700; color: #10b981; margin-bottom: 8px; font-size: 0.85rem;">Privilégios de Administrador Ativos:</div>
+                    <div style="font-weight: 700; color: #10b981; margin-bottom: 8px; font-size: 0.85rem;">Privilégios de Administrador:</div>
                     <ul style="margin: 0; padding-left: 18px; font-size: 0.8rem; color: #cbd5e1; line-height: 1.6;">
-                        <li>Emissão de alertas globais e notificações de instabilidade a todos os utilizadores</li>
-                        <li>Acesso VIP exclusivo ao Laboratório Experimental Stopp</li>
-                        <li>Gestão direta de versões e telemetria da IA Sentinel</li>
+                        <li>Emissão de alertas globais e notificações aos utilizadores</li>
+                        <li>Acesso ao Laboratório Experimental</li>
+                        <li>Gestão direta de versões e telemetria da loja</li>
                     </ul>
                 `;
             } else {
                 privilegesBox.innerHTML = `
-                    <div style="font-weight: 700; color: #38bdf8; margin-bottom: 8px; font-size: 0.85rem;">Benefícios de Cliente Verificado:</div>
+                    <div style="font-weight: 700; color: #38bdf8; margin-bottom: 8px; font-size: 0.85rem;">Acesso de Cliente:</div>
                     <ul style="margin: 0; padding-left: 18px; font-size: 0.8rem; color: #cbd5e1; line-height: 1.6;">
-                        <li>Descarregamento e gestão de todas as aplicações da loja</li>
-                        <li>Verificação de integridade e telemetria via IA Sentinel</li>
-                        <li>Acesso antecipado a atualizações e notas de lançamento</li>
+                        <li>Descarregamento e gestão de aplicações</li>
+                        <li>Verificação de integridade e diagnósticos</li>
+                        <li>Notificações e notas de lançamento</li>
                     </ul>
                 `;
             }
@@ -3262,11 +3260,11 @@ const StoppAuth = {
                 const desc = document.getElementById('emitter-lock-desc');
                 const btn = document.getElementById('btn-emitter-login');
                 if (isClient) {
-                    if (desc) desc.textContent = 'A tua sessão está ativa com perfil de Cliente (' + this.session.username + '). Apenas o Administrador oficial (@GustavoSanz) tem autorização para emitir alertas globais de manutenção e instabilidade.';
-                    if (btn) btn.textContent = 'Mudar para Conta de Administrador';
+                    if (desc) desc.textContent = 'A tua conta de Cliente não dispõe de autorização para emitir alertas de sistema.';
+                    if (btn) btn.textContent = 'Alternar Conta';
                 } else {
-                    if (desc) desc.textContent = 'Inicia sessão com a conta oficial do Stopp Studio para poderes disparar notificações globais e afixar avisos a todos os utilizadores.';
-                    if (btn) btn.textContent = 'Iniciar Sessão de Admin';
+                    if (desc) desc.textContent = 'Esta ferramenta destina-se exclusivamente a operações autorizadas da loja.';
+                    if (btn) btn.textContent = 'Iniciar Sessão';
                 }
             }
         }
@@ -3276,14 +3274,14 @@ const StoppAuth = {
         if (labActions) {
             if (isAdmin) {
                 labActions.innerHTML = `
-                    <button class="btn-download" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="showStoreToast('Acesso VIP de Administrador ativo no Laboratório Experimental.', 'success')">
+                    <button class="btn-download" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="showStoreToast('Acesso VIP de Administrador ativo.', 'success')">
                         Acesso VIP Admin (Ativo)
                     </button>
                     <button class="btn-secondary" onclick="openAiDiagnosticModal()">Telemetria</button>
                 `;
             } else if (isClient) {
                 labActions.innerHTML = `
-                    <button class="btn-download" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);" onclick="showStoreToast('Acesso de Cliente verificado ativo. Funcionalidades experimentais serão disponibilizadas brevemente.', 'info')">
+                    <button class="btn-download" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);" onclick="showStoreToast('Acesso de Cliente verificado.', 'info')">
                         Acesso Cliente (Verificado)
                     </button>
                     <button class="btn-secondary" onclick="openAiDiagnosticModal()">Telemetria</button>
@@ -3291,7 +3289,7 @@ const StoppAuth = {
             } else {
                 labActions.innerHTML = `
                     <button class="btn-download" style="opacity: 0.75;" onclick="StoppAuth.openLoginModal('login')">
-                        Bloqueado (Requer Iniciar Sessão)
+                        Acesso Restrito
                     </button>
                 `;
             }

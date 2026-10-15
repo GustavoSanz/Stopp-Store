@@ -432,7 +432,7 @@
 
                 <div class="card-actions" id="lab-card-actions">
                     <button class="btn-download" style="opacity: 0.7;" onclick="StoppAuth.openLoginModal()">
-                        Bloqueado (Requer Login Admin)
+                        Acesso Restrito
                     </button>
                 </div>
         </main>
@@ -671,9 +671,9 @@
                 <div class="settings-section-desc">Dispara notificações ao telemóvel e afixa avisos de instabilidade ou manutenção no topo da loja.</div>
                 
                 <div id="emitter-lock-notice" style="display: none; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; margin-top: 10px;">
-                    <div style="font-size: 0.88rem; color: #f87171; font-weight: 600; margin-bottom: 4px;">Funcionalidade Reservada a Administradores</div>
-                    <div id="emitter-lock-desc" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Inicia sessão com a conta oficial do Stopp Studio para poderes disparar notificações globais e afixar avisos a todos os utilizadores.</div>
-                    <button type="button" id="btn-emitter-login" class="btn-primary" style="font-size: 0.82rem; padding: 8px 14px;" onclick="closeSettingsModal(); StoppAuth.openLoginModal('login');">Iniciar Sessão de Admin</button>
+                    <div style="font-size: 0.88rem; color: #f87171; font-weight: 600; margin-bottom: 4px;">Funcionalidade Restrita</div>
+                    <div id="emitter-lock-desc" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Esta ferramenta destina-se exclusivamente a operações autorizadas da loja.</div>
+                    <button type="button" id="btn-emitter-login" class="btn-primary" style="font-size: 0.82rem; padding: 8px 14px;" onclick="closeSettingsModal(); StoppAuth.openLoginModal('login');">Iniciar Sessão</button>
                 </div>
 
                 <div class="notice-emitter-controls" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
@@ -1125,49 +1125,42 @@
                 <button class="modal-close-btn" onclick="StoppAuth.closeLoginModal()" aria-label="Fechar">&times;</button>
             </div>
 
-            <!-- GitHub Instant Connect Option -->
+            <!-- GitHub Authentication Option -->
             <div class="github-auth-cta-box" style="margin: 14px 0 12px 0;">
-                <button type="button" class="btn-github-auth" id="btn-github-auth-start" onclick="StoppAuth.toggleGithubView(true)">
+                <button type="button" class="btn-github-auth" id="btn-github-auth-start" onclick="StoppAuth.startGithubAuth()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
                     </svg>
                     <span>Continuar com GitHub</span>
                 </button>
-                <div class="github-auth-hint">
-                    Deteção automática: o perfil <code>@GustavoSanz</code> recebe privilégios totais de Administrador. Outros utilizadores autenticam como Cliente.
-                </div>
             </div>
 
-            <!-- GitHub Inline Panel (when active) -->
+            <!-- GitHub Direct Authentication Panel (when active) -->
             <div id="github-verify-panel" class="github-verify-panel" style="display: none;">
                 <div class="github-panel-header">
-                    <strong>Validação de Conta GitHub</strong>
+                    <strong>Autenticação Oficial GitHub</strong>
                     <button type="button" class="btn-text-dismiss" onclick="StoppAuth.toggleGithubView(false)">Voltar</button>
                 </div>
-                <p style="font-size: 0.8rem; color: #94a3b8; margin: 4px 0 10px 0;">
-                    Insere o teu utilizador GitHub para carregar perfil, avatar e verificar privilégios:
+                <p style="font-size: 0.8rem; color: #94a3b8; margin: 6px 0 12px 0;">
+                    Autentica a tua conta na página oficial do GitHub para validação de identidade:
                 </p>
-                <div class="github-input-row" style="display: flex; gap: 6px; margin-bottom: 8px;">
-                    <div style="position: relative; flex: 1;">
-                        <input type="text" id="github-username-input" class="settings-input" placeholder="ex: GustavoSanz ou outro username" style="padding-left: 28px;" value="GustavoSanz">
-                        <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748b; font-weight: 700;">@</span>
-                    </div>
-                    <button type="button" class="btn-primary" id="btn-submit-github" style="padding: 10px 14px; font-size: 0.82rem;" onclick="StoppAuth.handleGithubVerify()">
-                        Verificar
-                    </button>
+                <a href="https://github.com/settings/tokens/new?scopes=read:user&description=Stopp+Store+Auth" target="_blank" rel="noopener" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; margin-bottom: 12px; font-size: 0.84rem; font-weight: 600; text-decoration: none; box-sizing: border-box;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    <span>Abrir Página de Autorização no GitHub</span>
+                </a>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label for="github-token-input" class="settings-section-title" style="font-size: 0.82rem; margin-bottom: 6px; display: block;">Token de Acesso do GitHub</label>
+                    <input type="password" id="github-token-input" class="settings-input" placeholder="Cola o teu token de autorização do GitHub" autocomplete="off">
                 </div>
-                <div class="github-chips-row" style="display: flex; gap: 6px; align-items: center; margin-top: 6px;">
-                    <span style="font-size: 0.72rem; color: #64748b;">Atalho rápido:</span>
-                    <button type="button" class="github-chip admin" onclick="StoppAuth.selectGithubChip('GustavoSanz')">
-                        @GustavoSanz (Admin Oficial)
-                    </button>
-                </div>
+                <button type="button" class="btn-primary" id="btn-submit-github" style="width: 100%; padding: 11px; font-size: 0.86rem;" onclick="StoppAuth.handleGithubTokenAuth()">
+                    Validar Acesso via GitHub
+                </button>
                 <div id="github-verify-status" style="display: none; font-size: 0.8rem; margin-top: 8px;"></div>
             </div>
 
             <!-- Divider -->
             <div class="auth-divider" id="auth-divider-line">
-                <span>ou através de credenciais locais</span>
+                <span>ou através de conta local</span>
             </div>
 
             <!-- Tab Switcher (Login / Registar) -->
@@ -1176,28 +1169,24 @@
                     Iniciar Sessão
                 </button>
                 <button type="button" class="auth-tab-btn" id="tab-auth-register" onclick="StoppAuth.switchTab('register')">
-                    Criar Conta de Cliente
+                    Criar Conta
                 </button>
             </div>
 
             <!-- Form 1: Iniciar Sessão -->
             <form id="form-auth-login" onsubmit="StoppAuth.handleLoginSubmit(event)" class="login-form-body">
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="login-username-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Utilizador, Email ou Administrador</label>
-                    <input type="text" id="login-username-input" class="settings-input" placeholder="ex: admin, gustavo ou cliente1" autocomplete="username" required>
+                    <label for="login-username-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Nome de Utilizador ou Email</label>
+                    <input type="text" id="login-username-input" class="settings-input" placeholder="ex: o_teu_utilizador" autocomplete="username" required>
                 </div>
                 <div class="form-group" style="margin-bottom: 14px;">
-                    <label for="login-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Palavra-passe ou PIN</label>
-                    <input type="password" id="login-password-input" class="settings-input" placeholder="Palavra-passe ou PIN" autocomplete="current-password" required>
-                </div>
-
-                <div class="login-quick-hint" style="margin-bottom: 14px;">
-                    <strong>Dica de Acesso:</strong> Se és o administrador da loja, podes aceder com <code>admin</code> (senha <code>stopp2026</code> / PIN <code>2026</code>) ou diretamente via GitHub com <code>@GustavoSanz</code>.
+                    <label for="login-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Palavra-passe</label>
+                    <input type="password" id="login-password-input" class="settings-input" placeholder="Palavra-passe da conta" autocomplete="current-password" required>
                 </div>
 
                 <div class="login-actions" style="display: flex; gap: 8px;">
                     <button type="submit" class="btn-primary" style="flex: 1.5; padding: 12px 18px; font-size: 0.95rem;">
-                        Entrar na Loja
+                        Iniciar Sessão
                     </button>
                     <button type="button" class="btn-secondary" style="flex: 1;" onclick="StoppAuth.closeLoginModal()">
                         Cancelar
@@ -1226,7 +1215,7 @@
 
                 <div class="login-actions" style="display: flex; gap: 8px;">
                     <button type="submit" class="btn-primary" style="flex: 1.5; padding: 12px 18px; font-size: 0.95rem;">
-                        Criar Conta de Cliente
+                        Criar Conta
                     </button>
                     <button type="button" class="btn-secondary" style="flex: 1;" onclick="StoppAuth.closeLoginModal()">
                         Cancelar
