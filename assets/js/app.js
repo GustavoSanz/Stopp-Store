@@ -2723,6 +2723,12 @@ const StoppAuth = {
     currentTab: 'login',
     isGithubPanelOpen: false,
 
+    oauthConfig: {
+        clientId: localStorage.getItem('stopp_gh_client_id') || '',
+        clientSecret: localStorage.getItem('stopp_gh_client_secret') || '',
+        redirectUri: 'https://gustavosanz.github.io/Stopp-Store/'
+    },
+
     init: function () {
         const saved = localStorage.getItem('stopp_user_session');
         if (saved) {
@@ -2734,13 +2740,22 @@ const StoppAuth = {
             } catch (e) {}
         }
 
-        // Suporte para retorno de autorizacao por URL (?github_token=)
+        // Suporte para retorno de autorizacao por URL (?code= ou ?github_token=)
         try {
             const urlParams = new URLSearchParams(window.location.search);
+            const oauthCode = urlParams.get('code');
             const tokenParam = urlParams.get('github_token') || urlParams.get('token');
-            if (tokenParam) {
+
+            if (oauthCode) {
+                this.handleOAuthCode(oauthCode);
+                try {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } catch (ignored) {}
+            } else if (tokenParam) {
                 this.authenticateWithGithubToken(tokenParam);
-                window.history.replaceState({}, document.title, window.location.pathname);
+                try {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } catch (ignored) {}
             }
         } catch (e) {}
 
@@ -2907,26 +2922,187 @@ const StoppAuth = {
         return true;
     },
 
+    getOAuthAuthorizeUrl: function () {
+        const clientId = this.oauthConfig.clientId || localStorage.getItem('stopp_gh_client_id') || '';
+        const redirectUri = this.oauthConfig.redirectUri;
+        return 'https://github.com/login/oauth/authorize?client_id=' + encodeURIComponent(clientId) +
+               '&redirect_uri=' + encodeURIComponent(redirectUri) +
+               '&scope=read:user';
+    },
+
     startGithubAuth: function () {
+        const clientId = this.oauthConfig.clientId || localStorage.getItem('stopp_gh_client_id') || '';
+        if (clientId) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
+            showStoreToast('A abrir autenticação oficial do GitHub...', 'info');
+            setTimeout(() => {
+                window.location.href = this.getOAuthAuthorizeUrl();
+            }, 300);
+        } else {
+            this.toggleGithubView(true);
+        }
+    },
+
+    saveAndStartOAuth: function () {
+        const idInp = document.getElementById('github-client-id-input');
+        const secInp = document.getElementById('github-client-secret-input');
+        const clientId = idInp ? idInp.value.trim() : '';
+        const clientSecret = secInp ? secInp.value.trim() : '';
+
+        if (!clientId) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            showStoreToast('Por favor introduz o Client ID da tua OAuth App do GitHub.', 'warning');
+            return;
+        }
+
+        try {
+            localStorage.setItem('stopp_gh_client_id', clientId);
+            if (clientSecret) {
+                localStorage.setItem('stopp_gh_client_secret', clientSecret);
+            }
+        } catch (e) {}
+
+        this.oauthConfig.clientId = clientId;
+        this.oauthConfig.clientSecret = clientSecret;
+
         if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
-        this.toggleGithubView(true);
+        showStoreToast('Credenciais guardadas. A redirecionar para o GitHub...', 'info');
+        setTimeout(() => {
+            window.location.href = this.getOAuthAuthorizeUrl();
+        }, 350);
     },
 
     toggleGithubView: function (show) {
         if (typeof StoppAudio !== 'undefined') StoppAudio.play('tap');
         this.isGithubPanelOpen = !!show;
         const panel = document.getElementById('github-verify-panel');
-        const ctaBtn = document.getElementById('btn-github-auth-start');
+        const ctaBtn = document.getElementById('github-auth-cta-box');
 
         if (panel) panel.style.display = show ? 'block' : 'none';
-        if (ctaBtn) ctaBtn.style.display = show ? 'none' : 'flex';
+        if (ctaBtn) ctaBtn.style.display = show ? 'none' : 'block';
 
         if (show) {
-            const tokenInp = document.getElementById('github-token-input');
-            if (tokenInp) {
-                tokenInp.focus();
-            }
+            const savedId = this.oauthConfig.clientId || localStorage.getItem('stopp_gh_client_id') || '';
+            const savedSec = this.oauthConfig.clientSecret || localStorage.getItem('stopp_gh_client_secret') || '';
+            const idInp = document.getElementById('github-client-id-input');
+            const secInp = document.getElementById('github-client-secret-input');
+            if (idInp && savedId) idInp.value = savedId;
+            if (secInp && savedSec) secInp.value = savedSec;
         }
+    },
+
+    handleOAuthCode: async function (code) {
+        if (!code) return;
+        this.openLoginModal('login');
+        this.toggleGithubView(true);
+
+        const statusEl = document.getElementById('github-verify-status');
+        if (statusEl) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#38bdf8';
+            statusEl.textContent = 'A validar código OAuth com o GitHub...';
+        }
+
+        const clientId = this.oauthConfig.clientId || localStorage.getItem('stopp_gh_client_id') || '';
+        const clientSecret = this.oauthConfig.clientSecret || localStorage.getItem('stopp_gh_client_secret') || '';
+        const redirectUri = this.oauthConfig.redirectUri;
+
+        // Se estivermos dentro da app Android nativa, o interface nativo faz a troca sem problemas de CORS
+        if (typeof StoppStoreNative !== 'undefined' && typeof StoppStoreNative.exchangeGithubOAuthCode === 'function') {
+            StoppStoreNative.exchangeGithubOAuthCode(clientId, clientSecret, code, redirectUri);
+            return;
+        }
+
+        // Se estivermos no navegador web:
+        try {
+            const bodyParams = new URLSearchParams();
+            bodyParams.append('client_id', clientId);
+            bodyParams.append('client_secret', clientSecret);
+            bodyParams.append('code', code);
+            bodyParams.append('redirect_uri', redirectUri);
+
+            let res;
+            try {
+                res = await fetch('https://github.com/login/oauth/access_token', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: bodyParams.toString()
+                });
+            } catch (corsErr) {
+                res = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://github.com/login/oauth/access_token'), {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: bodyParams.toString()
+                });
+            }
+
+            if (!res.ok) {
+                throw new Error('Código HTTP do GitHub: ' + res.status);
+            }
+
+            const data = await res.json();
+            if (data.error) {
+                throw new Error(data.error_description || data.error);
+            }
+
+            if (data.access_token) {
+                await this.authenticateWithGithubToken(data.access_token);
+            } else {
+                throw new Error('Token de acesso não retornado.');
+            }
+        } catch (err) {
+            if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+            if (statusEl) {
+                statusEl.style.color = '#ef4444';
+                statusEl.textContent = 'Erro ao processar OAuth: ' + (err.message || 'Falha na troca de credenciais');
+            }
+            showStoreToast('Erro na validação OAuth: ' + (err.message || 'Verifica o Client Secret e ID'), 'warning');
+        }
+    },
+
+    onNativeOAuthToken: async function (responseStr) {
+        try {
+            let data = {};
+            try {
+                data = JSON.parse(responseStr);
+            } catch (e) {
+                const params = new URLSearchParams(responseStr);
+                data = {
+                    access_token: params.get('access_token'),
+                    error: params.get('error'),
+                    error_description: params.get('error_description')
+                };
+            }
+
+            if (data.error) {
+                throw new Error(data.error_description || data.error);
+            }
+
+            if (data.access_token) {
+                await this.authenticateWithGithubToken(data.access_token);
+            } else {
+                throw new Error('Token de acesso não encontrado na resposta.');
+            }
+        } catch (err) {
+            this.onNativeOAuthFailed(err.message || 'Falha ao processar token');
+        }
+    },
+
+    onNativeOAuthFailed: function (errMsg) {
+        if (typeof StoppAudio !== 'undefined') StoppAudio.play('error');
+        const statusEl = document.getElementById('github-verify-status');
+        if (statusEl) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#ef4444';
+            statusEl.textContent = 'Falha no OAuth: ' + (errMsg || 'Credenciais rejeitadas');
+        }
+        showStoreToast('Falha no OAuth nativo: ' + (errMsg || 'Verifica o Client Secret e ID'), 'warning');
     },
 
     handleGithubTokenAuth: function () {

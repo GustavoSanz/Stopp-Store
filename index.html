@@ -1126,13 +1126,18 @@
             </div>
 
             <!-- GitHub Authentication Option -->
-            <div class="github-auth-cta-box" style="margin: 14px 0 12px 0;">
+            <div class="github-auth-cta-box" id="github-auth-cta-box" style="margin: 14px 0 12px 0;">
                 <button type="button" class="btn-github-auth" id="btn-github-auth-start" onclick="StoppAuth.startGithubAuth()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
                     </svg>
                     <span>Continuar com GitHub</span>
                 </button>
+                <div style="text-align: center; margin-top: 6px;">
+                    <button type="button" class="btn-text-dismiss" onclick="StoppAuth.toggleGithubView(true)" style="font-size: 0.76rem; color: #64748b;">
+                        Configurar OAuth / Alternar Credenciais
+                    </button>
+                </div>
             </div>
 
             <!-- GitHub Direct Authentication Panel (when active) -->
@@ -1144,18 +1149,53 @@
                 <p style="font-size: 0.8rem; color: #94a3b8; margin: 6px 0 12px 0;">
                     Autentica a tua conta na página oficial do GitHub para validação de identidade:
                 </p>
-                <a href="https://github.com/settings/tokens/new?scopes=read:user&description=Stopp+Store+Auth" target="_blank" rel="noopener" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; margin-bottom: 12px; font-size: 0.84rem; font-weight: 600; text-decoration: none; box-sizing: border-box;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                    <span>Abrir Página de Autorização no GitHub</span>
-                </a>
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label for="github-token-input" class="settings-section-title" style="font-size: 0.82rem; margin-bottom: 6px; display: block;">Token de Acesso do GitHub</label>
-                    <input type="password" id="github-token-input" class="settings-input" placeholder="Cola o teu token de autorização do GitHub" autocomplete="off">
+
+                <!-- Section: OAuth App Flow -->
+                <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px; margin-bottom: 12px;">
+                    <div style="font-size: 0.82rem; font-weight: 600; color: #f1f5f9; margin-bottom: 4px;">
+                        Fluxo OAuth Oficial (Recomendado)
+                    </div>
+                    <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 8px 0; line-height: 1.4;">
+                        Callback URL: <code style="color: #38bdf8;">https://gustavosanz.github.io/Stopp-Store/</code>
+                    </p>
+                    <a href="https://github.com/settings/applications/new" target="_blank" rel="noopener" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px; margin-bottom: 10px; font-size: 0.78rem; font-weight: 600; text-decoration: none; box-sizing: border-box;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        <span>Criar Nova OAuth App no GitHub</span>
+                    </a>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label for="github-client-id-input" class="settings-section-title" style="font-size: 0.78rem; margin-bottom: 4px; display: block;">Client ID do GitHub</label>
+                        <input type="text" id="github-client-id-input" class="settings-input" placeholder="ex: Iv23..." autocomplete="off">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label for="github-client-secret-input" class="settings-section-title" style="font-size: 0.78rem; margin-bottom: 4px; display: block;">Client Secret do GitHub</label>
+                        <input type="password" id="github-client-secret-input" class="settings-input" placeholder="ex: 8a4b..." autocomplete="off">
+                    </div>
+                    <button type="button" class="btn-primary" style="width: 100%; padding: 10px; font-size: 0.84rem;" onclick="StoppAuth.saveAndStartOAuth()">
+                        Guardar &amp; Iniciar OAuth no GitHub
+                    </button>
                 </div>
-                <button type="button" class="btn-primary" id="btn-submit-github" style="width: 100%; padding: 11px; font-size: 0.86rem;" onclick="StoppAuth.handleGithubTokenAuth()">
-                    Validar Acesso via GitHub
-                </button>
-                <div id="github-verify-status" style="display: none; font-size: 0.8rem; margin-top: 8px;"></div>
+
+                <!-- Section: Personal Access Token Fallback -->
+                <details style="margin-top: 8px;">
+                    <summary style="font-size: 0.78rem; color: #64748b; cursor: pointer; user-select: none;">
+                        Ou autenticar via Personal Access Token (PAT)
+                    </summary>
+                    <div style="padding-top: 8px;">
+                        <a href="https://github.com/settings/tokens/new?scopes=read:user&description=Stopp+Store+Auth" target="_blank" rel="noopener" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px; margin-bottom: 8px; font-size: 0.78rem; font-weight: 600; text-decoration: none; box-sizing: border-box;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            <span>Gerar Token no GitHub</span>
+                        </a>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <label for="github-token-input" class="settings-section-title" style="font-size: 0.78rem; margin-bottom: 4px; display: block;">Token de Acesso Pessoal</label>
+                            <input type="password" id="github-token-input" class="settings-input" placeholder="ghp_..." autocomplete="off">
+                        </div>
+                        <button type="button" class="btn-secondary" id="btn-submit-github" style="width: 100%; padding: 9px; font-size: 0.82rem;" onclick="StoppAuth.handleGithubTokenAuth()">
+                            Validar Token Direto
+                        </button>
+                    </div>
+                </details>
+
+                <div id="github-verify-status" style="display: none; font-size: 0.8rem; margin-top: 10px; line-height: 1.4;"></div>
             </div>
 
             <!-- Divider -->
