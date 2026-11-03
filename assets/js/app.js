@@ -344,9 +344,9 @@ const STORE_APPS_REGISTRY = [
         name: 'Vera Watt',
         platform: 'Android & Web',
         isStore: false,
-        targetCode: 8,
-        targetName: '0.7.1-Beta',
-        apkUrl: 'assets/apks/VeraWatt-v0.7.1-Beta.apk',
+        targetCode: 9,
+        targetName: '0.7.2-Beta',
+        apkUrl: 'assets/apks/VeraWatt-v0.7.2-Beta.apk',
         size: 46,
         iconType: 'image',
         iconSrc: 'assets/img/verawatt_ativo2_4x.png',
@@ -766,7 +766,7 @@ function refreshAllAppStatus() {
             const targetCode = parseInt(container.getAttribute('data-target-version-code') || '0', 10);
             const targetName = container.getAttribute('data-target-version-name') || '';
             const appName = container.getAttribute('data-app-name') || 'Vera Watt';
-            const apkUrl = container.getAttribute('data-apk-url') || 'assets/apks/VeraWatt-v0.7.1-Beta.apk';
+            const apkUrl = container.getAttribute('data-apk-url') || 'assets/apks/VeraWatt-v0.7.2-Beta.apk';
             const apkSize = parseInt(container.getAttribute('data-apk-size') || '67', 10);
             const isDetailPage = container.classList.contains('app-detail-card');
 
@@ -2019,7 +2019,7 @@ function renderSettingsOverview() {
                 } else if (installedCode < 4) {
                     simStatus.textContent = 'Estado atual: Instalada (Versao Antiga v0.3 / Code 3)';
                 } else {
-                    simStatus.textContent = 'Estado atual: Instalada e Atualizada (v0.7.1-Beta / Code 8)';
+                    simStatus.textContent = 'Estado atual: Instalada e Atualizada (v0.7.2-Beta / Code 9)';
                 }
             }
         } else {
@@ -2056,7 +2056,7 @@ function handleTestNotification() {
 }
 
 // Simulador Web para Testes Locais de UI
-function simSetVeraWattInstalled(isInstalled, code = 8, name = '0.7.1-Beta') {
+function simSetVeraWattInstalled(isInstalled, code = 9, name = '0.7.2-Beta') {
     if (isInstalled) {
         localStorage.setItem('sim_installed_com.vera_watt', 'true');
         localStorage.setItem('sim_version_code_com.vera_watt', code.toString());
@@ -2525,7 +2525,7 @@ if (document.readyState === 'loading') {
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=14')
+        navigator.serviceWorker.register('./sw.js?v=15')
             .then(reg => {
                 reg.update();
             })
@@ -2534,7 +2534,7 @@ if ('serviceWorker' in navigator) {
         if ('caches' in window) {
             caches.keys().then(keys => {
                 keys.forEach(k => {
-                    if (k !== 'stopp-store-v14') {
+                    if (k !== 'stopp-store-v15') {
                         caches.delete(k);
                     }
                 });
