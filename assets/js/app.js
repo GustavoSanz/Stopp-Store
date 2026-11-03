@@ -2525,7 +2525,7 @@ if (document.readyState === 'loading') {
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=12')
+        navigator.serviceWorker.register('./sw.js?v=13')
             .then(reg => {
                 reg.update();
             })
@@ -2534,7 +2534,7 @@ if ('serviceWorker' in navigator) {
         if ('caches' in window) {
             caches.keys().then(keys => {
                 keys.forEach(k => {
-                    if (k !== 'stopp-store-v12') {
+                    if (k !== 'stopp-store-v13') {
                         caches.delete(k);
                     }
                 });
