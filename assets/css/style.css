@@ -4543,8 +4543,28 @@ header.play-store-header {
 
     .play-search-pill {
         min-height: 40px;
+        min-width: 0;
         padding: 4px 8px 4px 6px;
         gap: 6px;
+        overflow: hidden;
+    }
+
+    .play-ai-pill {
+        padding: 3px 7px !important;
+        gap: 4px !important;
+    }
+
+    .play-ai-pill .ai-telemetry-ping {
+        font-size: 0.65rem !important;
+    }
+
+    .play-top-actions {
+        flex-shrink: 0 !important;
+        gap: 4px !important;
+    }
+
+    .play-icon-btn[onclick*="toggleSound"] {
+        display: none !important;
     }
 
     .play-search-input {
