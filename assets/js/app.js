@@ -46,7 +46,7 @@ function syncModalBodyState() {
 // O estado dos modais e controlado diretamente pelas funcoes open/close correspondentes.
 
 
-const CURRENT_STORE_VERSION_CODE = 8;
+const CURRENT_STORE_VERSION_CODE = 9;
 const CURRENT_STORE_VERSION_NAME = "0.8-Beta";
 
 function resolveStoreUrl(url) {
@@ -325,7 +325,7 @@ const STORE_APPS_REGISTRY = [
         isStore: true,
         targetCode: CURRENT_STORE_VERSION_CODE,
         targetName: CURRENT_STORE_VERSION_NAME,
-        apkUrl: 'assets/apks/StoppStore-v0.8-Beta.apk',
+        apkUrl: 'assets/apks/StoppStore-v0.9-Beta.apk',
         size: 1,
         iconType: 'letter',
         iconLetter: 'S',
