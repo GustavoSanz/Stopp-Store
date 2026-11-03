@@ -1,39 +1,38 @@
 {
-  "store_version_code": 7,
-  "store_version_name": "0.7-Beta",
-  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.7-Beta.apk",
-  "store_update_message": "Nova versao v0.7-Beta: Reorganizacao completa da interface, navegacao de topo simplificada sem sobreposicoes, novo fluxo inteligente do Google Play Protect na primeira instalacao e maxima estabilidade.",
-  "store_changelog": [
-    "Reorganizacao integral do layout: eliminacao da barra flutuante inferior para desimpedir o catalogo e navegacao de topo unificada.",
-    "Acesso rapido ao Gestor de Aplicacoes e Definicoes diretamente no cabecalho em desktop e mobile.",
-    "Novo fluxo contextual do Google Play Protect: o guia de instalacao surge apenas antes da primeira instalacao de cada utilizador.",
-    "Acesso permanente ao guia de seguranca nas Definicoes da Loja sem poluir os menus principais.",
-    "Remocao de duplicacoes de botoes e filtros visuais de alto contraste para melhor ergonomia.",
-    "Blindagem de carregamento contra congelamentos e cache persistente Network-First no Service Worker."
-  ],
-  "system_notice": {
-    "active": true,
-    "level": "warning",
-    "title": "Aviso: Instabilidade na Instalação & Atualizações",
-    "message": "Detetada anomalia na instalação de pacotes APK em alguns dispositivos. Se ocorrer erro de instalação, desinstala a versão anterior da aplicação no telemóvel antes de reinstalar para evitar conflitos de assinatura.",
-    "timestamp": "14/10/2026 23:20",
-    "dismissible": true
-  },
-  "apps": {
-    "com.vera_watt": {
-      "name": "Vera Watt",
-      "version_code": 6,
-      "version_name": "0.6-Beta",
-      "apk_url": "assets/apks/VeraWatt-v0.6-Beta.apk",
-      "package_name": "com.vera_watt",
-      "size_mb": 67,
-      "changelog": [
-        "Integracao das novas imagens oficiais em 4x de alta resolucao (emblema e tipografia Vera Watt).",
-        "Icone adaptativo dinamico que alterna entre Ativo 1 e Ativo 2 de acordo com o tema do utilizador (Claro/Escuro).",
-        "Nova animacao de arranque e carregamento com efeitos de carga eletrica e logotipo em destaque.",
-        "Suporte aprimorado ao Nothing Glyph SDK com novos padroes de iluminacao.",
-        "Otimizacoes de performance e compatibilidade de ecra."
-      ]
-    }
-  }
+    "store_version_code":  7,
+    "store_version_name":  "0.7-Beta",
+    "store_apk_url":  "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.7-Beta.apk",
+    "store_update_message":  "Nova versao v0.7-Beta: Reorganizacao completa da interface, navegacao de topo simplificada sem sobreposicoes, novo fluxo inteligente do Google Play Protect na primeira instalacao e maxima estabilidade.",
+    "store_changelog":  [
+                            "Reorganizacao integral do layout: eliminacao da barra flutuante inferior para desimpedir o catalogo e navegacao de topo unificada.",
+                            "Acesso rapido ao Gestor de Aplicacoes e Definicoes diretamente no cabecalho em desktop e mobile.",
+                            "Novo fluxo contextual do Google Play Protect: o guia de instalacao surge apenas antes da primeira instalacao de cada utilizador.",
+                            "Acesso permanente ao guia de seguranca nas Definicoes da Loja sem poluir os menus principais.",
+                            "Remocao de duplicacoes de botoes e filtros visuais de alto contraste para melhor ergonomia.",
+                            "Blindagem de carregamento contra congelamentos e cache persistente Network-First no Service Worker."
+                        ],
+    "system_notice":  {
+                          "active":  true,
+                          "level":  "warning",
+                          "title":  "Aviso: Instabilidade na Instalação \u0026 Atualizações",
+                          "message":  "Detetada anomalia na instalação de pacotes APK em alguns dispositivos. Se ocorrer erro de instalação, desinstala a versão anterior da aplicação no telemóvel antes de reinstalar para evitar conflitos de assinatura.",
+                          "timestamp":  "14/10/2026 23:20",
+                          "dismissible":  true
+                      },
+    "apps":  {
+                 "com.vera_watt":  {
+                                       "name":  "Vera Watt",
+                                       "version_code":  7,
+                                       "version_name":  "0.7-Beta",
+                                       "apk_url":  "assets/apks/VeraWatt-v0.7-Beta.apk",
+                                       "package_name":  "com.vera_watt",
+                                       "size_mb":  46,
+                                       "changelog":  [
+                                                         "Redesign integral Dark Botanical Emerald \u0026 Glassmorphism alinhado com o novo portal VeraWatt.",
+                                                         "Popup nativo de Registo, Login e Recuperacao de Palavra-passe com envio automatico de e-mails.",
+                                                         "Integracao do ecossistema Smart Things Multi-Marca e Centro de Suporte com Tickets (VW-SUP).",
+                                                         "Compilacao automatica v0.7-Beta (Build 7)."
+                                                     ]
+                                   }
+             }
 }
