@@ -344,18 +344,17 @@ const STORE_APPS_REGISTRY = [
         name: 'Vera Watt',
         platform: 'Android & Web',
         isStore: false,
-        targetCode: 6,
-        targetName: '0.6-Beta',
-        apkUrl: 'assets/apks/VeraWatt-v0.6-Beta.apk',
-        size: 67,
+        targetCode: 7,
+        targetName: '0.7-Beta',
+        apkUrl: 'assets/apks/VeraWatt-v0.7-Beta.apk',
+        size: 46,
         iconType: 'image',
         iconSrc: 'assets/img/verawatt_ativo2_4x.png',
         changelog: [
-            "Integracao das novas imagens oficiais em 4x de alta resolucao (emblema e tipografia Vera Watt).",
-            "Icone adaptativo dinamico que alterna entre Ativo 1 e Ativo 2 de acordo com o tema do utilizador (Claro/Escuro).",
-            "Nova animacao de arranque e carregamento com efeitos de carga eletrica e logotipo em destaque.",
-            "Suporte aprimorado ao Nothing Glyph SDK com novos padroes de iluminacao.",
-            "Otimizacoes de performance e compatibilidade de ecra."
+            "Redesign integral Dark Botanical Emerald & Glassmorphism alinhado com o novo portal VeraWatt.",
+            "Popup nativo de Registo, Login e Recuperacao de Palavra-passe com envio automatico de e-mails.",
+            "Integracao do ecossistema Smart Things Multi-Marca e Centro de Suporte com Tickets (VW-SUP).",
+            "Verificacao de Conta (+50 Eco-Pontos), chave API Smart Things e acesso ao Back-Office Admin."
         ]
     }
 ];
@@ -767,7 +766,7 @@ function refreshAllAppStatus() {
             const targetCode = parseInt(container.getAttribute('data-target-version-code') || '0', 10);
             const targetName = container.getAttribute('data-target-version-name') || '';
             const appName = container.getAttribute('data-app-name') || 'Vera Watt';
-            const apkUrl = container.getAttribute('data-apk-url') || 'assets/apks/VeraWatt-v0.4-Beta.apk';
+            const apkUrl = container.getAttribute('data-apk-url') || 'assets/apks/VeraWatt-v0.7-Beta.apk';
             const apkSize = parseInt(container.getAttribute('data-apk-size') || '67', 10);
             const isDetailPage = container.classList.contains('app-detail-card');
 
@@ -2020,7 +2019,7 @@ function renderSettingsOverview() {
                 } else if (installedCode < 4) {
                     simStatus.textContent = 'Estado atual: Instalada (Versao Antiga v0.3 / Code 3)';
                 } else {
-                    simStatus.textContent = 'Estado atual: Instalada e Atualizada (v0.4-Beta / Code 4)';
+                    simStatus.textContent = 'Estado atual: Instalada e Atualizada (v0.7-Beta / Code 7)';
                 }
             }
         } else {
@@ -2057,7 +2056,7 @@ function handleTestNotification() {
 }
 
 // Simulador Web para Testes Locais de UI
-function simSetVeraWattInstalled(isInstalled, code = 4, name = '0.4-Beta') {
+function simSetVeraWattInstalled(isInstalled, code = 7, name = '0.7-Beta') {
     if (isInstalled) {
         localStorage.setItem('sim_installed_com.vera_watt', 'true');
         localStorage.setItem('sim_version_code_com.vera_watt', code.toString());
