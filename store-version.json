@@ -1,36 +1,36 @@
 {
-    "store_version_code": 9,
-    "store_version_name": "0.9-Beta",
-    "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.9-Beta.apk",
-    "store_update_message": "Nova versao v0.9-Beta (Build 9): A Stopp Store e agora uma aplicacao 100% Nativa Android em Jetpack Compose (Material 3) independente do site, com 0 transbordos de ecra, sessao persistente nativa e instalador direto estilo Google Play Store.",
-    "store_changelog": [
-        "App 100% Nativa Android em Jetpack Compose (Material 3): deixou de transmitir o site num WebView e corre agora de forma 100% independente no telemovel.",
-        "Design autentico Google Play Store (Material You Dark) com barra de pesquisa superior, abas sublinhadas (Para ti, Em destaque, Energia & IoT, Jogos, Ferramentas) e barra inferior nativa.",
-        "Zero transbordos de layout (0 Transbordos confirmados pela IA Stopp Sentinel) e ecra bloqueado na vertical.",
-        "Sessao de conta guardada nativamente nas SharedPreferences do Android e leitura em tempo real das aplicacoes instaladas via PackageManager."
-    ],
-    "system_notice": {
-        "active": false,
-        "level": "info",
-        "title": "Stopp Store v0.9-Beta Nativa",
-        "message": "Aplicacao 100% nativa em Jetpack Compose e controlo real de lampadas WiZ v2 na VeraWatt v0.7.4-Beta ativos.",
-        "timestamp": "03/11/2026 16:45",
-        "dismissible": true
-    },
-    "apps": {
-        "com.vera_watt": {
-            "name": "Vera Watt",
-            "version_code": 11,
-            "version_name": "0.7.4-Beta",
-            "apk_url": "assets/apks/VeraWatt-v0.7.4-Beta.apk",
-            "package_name": "com.vera_watt",
-            "size_mb": 47,
-            "changelog": [
-                "Controlo Real de Lampadas Inteligentes WiZ v2 na aba Smart IoT via protocolo UDP local na porta 38899 (sem precisar de cloud nem hub externo).",
-                "Auto-descoberta de lampadas WiZ v2 na rede Wi-Fi local (Broadcast + Scan de sub-rede) + opcao de IP manual e botao de teste instantaneo.",
-                "Mudanca real de cores RGB, brilho (10% a 100%), temperatura de branco Kelvin (2200K a 6500K) e cenas nativas WiZ v2 (Party, Ocean, Romance, Cozy, Pulse).",
-                "Compilacao automatica v0.7.4-Beta (Build 11)."
-            ]
-        }
+  "store_version_code": 9,
+  "store_version_name": "0.9-Beta",
+  "store_apk_url": "https://gustavosanz.github.io/Stopp-Store/assets/apks/StoppStore-v0.9-Beta.apk",
+  "store_update_message": "Nova versao v0.9-Beta (Build 9): A Stopp Store e agora uma aplicacao 100% Nativa Android em Jetpack Compose (Material 3) independente do site, com 0 transbordos de ecra, sessao persistente nativa e instalador direto estilo Google Play Store.",
+  "store_changelog": [
+    "App 100% Nativa Android em Jetpack Compose (Material 3): deixou de transmitir o site num WebView e corre agora de forma 100% independente no telemovel.",
+    "Design autentico Google Play Store (Material You Dark) com barra de pesquisa superior, abas sublinhadas (Para ti, Em destaque, Energia & IoT, Jogos, Ferramentas) e barra inferior nativa.",
+    "Zero transbordos de layout (0 Transbordos confirmados pela IA Stopp Sentinel) e ecra bloqueado na vertical.",
+    "Sessao de conta guardada nativamente nas SharedPreferences do Android e leitura em tempo real das aplicacoes instaladas via PackageManager."
+  ],
+  "system_notice": {
+    "active": false,
+    "level": "info",
+    "title": "Stopp Store v0.9-Beta Nativa",
+    "message": "Aplicacao 100% nativa em Jetpack Compose e controlo real de lampadas WiZ v2 na VeraWatt v0.7.4-Beta ativos.",
+    "timestamp": "03/11/2026 16:45",
+    "dismissible": true
+  },
+  "apps": {
+    "com.vera_watt": {
+      "name": "Vera Watt",
+      "version_code": 12,
+      "version_name": "0.7.5-Beta",
+      "apk_url": "assets/apks/VeraWatt-v0.7.5-Beta.apk",
+      "package_name": "com.vera_watt",
+      "size_mb": 47,
+      "changelog": [
+        "Nova aba dedicada Smart IoT com controlo RGB de luzes, comando completo de Smart TV com Ambilight e climatizacao AC.",
+        "Ecra de primeira vez com animacao de radar orbital e sincronizacao Matter 1.4 para a aba Smart Things.",
+        "Redesign Google Play Store (Material You Dark) na Stopp Store e barra inferior otimizada na VeraWatt.",
+        "Compilacao automatica v0.7.5-Beta (Build 12)."
+      ]
     }
+  }
 }
