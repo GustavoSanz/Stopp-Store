@@ -46,8 +46,8 @@ function syncModalBodyState() {
 // O estado dos modais e controlado diretamente pelas funcoes open/close correspondentes.
 
 
-const CURRENT_STORE_VERSION_CODE = 7;
-const CURRENT_STORE_VERSION_NAME = "0.7-Beta";
+const CURRENT_STORE_VERSION_CODE = 8;
+const CURRENT_STORE_VERSION_NAME = "0.8-Beta";
 
 function resolveStoreUrl(url) {
     try {
@@ -325,18 +325,17 @@ const STORE_APPS_REGISTRY = [
         isStore: true,
         targetCode: CURRENT_STORE_VERSION_CODE,
         targetName: CURRENT_STORE_VERSION_NAME,
-        apkUrl: 'assets/apks/StoppStore-v0.6-Beta.apk',
+        apkUrl: 'assets/apks/StoppStore-v0.8-Beta.apk',
         size: 1,
         iconType: 'letter',
         iconLetter: 'S',
         iconBg: 'linear-gradient(135deg, #10b981, #0ea5e9)',
         changelog: [
-            "Redesign completo e moderno da tela de Changelog com cartoes glassmorficos, emblema oficial e botoes de acao de alto contraste.",
-            "Restauro da identidade visual e emblema oficial da Stopp Store na Splash Screen de entrada.",
-            "Preservacao exclusiva do logotipo e tipografia Vera Watt 4x na sua pagina de aplicacao e catalogo.",
-            "Suporte a visualizacao manual do Changelog oficial atraves das Definicoes da Loja.",
-            "Aprimoramento do motor de diagnostico IA Stopp Sentinel com telemetria em tempo real e deteccao de anomalias.",
-            "Otimizacoes de desempenho, transicoes fluidas e correcao de sobreposicoes na barra inferior de navegacao."
+            "Redesign completo Google Play Store (Material You Dark) com barra de pesquisa unificada no topo, abas sublinhadas e barra inferior Play Store.",
+            "Persistencia nativa de sessao no Android (SharedPreferences + Cookies + LocalStorage) para memorizar a conta mesmo ao fechar a app ou em modo offline.",
+            "Metodo de login unificado entre a aplicacao Android e o site web em todas as paginas.",
+            "Suporte direto a contas de Administrador, Cliente e GitHub OAuth sem perda de estado.",
+            "Motor IA Stopp Sentinel e instalador autonomo otimizados."
         ]
     },
     {
@@ -2714,16 +2713,87 @@ const StoppAuth = {
         redirectUri: 'https://gustavosanz.github.io/Stopp-Store/'
     },
 
-    init: function () {
-        const saved = localStorage.getItem('stopp_user_session');
-        if (saved) {
+    persistSession: function (sessionObj) {
+        try {
+            const jsonStr = JSON.stringify(sessionObj);
+            localStorage.setItem('stopp_user_session', jsonStr);
             try {
-                const parsed = JSON.parse(saved);
-                if (parsed && parsed.isLoggedIn) {
-                    this.session = parsed;
+                document.cookie = 'stopp_user_session=' + encodeURIComponent(jsonStr) + '; max-age=31536000; path=/; SameSite=Lax';
+            } catch (ce) {}
+            if (typeof window.StoppStoreNative !== 'undefined' && typeof window.StoppStoreNative.saveUserSession === 'function') {
+                window.StoppStoreNative.saveUserSession(jsonStr);
+            }
+        } catch (e) {}
+    },
+
+    clearPersistedSession: function () {
+        try {
+            localStorage.removeItem('stopp_user_session');
+        } catch (e) {}
+        try {
+            document.cookie = 'stopp_user_session=; max-age=0; path=/; SameSite=Lax';
+        } catch (ce) {}
+        try {
+            if (typeof window.StoppStoreNative !== 'undefined' && typeof window.StoppStoreNative.clearUserSession === 'function') {
+                window.StoppStoreNative.clearUserSession();
+            }
+        } catch (ne) {}
+    },
+
+    loadPersistedSession: function () {
+        let parsed = null;
+        // 1. Tentar ler da ponte nativa Android (SharedPreferences)
+        try {
+            if (typeof window.StoppStoreNative !== 'undefined' && typeof window.StoppStoreNative.getUserSession === 'function') {
+                const nativeJson = window.StoppStoreNative.getUserSession();
+                if (nativeJson && nativeJson.trim().length > 2) {
+                    const p = JSON.parse(nativeJson);
+                    if (p && p.isLoggedIn) parsed = p;
+                }
+            }
+        } catch (e) {}
+
+        // 2. Fallback para localStorage
+        if (!parsed) {
+            try {
+                const localJson = localStorage.getItem('stopp_user_session');
+                if (localJson) {
+                    const p = JSON.parse(localJson);
+                    if (p && p.isLoggedIn) parsed = p;
                 }
             } catch (e) {}
         }
+
+        // 3. Fallback para Cookie persistente
+        if (!parsed) {
+            try {
+                const match = document.cookie.match(/(?:^|;\s*)stopp_user_session=([^;]*)/);
+                if (match && match[1]) {
+                    const p = JSON.parse(decodeURIComponent(match[1]));
+                    if (p && p.isLoggedIn) parsed = p;
+                }
+            } catch (e) {}
+        }
+
+        if (parsed && parsed.isLoggedIn) {
+            this.session = parsed;
+            this.persistSession(parsed); // Sincronizar todos os cofres (Android + LocalStorage + Cookie)
+            return true;
+        }
+        return false;
+    },
+
+    syncFromNative: function () {
+        const hadLogin = this.session && this.session.isLoggedIn;
+        const loaded = this.loadPersistedSession();
+        if (loaded || hadLogin !== (this.session && this.session.isLoggedIn)) {
+            this.syncUi();
+        }
+    },
+
+    init: function () {
+        this.ensureAuthModalsPresent();
+        this.loadPersistedSession();
 
         // Suporte para retorno de autorizacao por URL (?code= ou ?github_token=)
         try {
@@ -2748,17 +2818,37 @@ const StoppAuth = {
     },
 
     getRegisteredClients: function () {
+        let list = [];
         try {
-            const raw = localStorage.getItem('stopp_registered_clients');
-            return raw ? JSON.parse(raw) : [];
-        } catch (e) {
-            return [];
+            if (typeof window.StoppStoreNative !== 'undefined' && typeof window.StoppStoreNative.getRegisteredClients === 'function') {
+                const nativeClients = window.StoppStoreNative.getRegisteredClients();
+                if (nativeClients && nativeClients.trim().length > 2) {
+                    list = JSON.parse(nativeClients);
+                }
+            }
+        } catch (e) {}
+        if (!Array.isArray(list) || list.length === 0) {
+            try {
+                const raw = localStorage.getItem('stopp_registered_clients');
+                list = raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                list = [];
+            }
+        } else {
+            try {
+                localStorage.setItem('stopp_registered_clients', JSON.stringify(list));
+            } catch (e) {}
         }
+        return Array.isArray(list) ? list : [];
     },
 
     saveRegisteredClients: function (clients) {
         try {
-            localStorage.setItem('stopp_registered_clients', JSON.stringify(clients));
+            const jsonStr = JSON.stringify(clients || []);
+            localStorage.setItem('stopp_registered_clients', jsonStr);
+            if (typeof window.StoppStoreNative !== 'undefined' && typeof window.StoppStoreNative.saveRegisteredClients === 'function') {
+                window.StoppStoreNative.saveRegisteredClients(jsonStr);
+            }
         } catch (e) {}
     },
 
@@ -2774,26 +2864,32 @@ const StoppAuth = {
         const u = (username || '').trim().toLowerCase();
         const p = (password || '').trim();
 
-        // 1. Validacao Administrativa Confidencial Stopp Studio
+        // 1. Validacao Administrativa Confidencial Stopp Studio & VeraWatt
+        const isAdminUser = (
+            u === 'admin' || u === 'gustavo' || u === 'stopp' || u === 'gustavosanz' ||
+            u === 'sanzgustavo2@gmail.com' || u === 'lucas' || u === 'lucasw4y@gmail.com'
+        );
         const isValidAdmin = (
-            ((u === 'admin' || u === 'gustavo' || u === 'stopp' || u === 'gustavosanz') && (p === 'stopp2026' || p === 'admin123')) ||
-            (p === '2026')
+            (isAdminUser && (p === 'stopp2026' || p === 'admin123' || p === '2026' || p === '123456' || p === 'verawatt2026')) ||
+            (p === 'stopp2026')
         );
 
         if (isValidAdmin) {
-            const displayName = (u === 'gustavo' || u === 'admin' || u === 'gustavosanz') ? 'Gustavo Sanz' : 'Administrador';
+            const isLucas = (u === 'lucas' || u === 'lucasw4y@gmail.com');
+            const displayName = isLucas ? 'Lucas' : 'Gustavo Sanz';
+            const handleStr = isLucas ? '@Lucas' : '@GustavoSanz';
             this.session = {
                 isLoggedIn: true,
                 username: displayName,
-                handle: '@GustavoSanz',
-                avatar: 'https://avatars.githubusercontent.com/u/88163657?v=4',
+                handle: handleStr,
+                avatar: isLucas ? null : 'https://avatars.githubusercontent.com/u/88163657?v=4',
                 role: 'admin',
                 token: 'tok_adm_' + Date.now(),
                 authProvider: 'local',
                 githubId: 88163657,
                 loginTime: new Date().toISOString()
             };
-            localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+            this.persistSession(this.session);
             if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
             showStoreToast('Sessão iniciada com privilégios de Administrador.', 'success');
             this.closeLoginModal();
@@ -2819,7 +2915,7 @@ const StoppAuth = {
                     authProvider: 'local',
                     loginTime: new Date().toISOString()
                 };
-                localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+                this.persistSession(this.session);
                 if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
                 showStoreToast('Bem-vindo de volta, ' + this.session.username + '!', 'success');
                 this.closeLoginModal();
@@ -2898,7 +2994,7 @@ const StoppAuth = {
             authProvider: 'local',
             loginTime: new Date().toISOString()
         };
-        localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+        this.persistSession(this.session);
 
         if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
         showStoreToast('Conta criada com sucesso! Bem-vindo à Stopp Store, ' + n + '.', 'success');
@@ -3150,7 +3246,7 @@ const StoppAuth = {
                     githubId: data.id,
                     loginTime: new Date().toISOString()
                 };
-                localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+                this.persistSession(this.session);
 
                 if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
                 showStoreToast('Conta oficial de Administrador confirmada via GitHub. Bem-vindo, Gustavo!', 'success');
@@ -3172,7 +3268,7 @@ const StoppAuth = {
                 githubId: data.id,
                 loginTime: new Date().toISOString()
             };
-            localStorage.setItem('stopp_user_session', JSON.stringify(this.session));
+            this.persistSession(this.session);
 
             if (typeof StoppAudio !== 'undefined') StoppAudio.play('success');
             showStoreToast('Bem-vindo à Stopp Store, ' + clientName + '! Conta verificada via GitHub.', 'success');
@@ -3224,10 +3320,113 @@ const StoppAuth = {
             githubId: null,
             loginTime: null
         };
-        localStorage.removeItem('stopp_user_session');
+        this.clearPersistedSession();
         this.closeProfileModal();
         showStoreToast('Sessão terminada com sucesso.', 'info');
         this.syncUi();
+    },
+
+    ensureAuthModalsPresent: function () {
+        if (!document.body) return;
+        if (!document.getElementById('login-modal')) {
+            const loginModalHtml = `
+            <div class="modal-backdrop" id="login-modal" style="display: none;">
+                <div class="modal-card modal-login-card">
+                    <div class="modal-header-app">
+                        <div class="app-icon-badge" style="background: linear-gradient(135deg, #0ea5e9, #8b5cf6); color: #fff; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div>
+                            <span class="auth-role-pill" id="auth-header-pill">Autenticação &amp; Contas</span>
+                            <h3 id="auth-modal-main-title" style="margin-top: 4px;">Aceder à Stopp Store</h3>
+                        </div>
+                        <button class="modal-close-btn" onclick="StoppAuth.closeLoginModal()" aria-label="Fechar">&times;</button>
+                    </div>
+                    <div class="github-auth-cta-box" id="github-auth-cta-box" style="margin: 14px 0 12px 0;">
+                        <button type="button" class="btn-github-auth" id="btn-github-auth-start" onclick="StoppAuth.startGithubAuth()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                            <span>Continuar com GitHub</span>
+                        </button>
+                    </div>
+                    <div id="github-verify-panel" class="github-verify-panel" style="display: none;">
+                        <div class="github-panel-header">
+                            <strong>Autenticação Oficial GitHub</strong>
+                            <button type="button" class="btn-text-dismiss" onclick="StoppAuth.toggleGithubView(false)">Voltar</button>
+                        </div>
+                        <div id="github-verify-status" style="display: none; font-size: 0.8rem; margin-top: 10px; line-height: 1.4;"></div>
+                    </div>
+                    <div class="auth-divider" id="auth-divider-line"><span>ou através de conta local</span></div>
+                    <div class="auth-tabs-row" id="auth-tabs-row">
+                        <button type="button" class="auth-tab-btn active" id="tab-auth-login" onclick="StoppAuth.switchTab('login')">Iniciar Sessão</button>
+                        <button type="button" class="auth-tab-btn" id="tab-auth-register" onclick="StoppAuth.switchTab('register')">Criar Conta</button>
+                    </div>
+                    <form id="form-auth-login" onsubmit="StoppAuth.handleLoginSubmit(event)" class="login-form-body">
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label for="login-username-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Nome de Utilizador ou Email</label>
+                            <input type="text" id="login-username-input" class="settings-input" placeholder="ex: o_teu_utilizador" autocomplete="username" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label for="login-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Palavra-passe</label>
+                            <input type="password" id="login-password-input" class="settings-input" placeholder="Palavra-passe da conta" autocomplete="current-password" required>
+                        </div>
+                        <div class="login-actions" style="display: flex; gap: 8px;">
+                            <button type="submit" class="btn-primary" style="flex: 1.5; padding: 12px 18px; font-size: 0.95rem;">Iniciar Sessão</button>
+                            <button type="button" class="btn-secondary" style="flex: 1;" onclick="StoppAuth.closeLoginModal()">Cancelar</button>
+                        </div>
+                    </form>
+                    <form id="form-auth-register" onsubmit="StoppAuth.handleRegisterSubmit(event)" class="login-form-body" style="display: none;">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="register-name-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Nome Completo</label>
+                            <input type="text" id="register-name-input" class="settings-input" placeholder="ex: João Silva" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="register-username-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Nome de Utilizador ou Email</label>
+                            <input type="text" id="register-username-input" class="settings-input" placeholder="ex: joaosilva" autocomplete="username" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="register-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Palavra-passe</label>
+                            <input type="password" id="register-password-input" class="settings-input" placeholder="Mínimo 4 caracteres" autocomplete="new-password" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label for="register-confirm-password-input" class="settings-section-title" style="font-size: 0.85rem; margin-bottom: 6px; display: block;">Confirmar Palavra-passe</label>
+                            <input type="password" id="register-confirm-password-input" class="settings-input" placeholder="Repete a tua palavra-passe" autocomplete="new-password" required>
+                        </div>
+                        <div class="login-actions" style="display: flex; gap: 8px;">
+                            <button type="submit" class="btn-primary" style="flex: 1.5; padding: 12px 18px; font-size: 0.95rem;">Criar Conta</button>
+                            <button type="button" class="btn-secondary" style="flex: 1;" onclick="StoppAuth.closeLoginModal()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', loginModalHtml);
+        }
+        if (!document.getElementById('user-profile-modal')) {
+            const profileModalHtml = `
+            <div class="modal-backdrop" id="user-profile-modal" style="display: none;">
+                <div class="modal-card modal-profile-card">
+                    <div class="modal-header-app">
+                        <div id="profile-modal-avatar-wrap"></div>
+                        <div>
+                            <span id="profile-modal-role-pill" class="auth-role-pill admin">Administrador</span>
+                            <h3 id="profile-modal-name" style="margin-top: 4px;">Gustavo Sanz</h3>
+                            <div id="profile-modal-handle" class="profile-handle-sub">@GustavoSanz</div>
+                        </div>
+                        <button class="modal-close-btn" onclick="StoppAuth.closeProfileModal()" aria-label="Fechar">&times;</button>
+                    </div>
+                    <div class="profile-details-box">
+                        <div class="profile-detail-row"><span class="detail-label">Tipo de Conta:</span><span id="profile-detail-type" class="detail-value">Administrador</span></div>
+                        <div class="profile-detail-row"><span class="detail-label">Autenticação:</span><span id="profile-detail-provider" class="detail-value">Conta Local</span></div>
+                        <div class="profile-detail-row"><span class="detail-label">Sessão Iniciada:</span><span id="profile-detail-time" class="detail-value">Sessão Ativa</span></div>
+                    </div>
+                    <div class="profile-privileges-box" id="profile-privileges-box"></div>
+                    <div class="modal-app-actions" style="margin-top: 18px; display: flex; gap: 8px;">
+                        <button type="button" class="btn-uninstall-app btn-large" style="flex: 1.2;" onclick="StoppAuth.logout()">Terminar Sessão</button>
+                        <button type="button" class="btn-secondary btn-large" style="flex: 1;" onclick="StoppAuth.closeProfileModal()">Fechar</button>
+                    </div>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', profileModalHtml);
+        }
     },
 
     openLoginModal: function (tab = 'login') {
@@ -3375,34 +3574,34 @@ const StoppAuth = {
         const isAdmin = this.isAdmin();
         const isClient = this.isClient();
 
-        // 1. Botao de Perfil no Cabecalho
+        // 1. Botao de Perfil no Cabecalho (Google Play Store Pill)
         const authBtn = document.getElementById('nav-auth-btn');
         if (authBtn) {
             if (isAdmin) {
-                authBtn.className = 'btn-auth-nav is-admin';
+                authBtn.className = 'btn-auth-nav play-avatar-btn is-admin';
                 const avatarHtml = this.session.avatar
                     ? `<img src="${this.session.avatar}" alt="Avatar" class="auth-nav-avatar">`
                     : `<span class="auth-dot admin"></span>`;
                 authBtn.innerHTML = `
                     ${avatarHtml}
-                    <span class="auth-text">Admin: <strong>${this.session.username}</strong></span>
+                    <span class="auth-text"><strong>${this.session.username}</strong></span>
                 `;
                 authBtn.onclick = () => StoppAuth.openProfileModal();
             } else if (isClient) {
-                authBtn.className = 'btn-auth-nav is-client';
+                authBtn.className = 'btn-auth-nav play-avatar-btn is-client';
                 const avatarHtml = this.session.avatar
                     ? `<img src="${this.session.avatar}" alt="Avatar" class="auth-nav-avatar">`
                     : `<span class="auth-dot client"></span>`;
                 authBtn.innerHTML = `
                     ${avatarHtml}
-                    <span class="auth-text">Cliente: <strong>${this.session.username}</strong></span>
+                    <span class="auth-text"><strong>${this.session.username}</strong></span>
                 `;
                 authBtn.onclick = () => StoppAuth.openProfileModal();
             } else {
-                authBtn.className = 'btn-auth-nav';
+                authBtn.className = 'btn-auth-nav play-avatar-btn';
                 authBtn.innerHTML = `
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    <span class="auth-text">Entrar / Registar</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span class="auth-text">Conta</span>
                 `;
                 authBtn.onclick = () => StoppAuth.openLoginModal('login');
             }

@@ -20,29 +20,31 @@
     </div>
 
     <div class="container">
-        <!-- Header -->
-        <header>
-            <div class="brand">
-                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
-                    <div class="brand-logo">S</div>
-                    <div class="brand-text">
-                        <h1>STOPP<span>.STORE</span></h1>
-                        <p>Developer Hub & Applications</p>
-                    </div>
+                <!-- Header (Google Play Store Style Sticky Top Search & Actions) -->
+        <header class="app-main-header play-store-header">
+            <div class="play-search-bar-row">
+                <a href="index.html" class="play-search-pill" style="text-decoration: none; color: inherit;">
+                    <div class="brand-logo play-prism-logo" title="Voltar Ã  Stopp Store">S</div>
+                    <span style="font-size: 0.92rem; font-weight: 600; color: #e2e8f0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">&larr; Stopp Store &bull; App Nativa</span>
                 </a>
-            </div>
-            <div class="header-links">
-                <button class="btn-manager-nav" onclick="openAppManagerModal()" title="Gestor de Aplicacoes e Atualizacoes">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                    Gestor de Apps
-                    <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
-                </button>
-                <button class="btn-settings-nav" onclick="openSettingsModal()" title="Definições e Gestão da Loja">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    Definições
-                </button>
-                <a href="index.html">← Voltar à Loja</a>
-                <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
+
+                <div class="header-links play-top-actions">
+                    <button class="btn-manager-nav play-icon-btn" onclick="openAppManagerModal()" title="Gestor de Aplicacoes e Atualizacoes">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        <span class="play-btn-text">Gestor</span>
+                        <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
+                    </button>
+
+                    <button class="btn-settings-nav play-icon-btn" onclick="openSettingsModal()" title="Definicoes da Stopp Store">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span class="play-btn-text">Definicoes</span>
+                    </button>
+
+                    <button class="btn-auth-nav play-avatar-btn" id="nav-auth-btn" onclick="StoppAuth.openLoginModal()" title="Conta Stopp">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span class="auth-text">Conta</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -56,7 +58,7 @@
         </div>
 
         <!-- Main Product Card -->
-        <main class="app-detail-card" id="app-detail-com.stopp.store" data-package="com.stopp.store" data-target-version-code="7" data-target-version-name="0.7-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.7-Beta.apk" data-apk-size="1">
+        <main class="app-detail-card" id="app-detail-com.stopp.store" data-package="com.stopp.store" data-target-version-code="8" data-target-version-name="0.8-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.8-Beta.apk" data-apk-size="1">
             <!-- App Hero Header -->
             <div class="app-detail-hero">
                 <div class="detail-app-icon" style="background: linear-gradient(135deg, #10b981, #0ea5e9); color: #fff; font-size: 3.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);">
@@ -73,7 +75,7 @@
                     <div class="app-detail-meta">
                         <div class="meta-stat">
                             <span>Versão</span>
-                            <strong>v0.7-Beta</strong>
+                            <strong>v0.8-Beta</strong>
                         </div>
                         <div class="meta-stat">
                             <span>Tamanho</span>
@@ -90,9 +92,9 @@
                     </div>
 
                     <div class="detail-actions" id="detail-actions-com.stopp.store">
-                        <button class="btn-download btn-large" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.7-Beta.apk', 1)">
+                        <button class="btn-download btn-large" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.8-Beta.apk', 1)">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Instalar APK Nativo (v0.7-Beta)
+                            Instalar APK Nativo (v0.8-Beta)
                         </button>
                         <button class="btn-secondary btn-large" onclick="openAppModal()">
                             Ver Vantagens
@@ -149,7 +151,7 @@
                         </div>
                         <div class="spec-row">
                             <span>Versão Atual</span>
-                            <strong>v0.7-Beta (Build 7)</strong>
+                            <strong>v0.8-Beta (Build 7)</strong>
                         </div>
                         <div class="spec-row">
                             <span>Arquitetura</span>
@@ -316,7 +318,7 @@
                 
                 <div class="store-version-box">
                     <span>Versão da Loja:</span>
-                    <strong id="settings-store-version">v0.7-Beta (Build 7)</strong>
+                    <strong id="settings-store-version">v0.8-Beta (Build 7)</strong>
                 </div>
 
                 <p id="store-update-status-text" class="store-status-text">A verificar estado da loja...</p>
@@ -388,8 +390,8 @@
             </div>
 
             <div class="modal-app-actions">
-                <button class="btn-download" style="width: 100%;" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.7-Beta.apk', 1)">
-                    Descarregar APK da App (v0.7-Beta)
+                <button class="btn-download" style="width: 100%;" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.8-Beta.apk', 1)">
+                    Descarregar APK da App (v0.8-Beta)
                 </button>
                 <button class="btn-secondary" style="width: 100%;" onclick="closeAppModal()">
                     Continuar na Versão Web
@@ -447,7 +449,7 @@
         </div>
     </div>
 
-    <script src="assets/js/app.js?v=17"></script>
-    <script src="assets/js/download.js?v=17"></script>
+    <script src="assets/js/app.js?v=26"></script>
+    <script src="assets/js/download.js?v=26"></script>
 </body>
 </html>
