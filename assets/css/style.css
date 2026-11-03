@@ -3935,3 +3935,736 @@ body {
 }
 
 
+
+/* ==========================================================================
+   GOOGLE PLAY STORE REDESIGN (Material You Dark Emerald & Slate Edition)
+   ========================================================================== */
+
+body {
+    background: #0b111e !important;
+    background-image:
+        radial-gradient(circle at 15% 0%, rgba(16, 185, 129, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 85% 15%, rgba(14, 165, 233, 0.10) 0%, transparent 45%) !important;
+    padding-bottom: 92px !important;
+}
+
+.container {
+    max-width: 1140px !important;
+    padding: 0.75rem 1rem 2rem 1rem !important;
+}
+
+/* 1. Sticky Top Google Play Search Bar & Sub-Tabs */
+header.play-store-header {
+    position: sticky !important;
+    top: 8px !important;
+    z-index: 120 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    padding: 10px 14px 0 14px !important;
+    margin-bottom: 18px !important;
+    background: rgba(15, 23, 42, 0.92) !important;
+    backdrop-filter: blur(22px) !important;
+    -webkit-backdrop-filter: blur(22px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.42) !important;
+}
+
+.play-search-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+}
+
+.play-search-pill {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 999px;
+    padding: 6px 12px 6px 8px;
+    min-height: 46px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.play-search-pill:focus-within {
+    border-color: rgba(16, 185, 129, 0.6);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.play-prism-logo {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 10px !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    flex-shrink: 0;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35) !important;
+}
+
+.play-search-icon {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.play-search-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #f8fafc;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.play-search-input::placeholder {
+    color: #94a3b8;
+}
+
+.play-search-clear-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #cbd5e1;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.play-ai-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 4px 10px !important;
+    border-radius: 999px !important;
+    background: rgba(16, 185, 129, 0.14) !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin: 0 !important;
+}
+
+.play-ai-pill .ai-telemetry-ping {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: #34d399 !important;
+}
+
+.play-top-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+}
+
+.play-icon-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    height: 38px !important;
+    padding: 0 12px !important;
+    border-radius: 999px !important;
+    background: rgba(30, 41, 59, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #e2e8f0 !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    position: relative;
+}
+
+.play-icon-btn:hover {
+    background: rgba(51, 65, 85, 0.9) !important;
+    border-color: rgba(16, 185, 129, 0.45) !important;
+}
+
+.play-avatar-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    height: 38px !important;
+    padding: 0 12px !important;
+    border-radius: 999px !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(14, 165, 233, 0.22)) !important;
+    border: 1px solid rgba(16, 185, 129, 0.45) !important;
+    color: #ffffff !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+}
+
+/* 2. Google Play Underlined Category Tabs */
+.play-subtabs-wrap {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.play-subtabs-rail {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    padding: 0 2px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.play-subtabs-rail::-webkit-scrollbar {
+    display: none;
+}
+
+.play-subtabs-rail .tab-btn {
+    position: relative !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 10px 14px 11px 14px !important;
+    color: #94a3b8 !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.play-subtabs-rail .tab-btn.active {
+    color: #34d399 !important;
+    font-weight: 700 !important;
+    background: transparent !important;
+}
+
+.play-subtabs-rail .tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 14px;
+    right: 14px;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: #10b981;
+}
+
+/* 3. Google Play Store Featured Editorial Spotlight Card */
+.play-featured-spotlight {
+    margin-bottom: 20px;
+}
+
+.play-featured-artwork {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    padding: 22px 20px 16px 20px;
+    background:
+        radial-gradient(circle at 85% 20%, rgba(16, 185, 129, 0.32) 0%, transparent 55%),
+        radial-gradient(circle at 15% 85%, rgba(14, 165, 233, 0.25) 0%, transparent 55%),
+        linear-gradient(135deg, #0b241d 0%, #0f172a 65%, #111c35 100%);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.38);
+}
+
+.play-featured-tag-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.play-editorial-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.16);
+    border: 1px solid rgba(16, 185, 129, 0.38);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+.play-protect-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.play-featured-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.25;
+    margin-bottom: 6px;
+}
+
+.play-featured-desc {
+    font-size: 0.86rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+    max-width: 680px;
+    margin-bottom: 16px;
+}
+
+.play-featured-app-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(15, 23, 42, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+}
+
+.play-strip-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.play-strip-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.play-strip-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.play-strip-meta strong {
+    font-size: 0.94rem;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.play-strip-meta span {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.play-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: #10b981;
+    color: #051812;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.play-pill-btn:hover {
+    background: #34d399;
+    transform: translateY(-1px);
+}
+
+/* 4. Section Heading */
+.play-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 8px 2px 14px 2px;
+}
+
+.play-section-heading h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    line-height: 1.2;
+}
+
+.play-section-heading p {
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.play-section-link {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* 5. Play Store App Cards Grid */
+.play-apps-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)) !important;
+    gap: 14px !important;
+    margin-bottom: 24px !important;
+}
+
+.play-app-card {
+    background: rgba(19, 28, 46, 0.92) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    padding: 16px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+}
+
+.play-app-card::before {
+    display: none !important;
+}
+
+.play-card-top-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.play-squircle-icon {
+    width: 62px !important;
+    height: 62px !important;
+    border-radius: 16px !important;
+    flex-shrink: 0 !important;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.play-squircle-icon img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 15px !important;
+}
+
+.play-card-title-col {
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.play-card-title-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.play-card-title-line .app-title {
+    display: block !important;
+    font-size: 1.06rem !important;
+    font-weight: 700 !important;
+    color: #f8fafc !important;
+    margin: 0 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.play-card-dev {
+    font-size: 0.76rem;
+    color: #94a3b8;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.play-card-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.play-rating-pill {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.play-meta-dot {
+    color: #64748b;
+    font-size: 0.7rem;
+}
+
+.play-pegi-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+.play-app-card .app-desc {
+    font-size: 0.82rem !important;
+    color: #94a3b8 !important;
+    line-height: 1.48 !important;
+    margin-bottom: 12px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.play-specs-bar {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    background: rgba(15, 23, 42, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 12px !important;
+    padding: 8px 6px !important;
+    margin-bottom: 4px !important;
+}
+
+.play-specs-bar .spec-item {
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.play-specs-bar .spec-item:last-child {
+    border-right: none;
+}
+
+.play-specs-bar .spec-item span {
+    font-size: 0.66rem !important;
+    color: #64748b !important;
+    display: block;
+}
+
+.play-specs-bar .spec-item strong {
+    font-size: 0.78rem !important;
+    color: #e2e8f0 !important;
+}
+
+/* Play Store Pill Buttons inside Cards & Detail Pages */
+.play-card-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-top: 2px !important;
+}
+
+.play-card-actions .btn-download,
+.detail-actions .btn-download,
+.btn-open-app,
+.btn-update-action {
+    border-radius: 999px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    padding: 10px 18px !important;
+}
+
+.play-card-actions .btn-secondary,
+.detail-actions .btn-secondary {
+    border-radius: 999px !important;
+    font-size: 0.82rem !important;
+    padding: 10px 16px !important;
+}
+
+/* 6. Google Play Material 3 Bottom Navigation Bar (Mobile) */
+.play-bottom-nav {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .play-btn-text {
+        display: none !important;
+    }
+
+    .play-icon-btn {
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+    }
+
+    .play-avatar-btn .auth-text {
+        display: none !important;
+    }
+
+    .play-avatar-btn {
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        justify-content: center !important;
+    }
+
+    header.play-store-header {
+        top: 4px !important;
+        padding: 8px 10px 0 10px !important;
+        border-radius: 18px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .play-search-pill {
+        min-height: 40px;
+        padding: 4px 8px 4px 6px;
+        gap: 6px;
+    }
+
+    .play-search-input {
+        font-size: 0.82rem;
+    }
+
+    .play-featured-artwork {
+        padding: 16px 14px 14px 14px;
+        border-radius: 18px;
+    }
+
+    .play-featured-title {
+        font-size: 1.18rem;
+    }
+
+    .play-featured-desc {
+        font-size: 0.8rem;
+        margin-bottom: 12px;
+    }
+
+    .play-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 68px;
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.09);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px)) 8px;
+        z-index: 150;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.45);
+    }
+
+    body.modal-open .play-bottom-nav {
+        display: none !important;
+    }
+
+    .play-bottom-nav-item {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 4px 0;
+    }
+
+    .play-nav-pill {
+        position: relative;
+        width: 56px;
+        height: 30px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .play-bottom-nav-item.active {
+        color: #f8fafc;
+        font-weight: 700;
+    }
+
+    .play-bottom-nav-item.active .play-nav-pill {
+        background: rgba(16, 185, 129, 0.24);
+        color: #34d399;
+    }
+
+    .play-nav-pill .badge-count {
+        position: absolute;
+        top: -3px;
+        right: 4px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 0.62rem;
+        padding: 0 4px;
+    }
+}
+
+/* 7. Enhanced Google Play Style Download Modal */
+#download-modal .modal-card {
+    background: linear-gradient(180deg, #131c2e 0%, #0f172a 100%) !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
+    border-radius: 26px !important;
+    padding: 26px 22px !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65) !important;
+}
+
+#download-modal .modal-icon-circle {
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 20px !important;
+    background: rgba(16, 185, 129, 0.16) !important;
+    border: 2px solid rgba(16, 185, 129, 0.55) !important;
+    color: #34d399 !important;
+    font-size: 1.6rem !important;
+    margin: 0 auto 14px auto !important;
+    box-shadow: 0 0 24px rgba(16, 185, 129, 0.25) !important;
+}
+
+#download-modal .progress-track {
+    height: 10px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    overflow: hidden !important;
+    margin: 16px 0 12px 0 !important;
+}
+
+#download-modal .progress-fill {
+    background: linear-gradient(90deg, #10b981, #06b6d4) !important;
+    border-radius: 999px !important;
+}

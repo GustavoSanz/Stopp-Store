@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stopp App Store | Software & Experimental Projects</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=17">
+    <link rel="stylesheet" href="assets/css/style.css?v=25">
     <link rel="icon" type="image/svg+xml" href="assets/img/icon.svg">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
     <link rel="manifest" href="manifest.webmanifest">
@@ -108,161 +108,143 @@
             </div>
         </div>
 
-        <!-- Header -->
-        <header class="app-main-header">
-            <div class="brand">
-                <div class="brand-logo">S</div>
-                <div class="brand-text">
-                    <div style="display: flex; align-items: center;">
-                        <h1>STOPP<span>.STORE</span></h1>
-                        <span class="brand-version-pill">v0.7-Beta</span>
-                    </div>
-                    <p>Developer Hub &amp; Applications</p>
-                </div>
-            </div>
-            <div class="header-links">
-                <!-- UI Sound Effects Toggle -->
-                <button class="btn-sound-toggle" id="btn-sound-toggle" onclick="toggleSoundFx()" title="Ativar ou desativar efeitos sonoros da interface">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sound-icon-svg"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                    <span class="sound-toggle-label" id="sound-toggle-label">Sons: ON</span>
-                </button>
-
-                <!-- IA Stopp Sentinel Telemetry -->
-                <div class="ai-status-container" id="ai-status-container" onclick="openAiDiagnosticModal()" title="Clica para ver o Diagnóstico Completo da IA">
-                    <div class="ai-status-pulse-badge">
+        <!-- Header (Google Play Store Style Sticky Top Search & Tabs) -->
+        <header class="app-main-header play-store-header">
+            <div class="play-search-bar-row">
+                <div class="play-search-pill">
+                    <div class="brand-logo play-prism-logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Stopp Store">S</div>
+                    <svg class="play-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="play-store-search-input" class="play-search-input" placeholder="Pesquisar apps e jogos na Stopp..." oninput="filterAppsBySearch(this.value)" autocomplete="off">
+                    <button type="button" id="play-search-clear" class="play-search-clear-btn" style="display: none;" onclick="clearPlayStoreSearch()" title="Limpar pesquisa">&#10005;</button>
+                    <div class="ai-status-container play-ai-pill" id="ai-status-container" onclick="openAiDiagnosticModal()" title="Telemetria Stopp Sentinel">
                         <span class="ai-status-dot"></span>
-                        <span class="ai-status-label" id="ai-status-main-label">IA Sentinel: <strong>A analisar...</strong></span>
-                    </div>
-                    <div class="ai-status-telemetry">
+                        <span class="ai-status-label" id="ai-status-main-label" style="display: none;">IA Sentinel: <strong>Operacional</strong></span>
                         <span class="ai-telemetry-ping" id="ai-telemetry-ping">-- ms</span>
                     </div>
                 </div>
 
-                <!-- Gestor de Apps -->
-                <button class="btn-manager-nav" onclick="openAppManagerModal()" title="Gestor de Aplicações e Atualizações">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                    <span>Gestor</span>
-                    <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
-                </button>
+                <div class="header-links play-top-actions">
+                    <button class="btn-sound-toggle play-icon-btn" id="btn-sound-toggle" onclick="toggleSoundFx()" title="Ativar ou desativar efeitos sonoros">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sound-icon-svg"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <span class="sound-toggle-label play-btn-text" id="sound-toggle-label">Sons: ON</span>
+                    </button>
 
-                <!-- Definições -->
-                <button class="btn-settings-nav" onclick="openSettingsModal()" title="Definições e Gestão da Loja">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    <span>Definições</span>
-                </button>
+                    <button class="btn-manager-nav play-icon-btn" onclick="openAppManagerModal()" title="Gestor de Aplicacoes e Atualizacoes">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        <span class="play-btn-text">Gestor</span>
+                        <span class="badge-count" id="pending-updates-badge" style="display: none;">0</span>
+                    </button>
 
-                <!-- Admin & Client Auth / Account -->
-                <button class="btn-auth-nav" id="nav-auth-btn" onclick="StoppAuth.openLoginModal()" title="Conta e Autenticação">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    <span class="auth-text">Entrar / Registar</span>
-                </button>
+                    <button class="btn-settings-nav play-icon-btn" onclick="openSettingsModal()" title="Definicoes da Stopp Store">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span class="play-btn-text">Definicoes</span>
+                    </button>
 
-                <!-- Atalhos da Loja -->
-                <button class="btn-install-app" id="nav-pill-app-android" onclick="openAppModal()" title="Vantagens e download da App Android">App Android</button>
-                <button id="btn-pwa-install" class="btn-install-app" style="display: none;" title="Instalar Stopp Store no dispositivo">Instalar PWA</button>
-                <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener">GitHub</a>
+                    <button class="btn-auth-nav play-avatar-btn" id="nav-auth-btn" onclick="StoppAuth.openLoginModal()" title="Conta Stopp">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span class="auth-text">Conta</span>
+                    </button>
+
+                    <button id="btn-pwa-install" class="btn-install-app" style="display: none;" title="Instalar Stopp Store">Instalar</button>
+                </div>
+            </div>
+
+            <!-- Google Play Underlined Category Tabs -->
+            <div class="filter-rail-container play-subtabs-wrap" id="apps">
+                <div class="filter-tabs-rail play-subtabs-rail" id="filter-tabs-rail">
+                    <button class="tab-btn active" data-category="all">Para ti</button>
+                    <button class="tab-btn" data-category="android">Apps Android</button>
+                    <button class="tab-btn" data-category="energia">Energia &amp; IoT</button>
+                    <button class="tab-btn" data-category="gaming">Jogos</button>
+                    <button class="tab-btn" data-category="pc">PC &amp; Desktop</button>
+                    <button class="tab-btn" data-category="ferramentas">Ferramentas</button>
+                </div>
             </div>
         </header>
 
-        <!-- Modern Animated Hero Showcase (Início Bonito e Dinâmico) -->
-        <section class="hero-showcase">
-            <div class="hero-showcase-glow"></div>
-            <div class="hero-showcase-content">
-                <div class="hero-top-badges">
-                    <span class="hero-badge-pill">Portal Oficial de Distribuição</span>
+        <!-- Google Play Editorial Spotlight Banner -->
+        <section class="play-featured-spotlight">
+            <div class="play-featured-artwork">
+                <div class="play-featured-tag-row">
+                    <span class="play-editorial-badge">ATUALIZACAO EM DESTAQUE</span>
+                    <span class="play-protect-verified" onclick="openProtectModal()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                        Verificado pela Stopp Protect
+                    </span>
                 </div>
-                <h2 class="hero-headline">Aplicações Nativas &amp; <span>Projetos Stopp</span></h2>
-                <p class="hero-subtitle">Distribuição direta de utilitários, soluções energéticas e videojogos experimentais com instalação autónoma e gestão inteligente de versões.</p>
-                <div class="hero-highlights">
-                    <div class="highlight-chip" onclick="openAiDiagnosticModal()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                        <span>IA Sentinel Ativa</span>
+                <h2 class="play-featured-title">Vera Watt &bull; Smart Things Hub &amp; RGB Control</h2>
+                <p class="play-featured-desc">Controla luzes RGB, Smart TV com Ambilight, Ar Condicionado e producao solar em tempo real diretamente no telemovel.</p>
+
+                <div class="play-featured-app-strip">
+                    <div class="play-strip-left" onclick="window.location.href='verawatt.html'">
+                        <img src="assets/img/verawatt_ativo2_4x.png" alt="Vera Watt" class="play-strip-icon verawatt-theme-icon">
+                        <div class="play-strip-meta">
+                            <strong>Vera Watt</strong>
+                            <span>Energia &amp; Smart Home IoT &bull; 4.9 &#9733;</span>
+                        </div>
                     </div>
-                    <div class="highlight-chip" onclick="scrollToShelf()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                        <span>No Teu Dispositivo</span>
+                    <div class="play-strip-actions">
+                        <a href="verawatt.html" class="play-pill-btn">Ver App</a>
                     </div>
-                    <a href="https://github.com/GustavoSanz/Stopp-Store" target="_blank" rel="noopener" class="highlight-chip" style="text-decoration: none; color: inherit;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-                        <span>Código Aberto</span>
-                    </a>
                 </div>
             </div>
         </section>
 
         <!-- Promo Banner Android App (Apenas Browser Web) -->
         <div class="promo-banner" id="banner-app-promo" onclick="openAppModal()">
-            <div class="promo-badge">Novidade</div>
+            <div class="promo-badge">App Oficial</div>
             <div class="promo-content">
-                <strong>Stopp Store Oficial para Android!</strong>
-                <span>Clica para conhecer as vantagens exclusivas e novidades da aplicação nativa.</span>
+                <strong>Descarrega a Stopp Store para Android</strong>
+                <span>Instalacao direta com 1 toque e atualizacoes automaticas em segundo plano.</span>
             </div>
-            <div class="promo-arrow">Ver Vantagens →</div>
+            <div class="promo-arrow">Obter &rarr;</div>
         </div>
 
-        <!-- Relocated Horizontal Category Filter Rail (Posicionada Imediatamente Acima das Apps) -->
-        <div class="filter-rail-container" id="apps">
-            <div class="filter-rail-header">
-                <span class="filter-rail-title">Catálogo de Aplicações</span>
-                <span class="filter-rail-hint">Desliza para filtrar categorias</span>
+        <!-- Section Header: Recomendado para ti -->
+        <div class="play-section-heading">
+            <div>
+                <h3>Recomendado para ti</h3>
+                <p>Aplicacoes oficiais verificadas e prontas a instalar</p>
             </div>
-            <div class="filter-tabs-rail" id="filter-tabs-rail">
-                <button class="tab-btn active" data-category="all">
-                    <span class="tab-dot"></span> Todas as Criações
-                </button>
-                <button class="tab-btn" data-category="android">
-                    <span class="tab-dot"></span> Android (APK)
-                </button>
-                <button class="tab-btn" data-category="pc">
-                    <span class="tab-dot"></span> PC &amp; Desktop
-                </button>
-                <button class="tab-btn" data-category="energia">
-                    <span class="tab-dot"></span> Energia &amp; IoT
-                </button>
-                <button class="tab-btn" data-category="gaming">
-                    <span class="tab-dot"></span> Gaming &amp; Companion
-                </button>
-                <button class="tab-btn" data-category="ferramentas">
-                    <span class="tab-dot"></span> Ferramentas
-                </button>
-            </div>
+            <button type="button" class="play-section-link" onclick="openAppManagerModal()">Gerir APKs &rarr;</button>
         </div>
 
-        <!-- Apps Grid -->
-        <main class="apps-grid">
+        <!-- Apps Grid (Google Play Store Cards) -->
+        <main class="apps-grid play-apps-grid">
             <!-- App 0: Stopp Store (Oficial) -->
-            <article class="app-card" id="app-card-com.stopp.store" data-package="com.stopp.store" data-target-version-code="7" data-target-version-name="0.7-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.7-Beta.apk" data-apk-size="4" data-category="android ferramentas" style="--card-accent: #0ea5e9; --btn-color-start: #0ea5e9; --btn-color-end: #10b981;">
+            <article class="app-card play-app-card" id="app-card-com.stopp.store" data-package="com.stopp.store" data-target-version-code="7" data-target-version-name="0.7-Beta" data-app-name="Stopp Store" data-apk-url="assets/apks/StoppStore-v0.7-Beta.apk" data-apk-size="4" data-category="android ferramentas" style="--card-accent: #0ea5e9; --btn-color-start: #0ea5e9; --btn-color-end: #10b981;">
                 <div>
-                    <div class="card-header">
-                        <div class="app-icon" style="background: linear-gradient(135deg, #10b981, #0ea5e9); color: #fff; font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 18px; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);">
+                    <div class="play-card-top-row">
+                        <div class="app-icon play-squircle-icon" onclick="window.location.href='stoppstore.html'" style="background: linear-gradient(135deg, #10b981, #0ea5e9); color: #fff; font-size: 1.7rem; font-weight: 800; display: flex; align-items: center; justify-content: center;">
                             S
                         </div>
-                        <div class="app-header-badges">
-                            <span class="badge-version badge-blue">v0.7-Beta</span>
-                            <span class="badge-status badge-installed" id="badge-status-com.stopp.store" style="background: rgba(14, 165, 233, 0.15); border-color: rgba(14, 165, 233, 0.4); color: #38bdf8;">App Oficial</span>
+                        <div class="play-card-title-col" onclick="window.location.href='stoppstore.html'">
+                            <div class="play-card-title-line">
+                                <h3 class="app-title">Stopp Store</h3>
+                                <span class="badge-version badge-blue">v0.7-Beta</span>
+                            </div>
+                            <div class="play-card-dev">Stopp Studio &bull; Loja Oficial</div>
+                            <div class="play-card-rating-row">
+                                <span class="play-rating-pill">5.0 &#9733;</span>
+                                <span class="play-meta-dot">&bull;</span>
+                                <span class="play-pegi-tag">PEGI 3</span>
+                                <span class="badge-status badge-installed" id="badge-status-com.stopp.store">App Oficial</span>
+                            </div>
                         </div>
-                    </div>
-
-                    <h3 class="app-title" style="display: block; font-size: 1.4rem; margin-top: 14px; margin-bottom: 6px;">Stopp Store</h3>
-                    <div class="app-tags">
-                        <span class="tag tag-platform tag-android">Android (APK)</span>
-                        <span class="tag">Hub Oficial</span>
-                        <span class="tag">Gestor APKs</span>
-                        <span class="tag">Auto-Update</span>
                     </div>
 
                     <p class="app-desc">
-                        Aplicação nativa Android oficial da Stopp Store. Navega, instala e atualiza todas as aplicações Stopp com 1 toque direto, notificações de sistema em segundo plano e gestão inteligente de versões.
+                        Loja oficial Android da Stopp Studio. Instala e atualiza aplicacoes num toque com verificacao de integridade Stopp Protect.
                     </p>
 
-                    <div class="app-specs">
+                    <div class="app-specs play-specs-bar">
+                        <div class="spec-item">
+                            <span>Classificacao</span>
+                            <strong>5.0 &#9733;</strong>
+                        </div>
                         <div class="spec-item">
                             <span>Plataforma</span>
                             <strong>Android 10+</strong>
-                        </div>
-                        <div class="spec-item">
-                            <span>Formato</span>
-                            <strong>APK Direto</strong>
                         </div>
                         <div class="spec-item">
                             <span>Tamanho</span>
@@ -271,65 +253,62 @@
                     </div>
                 </div>
 
-                <div class="card-actions" id="actions-com.stopp.store">
+                <div class="card-actions play-card-actions" id="actions-com.stopp.store">
                     <button class="btn-download" onclick="triggerAppDownload('Stopp Store', 'assets/apks/StoppStore-v0.6-Beta.apk', 4)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Instalar APK
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Instalar
                     </button>
-                    <a href="stoppstore.html" class="btn-secondary" title="Ver Detalhes da Aplicação">
+                    <a href="stoppstore.html" class="btn-secondary" title="Ver Detalhes da Aplicacao">
                         Detalhes
                     </a>
                 </div>
             </article>
 
             <!-- App 1: Vera Watt -->
-            <article class="app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="9" data-target-version-name="0.7.2-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.7.2-Beta.apk" data-apk-size="46" data-category="android pc energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
+            <article class="app-card play-app-card" id="app-card-com.vera_watt" data-package="com.vera_watt" data-target-version-code="10" data-target-version-name="0.7.3-Beta" data-app-name="Vera Watt" data-apk-url="assets/apks/VeraWatt-v0.7.3-Beta.apk" data-apk-size="47" data-category="android pc energia ferramentas" style="--card-accent: #10b981; --btn-color-start: #10b981; --btn-color-end: #0ea5e9;">
                 <div>
-                    <div class="card-header">
-                        <div class="app-icon icon-verawatt" title="Vera Watt" style="border: none; background: transparent; padding: 0;">
-                            <img src="assets/img/verawatt_ativo2_4x.png" alt="Vera Watt" class="verawatt-theme-icon" id="verawatt-card-icon" style="width: 100%; height: 100%; border-radius: 18px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);">
+                    <div class="play-card-top-row">
+                        <div class="app-icon icon-verawatt play-squircle-icon" onclick="window.location.href='verawatt.html'" title="Vera Watt" style="border: none; background: transparent; padding: 0;">
+                            <img src="assets/img/verawatt_ativo2_4x.png" alt="Vera Watt" class="verawatt-theme-icon" id="verawatt-card-icon">
                         </div>
-                        <div class="app-header-badges">
-                            <span class="badge-version badge-green">v0.7.2-Beta</span>
-                            <span class="badge-status" id="badge-status-com.vera_watt" style="display: none;"></span>
+                        <div class="play-card-title-col" onclick="window.location.href='verawatt.html'">
+                            <div class="play-card-title-line">
+                                <h3 class="app-title">Vera Watt</h3>
+                                <span class="badge-version badge-green">v0.7.3-Beta</span>
+                            </div>
+                            <div class="play-card-dev">VeraWatt Energy &bull; Smart Home IoT</div>
+                            <div class="play-card-rating-row">
+                                <span class="play-rating-pill">4.9 &#9733;</span>
+                                <span class="play-meta-dot">&bull;</span>
+                                <span class="play-pegi-tag">PEGI 3</span>
+                                <span class="badge-status" id="badge-status-com.vera_watt" style="display: none;"></span>
+                            </div>
                         </div>
-                    </div>
-
-                    <img src="assets/img/verawatt_tipo1_4x.png" alt="Vera Watt" class="game-title-banner verawatt-title-banner">
-
-                    <h3 class="app-title" style="display: none;">Vera Watt</h3>
-                    <div class="app-tags">
-                        <span class="tag tag-platform tag-android">Android (APK)</span>
-                        <span class="tag tag-platform tag-pc">PC Web</span>
-                        <span class="tag">Energia Inteligente</span>
-                        <span class="tag">Jetpack Compose</span>
-                        <span class="tag">Nothing Glyph SDK</span>
-                        <span class="tag">Glassmorphism</span>
                     </div>
 
                     <p class="app-desc">
-                        Monitorização de energia residencial em tempo real com telemetria direta ligada aos LEDs traseiros do Nothing Phone (2a). Inclui gestão de faturas com portal web embutido, simulador solar interativo e pegada ecológica.
+                        Ecossistema inteligente de energia solar e Smart Things: controla luzes RGB, Smart TV, climatizacao AC, faturas e simulador fotovoltaico em tempo real.
                     </p>
 
-                    <div class="app-specs">
+                    <div class="app-specs play-specs-bar">
                         <div class="spec-item">
-                            <span>Plataforma</span>
-                            <strong>Android 13+ & Web</strong>
+                            <span>Classificacao</span>
+                            <strong>4.9 &#9733;</strong>
                         </div>
                         <div class="spec-item">
-                            <span>Formato</span>
-                            <strong>APK Direto / Web</strong>
+                            <span>Plataforma</span>
+                            <strong>Android 13+</strong>
                         </div>
                         <div class="spec-item">
                             <span>Tamanho</span>
-                            <strong>~46 MB</strong>
+                            <strong>~47 MB</strong>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-actions" id="actions-com.vera_watt">
-                    <button class="btn-download" onclick="triggerAppDownload('Vera Watt', 'assets/apks/VeraWatt-v0.7.2-Beta.apk', 46)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <div class="card-actions play-card-actions" id="actions-com.vera_watt">
+                    <button class="btn-download" onclick="triggerAppDownload('Vera Watt', 'assets/apks/VeraWatt-v0.7.3-Beta.apk', 47)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Instalar APK
                     </button>
                     <a href="verawatt.html" class="btn-secondary" title="Ver Detalhes e Screenshots">
@@ -339,53 +318,51 @@
             </article>
 
             <!-- App 2: Sons of Echoes -->
-            <article class="app-card" id="app-card-sons-of-echoes" data-platform="pc" data-category="pc gaming" style="--card-accent: #f59e0b; --btn-color-start: #f59e0b; --btn-color-end: #ef4444;">
+            <article class="app-card play-app-card" id="app-card-sons-of-echoes" data-platform="pc" data-category="pc gaming" style="--card-accent: #f59e0b; --btn-color-start: #f59e0b; --btn-color-end: #ef4444;">
                 <div>
-                    <div class="card-header">
-                        <div class="app-icon icon-forest" title="Orin">
+                    <div class="play-card-top-row">
+                        <div class="app-icon icon-forest play-squircle-icon" onclick="window.location.href='sons-of-echoes.html'" title="Orin">
                             <img src="assets/img/orin_character.png" alt="Orin">
                         </div>
-                        <div class="app-header-badges">
-                            <span class="badge-version badge-amber">Alpha Build</span>
-                            <span class="badge-status" id="badge-status-sons-of-echoes" style="display: none;"></span>
+                        <div class="play-card-title-col" onclick="window.location.href='sons-of-echoes.html'">
+                            <div class="play-card-title-line">
+                                <h3 class="app-title">Sons of Echoes</h3>
+                                <span class="badge-version badge-amber">Alpha Build</span>
+                            </div>
+                            <div class="play-card-dev">Stopp Games &bull; Acao &amp; RPG 2D</div>
+                            <div class="play-card-rating-row">
+                                <span class="play-rating-pill">4.8 &#9733;</span>
+                                <span class="play-meta-dot">&bull;</span>
+                                <span class="play-pegi-tag">PEGI 12</span>
+                                <span class="badge-status" id="badge-status-sons-of-echoes" style="display: none;"></span>
+                            </div>
                         </div>
-                    </div>
-
-                    <img src="assets/img/sons_of_echoes_title.png" alt="Sons of Echoes" class="game-title-banner">
-
-                    <h3 class="app-title" style="display: none;">Sons of Echoes</h3>
-                    <div class="app-tags">
-                        <span class="tag tag-platform tag-pc">PC & Desktop</span>
-                        <span class="tag">GameMaker</span>
-                        <span class="tag">Acao & Aventura 2D</span>
-                        <span class="tag">Orin Protagonist</span>
-                        <span class="tag">Magia & Bosses</span>
                     </div>
 
                     <p class="app-desc">
-                        Jogo atmosferico de acao e aventura em 2D desenvolvido por Stopp em GameMaker. Encarna o papel de Orin, explora florestas antigas e grutas sombrias, combate servos e invocacoes com mecanicas de esquiva, mana e combate magico.
+                        Aventura atmosferica 2D em GameMaker. Encarna Orin, explora florestas antigas e domina feiticaria e combate contra bosses.
                     </p>
 
-                    <div class="app-specs">
+                    <div class="app-specs play-specs-bar">
+                        <div class="spec-item">
+                            <span>Classificacao</span>
+                            <strong>4.8 &#9733;</strong>
+                        </div>
                         <div class="spec-item">
                             <span>Plataforma</span>
-                            <strong>PC & Windows</strong>
+                            <strong>PC Windows</strong>
                         </div>
                         <div class="spec-item">
-                            <span>Protagonista</span>
-                            <strong>Orin</strong>
-                        </div>
-                        <div class="spec-item">
-                            <span>Estado</span>
-                            <strong>Em Dev</strong>
+                            <span>Tamanho</span>
+                            <strong>~120 MB</strong>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-actions" id="actions-sons-of-echoes">
+                <div class="card-actions play-card-actions" id="actions-sons-of-echoes">
                     <button class="btn-download" onclick="triggerAppDownload('Sons of Echoes (Alpha)', null, 120)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                        Jogar / Demo
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Jogar Demo
                     </button>
                     <a href="sons-of-echoes.html" class="btn-secondary" title="Ver Detalhes e Screenshots">
                         Detalhes
@@ -393,35 +370,39 @@
                 </div>
             </article>
 
-            <!-- App 3: Laboratório Experimental -->
-            <article class="app-card" data-category="android pc ferramentas" style="--card-accent: #8b5cf6; --btn-color-start: #8b5cf6; --btn-color-end: #6366f1;">
+            <!-- App 3: Laboratorio Experimental -->
+            <article class="app-card play-app-card" data-category="android pc ferramentas" style="--card-accent: #8b5cf6; --btn-color-start: #8b5cf6; --btn-color-end: #6366f1;">
                 <div>
-                    <div class="card-header">
-                        <div class="app-icon icon-future">
+                    <div class="play-card-top-row">
+                        <div class="app-icon icon-future play-squircle-icon">
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg>
                         </div>
-                        <span class="badge-version badge-indigo">Lab / Em Breve</span>
-                    </div>
-
-                    <h3 class="app-title">Stopp Experimental Lab</h3>
-                    <div class="app-tags">
-                        <span class="tag tag-platform">Multiplataforma</span>
-                        <span class="tag">Em Desenvolvimento</span>
-                        <span class="tag">Projetos Futuros</span>
+                        <div class="play-card-title-col">
+                            <div class="play-card-title-line">
+                                <h3 class="app-title">Stopp Experimental Lab</h3>
+                                <span class="badge-version badge-indigo">Em Breve</span>
+                            </div>
+                            <div class="play-card-dev">Stopp R&amp;D &bull; Acesso Antecipado</div>
+                            <div class="play-card-rating-row">
+                                <span class="play-rating-pill">Lab</span>
+                                <span class="play-meta-dot">&bull;</span>
+                                <span class="play-pegi-tag">Beta Privada</span>
+                            </div>
+                        </div>
                     </div>
 
                     <p class="app-desc">
-                        Próximas aplicações e utilitários em desenvolvimento pela Stopp Studio. Novas integrações com sensores móveis, micro-serviços e ferramentas de apoio a videojogos serão publicadas aqui diretamente.
+                        Proximas aplicacoes e utilitarios experimentais da Stopp Studio com sensores moveis, automacao e ferramentas para criadores.
                     </p>
 
-                    <div class="app-specs">
+                    <div class="app-specs play-specs-bar">
                         <div class="spec-item">
                             <span>Estado</span>
-                            <strong>R&D</strong>
+                            <strong>R&amp;D</strong>
                         </div>
                         <div class="spec-item">
                             <span>Fase</span>
-                            <strong>Design</strong>
+                            <strong>Prototipo</strong>
                         </div>
                         <div class="spec-item">
                             <span>Acesso</span>
@@ -430,11 +411,12 @@
                     </div>
                 </div>
 
-                <div class="card-actions" id="lab-card-actions">
-                    <button class="btn-download" style="opacity: 0.7;" onclick="StoppAuth.openLoginModal()">
+                <div class="card-actions play-card-actions" id="lab-card-actions">
+                    <button class="btn-download" style="opacity: 0.75;" onclick="StoppAuth.openLoginModal()">
                         Acesso Restrito
                     </button>
                 </div>
+            </article>
         </main>
 
         <!-- Horizontal Swipeable Shelf: Installed Applications on Device -->
@@ -442,14 +424,14 @@
             <div class="shelf-header">
                 <div class="shelf-title-wrap">
                     <div class="shelf-icon-badge">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     </div>
                     <div>
-                        <h3 class="shelf-title">Aplicações no Teu Dispositivo</h3>
-                        <p class="shelf-subtitle">Acesso rápido com 1 toque direto • Desliza para o lado</p>
+                        <h3 class="shelf-title">Instaladas no Teu Dispositivo</h3>
+                        <p class="shelf-subtitle">Acesso rapido com 1 toque direto</p>
                     </div>
                 </div>
-                <div class="shelf-nav-hint">Desliza ← →</div>
+                <div class="shelf-nav-hint">Desliza &larr; &rarr;</div>
             </div>
 
             <div class="shelf-scroll-track" id="shelf-scroll-track">
@@ -459,10 +441,39 @@
 
         <!-- Footer -->
         <footer>
-            <p>&copy; 2026 Stopp Developer Studio. Todos os direitos reservados.</p>
+            <p>&copy; 2026 Stopp Developer Studio &bull; Google Play Inspired Material UI</p>
             <p>Criado por Gustavo Sanz (Stopp) &bull; Alojado via GitHub Pages</p>
         </footer>
     </div>
+
+    <!-- Google Play Store Material 3 Bottom Navigation Bar (Mobile) -->
+    <nav class="play-bottom-nav" id="play-bottom-nav" aria-label="Navegacao Principal da Loja">
+        <button type="button" class="play-bottom-nav-item active" data-play-nav="apps" onclick="playTabNavigate('all')">
+            <div class="play-nav-pill">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+            </div>
+            <span>Apps</span>
+        </button>
+        <button type="button" class="play-bottom-nav-item" data-play-nav="gaming" onclick="playTabNavigate('gaming')">
+            <div class="play-nav-pill">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="6"></rect></svg>
+            </div>
+            <span>Jogos</span>
+        </button>
+        <button type="button" class="play-bottom-nav-item" data-play-nav="updates" onclick="openAppManagerModal()">
+            <div class="play-nav-pill">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span class="badge-count" id="play-nav-updates-badge" style="display: none;">0</span>
+            </div>
+            <span>Atualizacoes</span>
+        </button>
+        <button type="button" class="play-bottom-nav-item" data-play-nav="settings" onclick="openSettingsModal()">
+            <div class="play-nav-pill">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </div>
+            <span>Definicoes</span>
+        </button>
+    </nav>
 
     <!-- Download Progress & Post-Install Celebration Modal -->
     <div class="modal-backdrop" id="download-modal">
@@ -765,10 +776,10 @@
                 <div class="settings-section-desc">Testa os comportamentos de app instalada, atualização pendente e desinstalação sem necessidade de dispositivo Android:</div>
                 <p id="sim-verawatt-status" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;"></p>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="btn-secondary" style="flex: 1; font-size: 0.8rem; padding: 10px 8px;" onclick="simSetVeraWattInstalled(true, 9, '0.7.2-Beta')">
+                    <button class="btn-secondary" style="flex: 1; font-size: 0.8rem; padding: 10px 8px;" onclick="simSetVeraWattInstalled(true, 10, '0.7.3-Beta')">
                         Definir Instalada
                     </button>
-                    <button class="btn-secondary" style="flex: 1; font-size: 0.8rem; padding: 10px 8px;" onclick="simSetVeraWattInstalled(true, 9, '0.7.2-Beta')">
+                    <button class="btn-secondary" style="flex: 1; font-size: 0.8rem; padding: 10px 8px;" onclick="simSetVeraWattInstalled(true, 10, '0.7.3-Beta')">
                         Definir Desatualizada
                     </button>
                     <button class="btn-secondary" style="flex: 1; font-size: 0.8rem; padding: 10px 8px; color: #f87171;" onclick="simSetVeraWattInstalled(false)">
@@ -1301,7 +1312,7 @@
         </div>
     </div>
 
-    <script src="assets/js/app.js?v=19"></script>
-    <script src="assets/js/download.js?v=19"></script>
+    <script src="assets/js/app.js?v=20"></script>
+    <script src="assets/js/download.js?v=20"></script>
 </body>
 </html>

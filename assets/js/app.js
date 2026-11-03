@@ -344,10 +344,10 @@ const STORE_APPS_REGISTRY = [
         name: 'Vera Watt',
         platform: 'Android & Web',
         isStore: false,
-        targetCode: 9,
-        targetName: '0.7.2-Beta',
-        apkUrl: 'assets/apks/VeraWatt-v0.7.2-Beta.apk',
-        size: 46,
+        targetCode: 10,
+        targetName: '0.7.3-Beta',
+        apkUrl: 'assets/apks/VeraWatt-v0.7.3-Beta.apk',
+        size: 47,
         iconType: 'image',
         iconSrc: 'assets/img/verawatt_ativo2_4x.png',
         changelog: [
@@ -401,17 +401,19 @@ function renderAppManager() {
 
     // 1. Atualizar Badges de contagem
     const headerBadge = document.getElementById('pending-updates-badge');
-    if (headerBadge) {
+    const playNavBadge = document.getElementById('play-nav-updates-badge');
+    [headerBadge, playNavBadge].forEach(badgeEl => {
+        if (!badgeEl) return;
         if (pendingList.length > 0) {
-            headerBadge.textContent = pendingList.length;
-            headerBadge.style.display = 'inline-flex';
-            headerBadge.className = 'badge-count has-updates';
+            badgeEl.textContent = pendingList.length;
+            badgeEl.style.display = 'inline-flex';
+            badgeEl.className = 'badge-count has-updates';
         } else {
-            headerBadge.textContent = '0';
-            headerBadge.style.display = 'none';
-            headerBadge.className = 'badge-count';
+            badgeEl.textContent = '0';
+            badgeEl.style.display = 'none';
+            badgeEl.className = 'badge-count';
         }
-    }
+    });
 
     const tabPendingBadge = document.getElementById('manager-pending-tab-badge');
     if (tabPendingBadge) {
@@ -766,7 +768,7 @@ function refreshAllAppStatus() {
             const targetCode = parseInt(container.getAttribute('data-target-version-code') || '0', 10);
             const targetName = container.getAttribute('data-target-version-name') || '';
             const appName = container.getAttribute('data-app-name') || 'Vera Watt';
-            const apkUrl = container.getAttribute('data-apk-url') || 'assets/apks/VeraWatt-v0.7.2-Beta.apk';
+            const apkUrl = container.getAttribute('data-apk-url') || 'assets/apks/VeraWatt-v0.7.3-Beta.apk';
             const apkSize = parseInt(container.getAttribute('data-apk-size') || '67', 10);
             const isDetailPage = container.classList.contains('app-detail-card');
 
@@ -1433,29 +1435,10 @@ const StoppAiSentinel = {
 
         this.updateModalUi();
 
-        // 7. Alerta Autónomo da IA Stopp Sentinel ao detetar Instabilidade de Rede/Servidores
-        if (!this.state.apiOk) {
-            const now = Date.now();
-            const lastAlert = parseInt(localStorage.getItem('stopp_sentinel_last_instability_alert') || '0', 10);
-            const ALERT_COOLDOWN = 15 * 60 * 1000; // 15 minutos entre alertas automaticos para evitar repeticoes
-
-            if (now - lastAlert > ALERT_COOLDOWN) {
-                localStorage.setItem('stopp_sentinel_last_instability_alert', now.toString());
-                const alertTitle = 'Alerta Stopp Sentinel: Instabilidade Detetada';
-                const alertMsg = 'A IA Sentinel detetou anomalias no carregamento ou resposta dos servidores da Stopp Store. A acompanhar estabilidade.';
-
-                StoppNotifications.send(alertTitle, alertMsg, resolveStoreUrl('index.html'));
-
-                if (!StoppSystemNotice.state.active) {
-                    StoppSystemNotice.state.active = true;
-                    StoppSystemNotice.state.level = 'error';
-                    StoppSystemNotice.state.title = alertTitle;
-                    StoppSystemNotice.state.message = alertMsg;
-                    const dateNow = new Date();
-                    StoppSystemNotice.state.timestamp = ('0' + dateNow.getDate()).slice(-2) + '/' + ('0' + (dateNow.getMonth() + 1)).slice(-2) + '/' + dateNow.getFullYear() + ' ' + ('0' + dateNow.getHours()).slice(-2) + ':' + ('0' + dateNow.getMinutes()).slice(-2);
-                    StoppSystemNotice.render();
-                }
-            }
+        // 7. Registo silencioso da IA Stopp Sentinel (sem afixar banner amarelo intrusivo automaticamente)
+        if (this.state.apiOk && StoppSystemNotice.state.title && StoppSystemNotice.state.title.includes('Instabilidade Detetada')) {
+            StoppSystemNotice.state.active = false;
+            StoppSystemNotice.render();
         }
 
         if (showFeedback) {
@@ -1588,7 +1571,10 @@ const StoppSystemNotice = {
         if (localNotice) {
             try {
                 const parsed = JSON.parse(localNotice);
-                if (parsed && parsed.active) {
+                if (parsed && parsed.title && parsed.title.includes('Instabilidade Detetada')) {
+                    localStorage.removeItem('stopp_admin_notice');
+                    this.state.active = false;
+                } else if (parsed && parsed.active) {
                     this.state = Object.assign({}, this.state, parsed);
                 }
             } catch (e) {}
@@ -2019,7 +2005,7 @@ function renderSettingsOverview() {
                 } else if (installedCode < 4) {
                     simStatus.textContent = 'Estado atual: Instalada (Versao Antiga v0.3 / Code 3)';
                 } else {
-                    simStatus.textContent = 'Estado atual: Instalada e Atualizada (v0.7.2-Beta / Code 9)';
+                    simStatus.textContent = 'Estado atual: Instalada e Atualizada (v0.7.3-Beta / Code 10)';
                 }
             }
         } else {
@@ -2056,7 +2042,7 @@ function handleTestNotification() {
 }
 
 // Simulador Web para Testes Locais de UI
-function simSetVeraWattInstalled(isInstalled, code = 9, name = '0.7.2-Beta') {
+function simSetVeraWattInstalled(isInstalled, code = 10, name = '0.7.3-Beta') {
     if (isInstalled) {
         localStorage.setItem('sim_installed_com.vera_watt', 'true');
         localStorage.setItem('sim_version_code_com.vera_watt', code.toString());
@@ -2525,7 +2511,7 @@ if (document.readyState === 'loading') {
 // Service Worker Registration for PWA & Cache Invalidation
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=15')
+        navigator.serviceWorker.register('./sw.js?v=16')
             .then(reg => {
                 reg.update();
             })
@@ -2534,7 +2520,7 @@ if ('serviceWorker' in navigator) {
         if ('caches' in window) {
             caches.keys().then(keys => {
                 keys.forEach(k => {
-                    if (k !== 'stopp-store-v15') {
+                    if (k !== 'stopp-store-v16') {
                         caches.delete(k);
                     }
                 });
@@ -3519,9 +3505,65 @@ window.bootstrapStore = bootstrapStore;
 window.StoppSystemNotice = StoppSystemNotice;
 window.updateVeraWattThemeIcons = updateVeraWattThemeIcons;
 window.getVeraWattDynamicIcon = getVeraWattDynamicIcon;
+function filterAppsBySearch(query) {
+    const q = (query || '').trim().toLowerCase();
+    const appCards = document.querySelectorAll('.app-card');
+    const clearBtn = document.getElementById('play-search-clear-btn');
+    if (clearBtn) {
+        clearBtn.style.display = q.length > 0 ? 'inline-flex' : 'none';
+    }
+    appCards.forEach(card => {
+        const text = (card.textContent || '').toLowerCase();
+        const name = (card.getAttribute('data-app-name') || '').toLowerCase();
+        const cat = (card.getAttribute('data-category') || '').toLowerCase();
+        if (!q || text.includes(q) || name.includes(q) || cat.includes(q)) {
+            card.style.display = 'flex';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function clearPlayStoreSearch() {
+    const input = document.getElementById('play-store-search-input');
+    if (input) {
+        input.value = '';
+        filterAppsBySearch('');
+    }
+}
+
+function playTabNavigate(tab) {
+    StoppAudio.play('tap');
+    const navItems = document.querySelectorAll('.play-bottom-nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+    const activeItem = document.getElementById('play-nav-' + tab);
+    if (activeItem) activeItem.classList.add('active');
+
+    if (tab === 'apps') {
+        const allTab = document.querySelector('.tab-btn[data-category="all"]');
+        if (allTab) allTab.click();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (tab === 'games') {
+        const gameTab = document.querySelector('.tab-btn[data-category="gaming"]');
+        if (gameTab) gameTab.click();
+        const appsEl = document.getElementById('apps');
+        if (appsEl) appsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (tab === 'updates') {
+        openAppManagerModal();
+    } else if (tab === 'profile') {
+        openSettingsModal();
+    }
+}
+
+window.filterAppsBySearch = filterAppsBySearch;
+window.clearPlayStoreSearch = clearPlayStoreSearch;
+window.playTabNavigate = playTabNavigate;
 window.showErrorModal = showErrorModal;
 window.closeErrorModal = closeErrorModal;
 window.handleErrorRetry = handleErrorRetry;
 window.handleErrorUninstall = handleErrorUninstall;
 window.StoppAuth = StoppAuth;
+
 
