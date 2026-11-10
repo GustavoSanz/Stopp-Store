@@ -20,16 +20,16 @@
   "apps": {
     "com.vera_watt": {
       "name": "Vera Watt",
-      "version_code": 12,
-      "version_name": "0.7.5-Beta",
-      "apk_url": "assets/apks/VeraWatt-v0.7.5-Beta.apk",
+      "version_code": 13,
+      "version_name": "0.7.6-Beta",
+      "apk_url": "assets/apks/VeraWatt-v0.7.6-Beta.apk",
       "package_name": "com.vera_watt",
       "size_mb": 47,
       "changelog": [
         "Nova aba dedicada Smart IoT com controlo RGB de luzes, comando completo de Smart TV com Ambilight e climatizacao AC.",
         "Ecra de primeira vez com animacao de radar orbital e sincronizacao Matter 1.4 para a aba Smart Things.",
         "Redesign Google Play Store (Material You Dark) na Stopp Store e barra inferior otimizada na VeraWatt.",
-        "Compilacao automatica v0.7.5-Beta (Build 12)."
+        "Compilacao automatica v0.7.6-Beta (Build 13)."
       ]
     }
   }
