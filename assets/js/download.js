@@ -178,8 +178,8 @@ function triggerAppDownload(appName, apkUrl, fileSizeMb = 64) {
 
             if (apkUrl.includes('VeraWatt')) {
                 localStorage.setItem('sim_installed_com.vera_watt', 'true');
-                localStorage.setItem('sim_version_code_com.vera_watt', '13');
-                localStorage.setItem('sim_version_name_com.vera_watt', '0.7.6-Beta');
+                localStorage.setItem('sim_version_code_com.vera_watt', '14');
+                localStorage.setItem('sim_version_name_com.vera_watt', '0.7.7-Beta');
                 if (typeof refreshAllAppStatus === 'function') {
                     setTimeout(() => refreshAllAppStatus(), 600);
                 }
